@@ -1,0 +1,37 @@
+machine:
+  python:
+    version: 2.7.3
+  php:
+    version: 5.5.11
+  node:
+    version: 0.10.33
+  services:
+    - mongodb
+    - docker
+
+dependencies:
+ pre:
+    - yes '' | pecl install mongo
+    - rm -rf /home/ubuntu/wntt-docker-vagrant/vendor
+ post:
+    #- pip install awscli
+    - sed "s/<EMAIL>/$DOCKER_EMAIL/;s/<AUTH>/$DOCKER_AUTH/" < .dockercfg.TEMPLATE > ~/.dockercfg
+    #- sed "s/<IMAGE_SHA>/$CIRCLE_SHA1/;s/<BUILD_EB_BUCKET>/$BUILD_EB_BUCKET/;s/<BUILD_ENVIRONMENT>/$QA_BUILD_ENVIRONMENT/" < deploy.sh.TEMPLATE > ~/qa-deploy.sh
+    #- sed "s/<IMAGE_SHA>/$CIRCLE_SHA1/;s/<BUILD_EB_BUCKET>/$BUILD_EB_BUCKET/;s/<BUILD_ENVIRONMENT>/$PROD_BUILD_ENVIRONMENT/" < deploy.sh.TEMPLATE > ~/prod-deploy.sh
+    #- mkdir ~/.aws
+    #- cp .aws.config ~/.aws/config
+    - docker build -t betavest/wntt-dist:$CIRCLE_SHA1 .
+
+test:
+  override:
+    - docker run -i -t betavest/wntt-dist:$CIRCLE_SHA1 phing -find /var/www/build.xml test
+
+#deployment:
+#  qa:
+#    branch: develop
+#    commands:
+#      - bash -x ~/qa-deploy.sh
+#  prod:
+#    branch: master
+#    commands:
+#      - bash -x ~/prod-deploy.sh

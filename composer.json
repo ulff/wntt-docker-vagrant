@@ -21,7 +21,12 @@
         "incenteev/composer-parameter-handler": "~2.0",
         "doctrine/mongodb-odm": "1.0.*@dev",
         "doctrine/mongodb-odm-bundle": "3.0.*@dev",
-        "doctrine/mongodb": "1.1.*@dev"
+        "doctrine/mongodb": "1.1.*@dev",
+        "behat/behat": "dev-master",
+        "behat/mink-extension": "dev-master",
+        "behat/mink-goutte-driver": "*",
+        "phing/phing": "2.*",
+        "phpspec/phpspec": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"
