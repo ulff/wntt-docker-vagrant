@@ -1,6 +1,7 @@
 .idea/
 .vagrant/
 .modman/
+.dockercfg
 /proxy/.vagrant/
 /proxy/Vagrantfile.proxy
 /proxy/Vagrantfile.proxy.TEMPLATE
