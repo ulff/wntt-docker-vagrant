@@ -1,6 +1,7 @@
 <?php
 
-namespace Sysla\WeNeedToTalk\WnttApiBundle\Entity;
+namespace Sysla\WeNeedToTalk\WnttApiBundle\Document;
+
 
 class Stand
 {
