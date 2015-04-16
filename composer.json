@@ -26,7 +26,11 @@
         "behat/mink-extension": "dev-master",
         "behat/mink-goutte-driver": "*",
         "phing/phing": "2.*",
-        "phpspec/phpspec": "dev-master"
+        "phpspec/phpspec": "dev-master",
+        "sonata-project/admin-bundle": "dev-master",
+        "sonata-project/doctrine-mongodb-admin-bundle": "dev-master",
+        "sonata-project/media-bundle": "~2.3",
+        "jms/serializer-bundle": "0.13.*"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"

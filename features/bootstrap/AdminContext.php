@@ -9,7 +9,7 @@ use Behat\MinkExtension\Context\MinkContext;
 /**
  * Defines application features from the specific context.
  */
-class WebContext extends MinkContext implements Context, SnippetAcceptingContext
+class AdminContext extends MinkContext implements Context, SnippetAcceptingContext
 {
 
     /**
@@ -31,5 +31,23 @@ class WebContext extends MinkContext implements Context, SnippetAcceptingContext
     {
         $this->visit('/app_dev.php');
     }
+
+    /**
+     * @Given I am on :formLabel form
+     */
+    public function iAmOnForm($formLabel)
+    {
+        list($action, $document) = explode(' ', $formLabel);
+        $this->visit("/app_dev.php/admin/weneedtotalk/wnttapi/$document/$action");
+    }
+
+    /**
+     * @Then I should see form notification :message
+     */
+    public function iShouldSeeFormNotification($message)
+    {
+        $this->assertPageContainsText($message);
+    }
+
 
 }

@@ -1,0 +1,4 @@
+services:
+    sonata.media.admin.media.manager:
+        class: Sonata\MediaBundle\Admin\Manager\DoctrineMongoDBManager
+        arguments: [@doctrine_mongodb, @sonata.media.manager.media]
