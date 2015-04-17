@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 /**
  * @MongoDB\Document
  */
-class Event
+class Company
 {
     /**
      * @MongoDB\Id
@@ -22,17 +22,12 @@ class Event
     /**
      * @MongoDB\String
      */
-    protected $location;
+    protected $websiteUrl;
 
     /**
-     * @MongoDB\Date
+     * @MongoDB\String
      */
-    protected $dateStart;
-
-    /**
-     * @MongoDB\Date
-     */
-    protected $dateEnd;
+    protected $logoUrl;
 
     /**
      * @return string
@@ -69,49 +64,33 @@ class Event
     /**
      * @return string
      */
-    public function getLocation()
+    public function getWebsiteUrl()
     {
-        return $this->location;
+        return $this->websiteUrl;
     }
 
     /**
-     * @param string $location
+     * @param string $websiteUrl
      */
-    public function setLocation($location)
+    public function setWebsiteUrl($websiteUrl)
     {
-        $this->location = $location;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDateStart()
-    {
-        return $this->dateStart;
-    }
-
-    /**
-     * @param string $dateStart
-     */
-    public function setDateStart($dateStart)
-    {
-        $this->dateStart = $dateStart;
+        $this->websiteUrl = $websiteUrl;
     }
 
     /**
      * @return string
      */
-    public function getDateEnd()
+    public function getLogoUrl()
     {
-        return $this->dateEnd;
+        return $this->logoUrl;
     }
 
     /**
-     * @param string $dateEnd
+     * @param string $logoUrl
      */
-    public function setDateEnd($dateEnd)
+    public function setLogoUrl($logoUrl)
     {
-        $this->dateEnd = $dateEnd;
+        $this->logoUrl = $logoUrl;
     }
 
 }
