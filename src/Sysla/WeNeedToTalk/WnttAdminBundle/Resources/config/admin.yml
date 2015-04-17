@@ -1,16 +1,3 @@
-services:
-    sonata.admin.event:
-        class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\EventAdmin
-        tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Content", label: "Event" }
-        arguments:
-            - ~
-            - Sysla\WeNeedToTalk\WnttApiBundle\Document\Event
-            - ~
-        calls:
-            - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]
-
-
 sonata_media:
     # if you don't use default namespace configuration
     #class:
