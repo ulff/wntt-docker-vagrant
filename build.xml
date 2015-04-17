@@ -2,12 +2,8 @@
 <project name="We Need To Talk" default="quality">
 
     <target name="prepare">
-        <exec command="sleep 3" passthru="true"/>
-        <exec command="rm -rf /var/www/app/cache/*"/>
-        <exec command="rm -rf /var/www/app/logs/*"/>
+        <exec command="sleep 15" passthru="true"/>
         <exec command="chown -R www:www /var/www/app/cache /var/www/app/logs"/>
-        <exec command="chmod 777 -R /var/www/app/cache /var/www/app/logs"/>
-        <exec command="chmod g+s /var/www/app/cache /var/www/app/logs"/>
     </target>
 
     <target name="behat" depends="prepare">

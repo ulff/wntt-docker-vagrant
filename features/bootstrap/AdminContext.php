@@ -34,6 +34,7 @@ class AdminContext extends MinkContext implements Context, SnippetAcceptingConte
 
     /**
      * @Given I am on :formLabel form
+     * @Given I go to :formLabel form
      */
     public function iAmOnForm($formLabel)
     {
@@ -42,12 +43,33 @@ class AdminContext extends MinkContext implements Context, SnippetAcceptingConte
     }
 
     /**
+     * @Given Event exists with data
+     */
+    public function eventExistsWithData(TableNode $table)
+    {
+        $this->iAmOnForm('create event');
+        foreach($table->getTable() as $row) {
+            $this->fillField($row[0], $row[1]);
+        }
+        $this->pressButton('Create');
+    }
+
+    /**
+     * @When I am on :document list
+     * @When I go to :document list
+     */
+    public function iGoToList($document)
+    {
+        $this->visit("/app_dev.php/admin/weneedtotalk/wnttapi/$document/list");
+    }
+
+
+    /**
      * @Then I should see form notification :message
      */
     public function iShouldSeeFormNotification($message)
     {
         $this->assertPageContainsText($message);
     }
-
 
 }
