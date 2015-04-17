@@ -2,3 +2,26 @@ services:
     sonata.media.admin.media.manager:
         class: Sonata\MediaBundle\Admin\Manager\DoctrineMongoDBManager
         arguments: [@doctrine_mongodb, @sonata.media.manager.media]
+
+    sonata.admin.event:
+        class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\EventAdmin
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Content", label: "Event" }
+        arguments:
+            - ~
+            - Sysla\WeNeedToTalk\WnttApiBundle\Document\Event
+            - ~
+        calls:
+            - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]
+
+    sonata.admin.company:
+            class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\CompanyAdmin
+            tags:
+                - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Content", label: "Company" }
+            arguments:
+                - ~
+                - Sysla\WeNeedToTalk\WnttApiBundle\Document\Company
+                - ~
+            calls:
+                - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]
+
