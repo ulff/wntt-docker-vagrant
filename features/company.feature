@@ -11,3 +11,13 @@ Feature: adding companies
       | Logo URL    | http://c1/static/logo.png |
     And I press "Create"
     Then I should see form notification "successfully created"
+
+  Scenario: browse companies
+    Given "Company" exists with data
+      | Name        | Company 2nd              |
+      | Website URL | http://c2.com            |
+      | Logo URL    | http://c2.com/!Pomorskie |
+    When I go to "company" list
+    Then I should see "Company 2nd"
+    And I should see "http://c2.com"
+    And I should see "http://c2.com/!Pomorskie"

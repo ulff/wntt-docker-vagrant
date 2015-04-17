@@ -43,11 +43,11 @@ class AdminContext extends MinkContext implements Context, SnippetAcceptingConte
     }
 
     /**
-     * @Given Event exists with data
+     * @Given :document exists with data
      */
-    public function eventExistsWithData(TableNode $table)
+    public function documentExistsWithData($document, TableNode $table)
     {
-        $this->iAmOnForm('create event');
+        $this->iAmOnForm('create '.strtolower($document));
         foreach($table->getTable() as $row) {
             $this->fillField($row[0], $row[1]);
         }
