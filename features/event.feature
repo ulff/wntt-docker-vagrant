@@ -12,7 +12,7 @@ Feature: adding events
     Then I should see form notification "successfully created"
 
   Scenario: browse events
-    Given Event exists with data
+    Given "Event" exists with data
       | Name      | Olive Oil               |
       | Location  | Olivia Buisness Centre  |
     When I go to "event" list
