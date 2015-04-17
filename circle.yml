@@ -22,14 +22,15 @@ dependencies:
     #- sed "s/<IMAGE_SHA>/$CIRCLE_SHA1/;s/<BUILD_EB_BUCKET>/$BUILD_EB_BUCKET/;s/<BUILD_ENVIRONMENT>/$PROD_BUILD_ENVIRONMENT/" < deploy.sh.TEMPLATE > ~/prod-deploy.sh
     #- mkdir ~/.aws
     #- cp .aws.config ~/.aws/config
+    - chmod -R 777 app/cache
+    - chmod -R 777 app/logs
     - docker build -t betavest/wntt-dist:$CIRCLE_SHA1 .
 
 test:
   override:
-    #- docker run -d --name mongo openshift/centos-mongodb
-    #- docker run -i -t --link mongo:mongo betavest/wntt-dist:$CIRCLE_SHA1 phing -find /var/www/build.xml test
-    #- docker kill mongo
-    - echo NO TESTS
+    - docker run -d --name mongo openshift/centos-mongodb
+    - docker run -i -t --link mongo:mongo betavest/wntt-dist:$CIRCLE_SHA1 phing -find /var/www/build.xml test
+    - docker kill mongo
 
 #deployment:
 #  qa:
