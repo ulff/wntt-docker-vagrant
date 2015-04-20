@@ -93,4 +93,9 @@ class Company
         $this->logoUrl = $logoUrl;
     }
 
+    public function getClassName()
+    {
+        $classCanonicalName = explode('\\', get_class($this));
+        return end($classCanonicalName);
+    }
 }

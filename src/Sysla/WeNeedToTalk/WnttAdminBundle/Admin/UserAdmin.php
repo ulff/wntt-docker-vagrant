@@ -11,10 +11,18 @@ class UserAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('username', 'text', array('label' => 'Username'))
-            ->add('email', 'text', array('label' => 'Email'))
-            ->add('plainPassword', 'text', array('label' => 'Password'))
-            ->add('phoneNumber', 'text', array('label' => 'Phone number'))
+            ->add('username', 'text', ['label' => 'Username'])
+            ->add('email', 'text', ['label' => 'Email'])
+            ->add('plainPassword', 'password', ['label' => 'Password'])
+            ->add('phoneNumber', 'text', ['label' => 'Phone number'])
+            ->add('roles', 'choice', [
+                    'choices' => [
+                        'ROLE_USER' => 'User',
+                        'ROLE_ADMIN' => 'Admin',
+                    ],
+                    'multiple' => true,
+                    'required' => true
+                ])
         ;
     }
 
@@ -25,13 +33,26 @@ class UserAdmin extends Admin
             ->add('username')
             ->add('email')
             ->add('phoneNumber')
+            ->add('roles', 'choice', [
+                    'multiple' => true,
+                    'delimiter' => ' | ',
+                    'choices' => [
+                        'ROLE_USER'=>'User',
+                        'ROLE_ADMIN'=>'Admin',
+                        'ROLE_SUPER_ADMIN'=>'Super Admin'
+                    ]
+                ]
+            )
 
-            ->add('_action', 'actions', array(
-                'actions' => array(
-                    'view' => array(),
-                    'edit' => array(),
-                )
-            ))
+            ->add('_action', 'actions', [
+                'actions' => [
+                    'edit' => [],
+                    'delete' => [
+                        'template' => 'SyslaWeeNeedToTalkWnttAdminBundle:CRUD:list__action_delete.html.twig'
+                    ],
+                ]
+            ])
         ;
     }
+
 }
