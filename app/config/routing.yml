@@ -1,6 +1,9 @@
-app:
-    resource: "@SyslaWeeNeedToTalkWnttApiBundle/Controller/"
-    type:     annotation
+root:
+    path: /
+    defaults:
+        _controller: FrameworkBundle:Redirect:urlRedirect
+        path: /admin/dashboard
+        permanent: true
 
 admin:
     resource: '@SonataAdminBundle/Resources/config/routing/sonata_admin.xml'
@@ -18,3 +21,6 @@ gallery:
 media:
     resource: '@SonataMediaBundle/Resources/config/routing/media.xml'
     prefix: /media
+
+fos_user:
+    resource: "@FOSUserBundle/Resources/config/routing/all.xml"

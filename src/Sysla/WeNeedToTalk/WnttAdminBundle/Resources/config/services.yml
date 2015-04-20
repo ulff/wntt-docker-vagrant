@@ -15,13 +15,23 @@ services:
             - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]
 
     sonata.admin.company:
-            class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\CompanyAdmin
-            tags:
-                - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Content", label: "Company" }
-            arguments:
-                - ~
-                - Sysla\WeNeedToTalk\WnttApiBundle\Document\Company
-                - ~
-            calls:
-                - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]
+        class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\CompanyAdmin
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Content", label: "Company" }
+        arguments:
+            - ~
+            - Sysla\WeNeedToTalk\WnttApiBundle\Document\Company
+            - ~
+        calls:
+            - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]
 
+    sonata.admin.user:
+        class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\UserAdmin
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Users", label: "User" }
+        arguments:
+            - ~
+            - Sysla\WeNeedToTalk\WnttUserBundle\Document\User
+            - ~
+        calls:
+            - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]

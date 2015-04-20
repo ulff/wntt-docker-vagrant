@@ -29,6 +29,7 @@ dependencies:
 test:
   override:
     - docker run -d --name mongo openshift/centos-mongodb
+    - docker run -i -t --link mongo:mongo betavest/wntt-dist:$CIRCLE_SHA1 /var/www/bin/setup.sh
     - docker run -i -t --link mongo:mongo betavest/wntt-dist:$CIRCLE_SHA1 phing -find /var/www/build.xml test
     - docker kill mongo
 

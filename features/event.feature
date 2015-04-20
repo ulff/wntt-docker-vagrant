@@ -3,6 +3,9 @@ Feature: adding events
   As an admin
   I want to be able to manage event list
 
+  Background:
+    Given I am logged in as super-admin
+
   Scenario: create event
     Given I am on "create event" form
     When I fill in the following:

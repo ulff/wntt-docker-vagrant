@@ -6,4 +6,6 @@ ADD . /var/www
 RUN pear channel-discover pear.phing.info
 RUN pear install phing/phing
 
-ENV SYMFONY__MONGO__HOST $MONGO_PORT_27017_TCP_ADDR
+ENV SYMFONY__MONGO__HOST mongo
+
+CMD ["/var/www/bin/setup.sh"]

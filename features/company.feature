@@ -3,6 +3,9 @@ Feature: adding companies
   As an admin
   I want to be able to manage companies list
 
+  Background:
+    Given I am logged in as super-admin
+
   Scenario: create company
     Given I am on "create company" form
     When I fill in the following:
