@@ -58,5 +58,10 @@ class User extends BaseUser
         $this->phoneNumber = $phoneNumber;
     }
 
+    public function getClassName()
+    {
+        $classCanonicalName = explode('\\', get_class($this));
+        return end($classCanonicalName);
+    }
 
 }

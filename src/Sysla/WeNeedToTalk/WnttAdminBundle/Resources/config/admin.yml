@@ -62,3 +62,7 @@ sonata_doctrine_mongo_db_admin:
                 bigint:     SonataAdminBundle:CRUD:base_show_field.html.twig
                 integer:    SonataAdminBundle:CRUD:base_show_field.html.twig
                 decimal:    SonataAdminBundle:CRUD:base_show_field.html.twig
+
+sonata_admin:
+    templates:
+        user_block:         SyslaWeeNeedToTalkWnttAdminBundle:Core:user_block.html.twig

@@ -93,7 +93,15 @@ class AdminContext extends MinkContext implements Context, SnippetAcceptingConte
      */
     public function iGoToList($document)
     {
-        $this->visit("/app_dev.php/admin/weneedtotalk/wnttapi/$document/list");
+        switch($document) {
+            case 'user':
+                $bundle = 'wnttuser';
+                break;
+            default:
+                $bundle = 'wnttapi';
+        }
+
+        $this->visit("/app_dev.php/admin/weneedtotalk/$bundle/$document/list");
     }
 
 

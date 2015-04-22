@@ -29,7 +29,7 @@ class EventAdmin extends Admin
 
             ->add('_action', 'actions', array(
                 'actions' => array(
-                    'view' => array(),
+                    'delete' => array(),
                     'edit' => array(),
                 )
             ))
