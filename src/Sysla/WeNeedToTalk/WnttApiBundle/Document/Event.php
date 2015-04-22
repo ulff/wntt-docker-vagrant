@@ -5,7 +5,7 @@ namespace Sysla\WeNeedToTalk\WnttApiBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
- * @MongoDB\Document
+ * @MongoDB\Document(collection="events")
  */
 class Event
 {
@@ -118,6 +118,11 @@ class Event
     {
         $classCanonicalName = explode('\\', get_class($this));
         return end($classCanonicalName);
+    }
+
+    public function __toString()
+    {
+        return $this->name;
     }
 
 }

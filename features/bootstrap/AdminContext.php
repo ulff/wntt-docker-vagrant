@@ -5,12 +5,15 @@ use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use Behat\MinkExtension\Context\MinkContext;
+use Codifico\ParameterBagExtension\Context\ParameterBagDictionary;
 
 /**
  * Defines application features from the specific context.
  */
 class AdminContext extends MinkContext implements Context, SnippetAcceptingContext
 {
+
+    use ParameterBagDictionary;
 
     /**
      * Initializes context.
@@ -65,11 +68,41 @@ class AdminContext extends MinkContext implements Context, SnippetAcceptingConte
      */
     public function documentExistsWithData($document, TableNode $table)
     {
+        $identifiedBy = '';
         $this->iAmOnForm('create '.strtolower($document));
-        foreach($table->getTable() as $row) {
-            $this->fillField($row[0], $row[1]);
+        foreach($table->getRowsHash() as $field => $value) {
+            if($field == 'identifiedBy') {
+                $identifiedBy = $value;
+            } else {
+                $this->fillField($field, $value);
+            }
         }
         $this->pressButton('Create');
+
+        $editPageUrl = explode('/', $this->getSession()->getCurrentUrl());
+        if(array_pop($editPageUrl) == 'edit') {
+            $this->getParameterBag()->set(ucfirst($document).':'.$identifiedBy, array_pop($editPageUrl));
+        }
+
+    }
+
+    /**
+     * @Given I am on edit :document :identifiedBy form
+     * @Given I go to edit :document :identifiedBy form
+     */
+    public function iAmOnEditForm($document, $identifiedBy)
+    {
+        $mongoId = $this->getParameterBag()->get(ucfirst($document).':'.$identifiedBy);
+
+        switch($document) {
+            case 'user':
+                $bundle = 'wnttuser';
+                break;
+            default:
+                $bundle = 'wnttapi';
+        }
+
+        $this->visit("/app_dev.php/admin/weneedtotalk/$bundle/$document/$mongoId/edit");
     }
 
     /**
@@ -104,6 +137,21 @@ class AdminContext extends MinkContext implements Context, SnippetAcceptingConte
         $this->visit("/app_dev.php/admin/weneedtotalk/$bundle/$document/list");
     }
 
+    /**
+     * @When I check following items from grid:
+     */
+    public function iCheckFollowingItemsFromGrid(TableNode $table)
+    {
+        $editPageUrl = explode('/', $this->getSession()->getCurrentUrl());
+        $document = $editPageUrl[count($editPageUrl)-2];
+
+        foreach($table->getRows() as $row) {
+            $mongoId = $this->getParameterBag()->get(ucfirst($document).':'.reset($row));
+            $checkboxList = $this->getSession()->getPage()->findAll('xpath', "//input[@value='$mongoId']");
+            $checkbox = reset($checkboxList);
+            $checkbox->check();
+        }
+    }
 
     /**
      * @Then I should see form notification :message

@@ -14,6 +14,18 @@ services:
         calls:
             - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]
 
+    sonata.admin.stand:
+        class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\StandAdmin
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Content", label: "Stand" }
+        arguments:
+            - ~
+            - Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand
+            - ~
+        calls:
+            - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]
+
+
     sonata.admin.company:
         class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\CompanyAdmin
         tags:

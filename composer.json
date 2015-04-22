@@ -31,7 +31,8 @@
         "sonata-project/doctrine-mongodb-admin-bundle": "dev-master",
         "sonata-project/media-bundle": "~2.3",
         "jms/serializer-bundle": "0.13.*",
-        "friendsofsymfony/user-bundle": "~2.0@dev"
+        "friendsofsymfony/user-bundle": "~2.0@dev",
+        "codifico/parameter-bag-extension": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"
