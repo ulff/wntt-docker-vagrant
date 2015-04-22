@@ -24,22 +24,40 @@ class AdminContext extends MinkContext implements Context, SnippetAcceptingConte
     }
 
     /**
-     * @Given I am on main page
-     * @Given I go to main page
+     * @Given /^I (?:am on|go to) dashboard$/
      */
-    public function iAmOnMainPage()
+    public function iAmOnDashboard()
     {
-        $this->visit('/app_dev.php');
+        $this->visit('/app_dev.php/admin/dashboard');
     }
 
     /**
-     * @Given I am on :formLabel form
-     * @Given I go to :formLabel form
+     * @Given /^I am logged in as super[- ]?admin$/
+     */
+    public function iAmLoggedInAsSuperAdmin()
+    {
+        $this->iGoToLoginPage();
+        $this->fillField('Username', 'admin');
+        $this->fillField('Password', 'admin');
+        $this->pressButton('Login');
+    }
+
+    /**
+     * @Given /^I (?:am on|go to) "(.+)" form$/
      */
     public function iAmOnForm($formLabel)
     {
         list($action, $document) = explode(' ', $formLabel);
-        $this->visit("/app_dev.php/admin/weneedtotalk/wnttapi/$document/$action");
+
+        switch($document) {
+            case 'user':
+                $bundle = 'wnttuser';
+                break;
+            default:
+                $bundle = 'wnttapi';
+        }
+
+        $this->visit("/app_dev.php/admin/weneedtotalk/$bundle/$document/$action");
     }
 
     /**
@@ -55,12 +73,35 @@ class AdminContext extends MinkContext implements Context, SnippetAcceptingConte
     }
 
     /**
-     * @When I am on :document list
-     * @When I go to :document list
+     * @Given /^I (?:have|am) logged out$/
+     */
+    public function iHaveLoggedOut()
+    {
+        $this->visit('/app_dev.php/logout');
+    }
+
+    /**
+     * @When I go to login page
+     */
+    public function iGoToLoginPage()
+    {
+        $this->visit('/app_dev.php/login');
+    }
+
+    /**
+     * @When /^I (?:am on|go to) "(.+)" list$/
      */
     public function iGoToList($document)
     {
-        $this->visit("/app_dev.php/admin/weneedtotalk/wnttapi/$document/list");
+        switch($document) {
+            case 'user':
+                $bundle = 'wnttuser';
+                break;
+            default:
+                $bundle = 'wnttapi';
+        }
+
+        $this->visit("/app_dev.php/admin/weneedtotalk/$bundle/$document/list");
     }
 
 

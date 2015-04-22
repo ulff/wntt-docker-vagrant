@@ -41,4 +41,10 @@ class Stand
         $this->number = $number;
     }
 
+    public function getClassName()
+    {
+        $classCanonicalName = explode('\\', get_class($this));
+        return end($classCanonicalName);
+    }
+
 }
