@@ -7,8 +7,9 @@ default:
             contexts: [ AdminContext ]
 
     extensions:
-            Behat\MinkExtension:
-                  base_url: "http://127.0.0.1/"
-                  sessions:
-                    default:
-                      goutte: ~
+        Behat\MinkExtension:
+            base_url: "http://127.0.0.1/"
+            sessions:
+              default:
+                goutte: ~
+        Codifico\ParameterBagExtension\ServiceContainer\ParameterBagExtension: ~

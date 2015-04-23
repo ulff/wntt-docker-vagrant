@@ -6,18 +6,9 @@ Feature: adding users
   Background:
     Given I am logged in as super-admin
 
-  Scenario: create user
-    Given I am on "create user" form
-    When I fill in the following:
-      | Username      | test-scenario1  |
-      | Email         | scenario1@wntt  |
-      | Password      | password1       |
-      | Phone number  | 001 002 001     |
-    And I press "Create"
-    Then I should see form notification "successfully created"
-
   Scenario: create user and log him in
     Given "user" exists with data
+      | identifiedBy  | test-scenario2  |
       | Username      | test-scenario2  |
       | Email         | scenario2@wntt  |
       | Password      | password2       |
@@ -31,6 +22,7 @@ Feature: adding users
 
   Scenario: browse users
     Given "User" exists with data
+      | identifiedBy  | test-scenario3  |
       | Username      | test-scenario3  |
       | Email         | scenario3@wntt  |
       | Password      | password3       |
@@ -41,6 +33,7 @@ Feature: adding users
 
   Scenario: create user with admin privileges and log him in
     Given "user" exists with data
+      | identifiedBy  | test-scenario4  |
       | Username      | test-scenario4  |
       | Email         | scenario4@wntt  |
       | Password      | password4       |
@@ -56,6 +49,7 @@ Feature: adding users
 
   Scenario: create user without admin privileges and log him in
     Given "user" exists with data
+      | identifiedBy  | test-scenario5  |
       | Username      | test-scenario5  |
       | Email         | scenario5@wntt  |
       | Password      | password5       |
@@ -68,3 +62,19 @@ Feature: adding users
     And I press "Login"
     Then I should be on "app_dev.php/admin/dashboard"
     And I should see "Access Denied"
+
+  Scenario: delete user from edit form
+    Given I am on edit "user" "test-scenario2" form
+    When I follow "Delete"
+    And I press "Yes, delete"
+    Then I should see form notification "deleted successfully"
+
+  Scenario: batch delete selected users
+    Given I am on "user" list
+    When I check following items from grid:
+      | test-scenario3 |
+      | test-scenario4 |
+      | test-scenario5 |
+    And I press "OK"
+    And I press "Yes, execute"
+    Then I should see form notification "successfully deleted"

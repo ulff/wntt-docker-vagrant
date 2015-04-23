@@ -3,10 +3,12 @@
 namespace Sysla\WeNeedToTalk\WnttUserBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use FOS\UserBundle\Model\User as BaseUser;
 
 /**
- * @MongoDB\Document
+ * @MongoDB\Document(collection="users")
+ * @MongoDBUnique(fields="username")
  */
 class User extends BaseUser
 {

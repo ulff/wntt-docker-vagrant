@@ -5,7 +5,7 @@ namespace Sysla\WeNeedToTalk\WnttApiBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
- * @MongoDB\Document
+ * @MongoDB\Document(collection="companies")
  */
 class Company
 {
