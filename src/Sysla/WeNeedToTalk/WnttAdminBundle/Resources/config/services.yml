@@ -25,11 +25,21 @@ services:
         calls:
             - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]
 
+    sonata.admin.category:
+        class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\CategoryAdmin
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Content", label: "Category" }
+        arguments:
+            - ~
+            - Sysla\WeNeedToTalk\WnttApiBundle\Document\Category
+            - ~
+        calls:
+            - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]
 
     sonata.admin.company:
         class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\CompanyAdmin
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Content", label: "Company" }
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Companies", label: "Company" }
         arguments:
             - ~
             - Sysla\WeNeedToTalk\WnttApiBundle\Document\Company
