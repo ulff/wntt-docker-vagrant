@@ -14,6 +14,19 @@ Feature: adding events
     And I press "Create"
     Then I should see form notification "successfully created"
 
+  Scenario: allow creating event with empty location
+    Given I am on "create event" form
+    When I fill in the following:
+      | Name        | E2         |
+    And I press "Create"
+    Then I should see form notification "successfully created"
+
+  Scenario: do not create event with empty name
+    Given I am on "create event" form
+    And I press "Create"
+    Then I should be on "create event" form
+    And I should not see "successfully created"
+
   Scenario: browse events
     Given "Event" exists with data
       | Name      | Olive Oil               |

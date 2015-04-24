@@ -161,4 +161,22 @@ class AdminContext extends MinkContext implements Context, SnippetAcceptingConte
         $this->assertPageContainsText($message);
     }
 
+    /**
+     * @Then I should be on :formLabel form
+     */
+    public function iShouldBeOnForm($formLabel)
+    {
+        list($action, $document) = explode(' ', $formLabel);
+
+        switch($document) {
+            case 'user':
+                $bundle = 'wnttuser';
+                break;
+            default:
+                $bundle = 'wnttapi';
+        }
+
+        $this->assertPageAddress("/app_dev.php/admin/weneedtotalk/$bundle/$document/$action");
+    }
+
 }

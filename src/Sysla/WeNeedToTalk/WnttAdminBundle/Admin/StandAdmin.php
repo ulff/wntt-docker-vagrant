@@ -14,7 +14,10 @@ class StandAdmin extends Admin
     {
         $formMapper
             ->add('event', 'sonata_type_model', ['class' => 'Sysla\WeNeedToTalk\WnttApiBundle\Document\Event'])
-            ->add('hall', 'text', ['label' => 'Hall'])
+            ->add('hall', 'text', [
+                'label' => 'Hall',
+                'required' => false
+            ])
             ->add('number', 'text', ['label' => 'Number'])
             ->add('company', 'sonata_type_model', [
                 'class' => 'Sysla\WeNeedToTalk\WnttApiBundle\Document\Company',

@@ -14,7 +14,10 @@ class UserAdmin extends Admin
             ->add('username', 'text', ['label' => 'Username'])
             ->add('email', 'text', ['label' => 'Email'])
             ->add('plainPassword', 'password', ['label' => 'Password'])
-            ->add('phoneNumber', 'text', ['label' => 'Phone number'])
+            ->add('phoneNumber', 'text', [
+                'label' => 'Phone number',
+                'required' => false
+            ])
             ->add('roles', 'choice', [
                     'choices' => [
                         'ROLE_USER' => 'User',
