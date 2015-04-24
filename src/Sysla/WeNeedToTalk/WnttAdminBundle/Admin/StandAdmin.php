@@ -16,6 +16,10 @@ class StandAdmin extends Admin
             ->add('event', 'sonata_type_model', ['class' => 'Sysla\WeNeedToTalk\WnttApiBundle\Document\Event'])
             ->add('hall', 'text', ['label' => 'Hall'])
             ->add('number', 'text', ['label' => 'Number'])
+            ->add('company', 'sonata_type_model', [
+                'class' => 'Sysla\WeNeedToTalk\WnttApiBundle\Document\Company',
+                'required' => false
+            ])
         ;
     }
 
@@ -26,6 +30,7 @@ class StandAdmin extends Admin
             ->add('event')
             ->add('hall')
             ->add('number')
+            ->add('company')
 
             ->add('_action', 'actions', array(
                 'actions' => array(

@@ -83,7 +83,7 @@ class Event
     }
 
     /**
-     * @return string
+     * @return \DateTime
      */
     public function getDateStart()
     {
@@ -91,7 +91,16 @@ class Event
     }
 
     /**
-     * @param string $dateStart
+     * return string
+     */
+    public function getDateStartAsString($format = 'Y-m-d')
+    {
+        $dateStart = $this->getDateStart();
+        return empty($dateStart) ? '' : $dateStart->format($format);
+    }
+
+    /**
+     * @param \DateTime $dateStart
      */
     public function setDateStart($dateStart)
     {
@@ -99,7 +108,7 @@ class Event
     }
 
     /**
-     * @return string
+     * @return \DateTime
      */
     public function getDateEnd()
     {
@@ -107,7 +116,16 @@ class Event
     }
 
     /**
-     * @param string $dateEnd
+     * return string
+     */
+    public function getDateEndAsString($format = 'Y-m-d')
+    {
+        $dateEnd = $this->getDateEnd();
+        return empty($dateEnd) ? '' : $dateEnd->format($format);
+    }
+
+    /**
+     * @param \DateTime $dateEnd
      */
     public function setDateEnd($dateEnd)
     {
@@ -122,7 +140,7 @@ class Event
 
     public function __toString()
     {
-        return $this->name;
+        return $this->getName().' ('.$this->getDateStartAsString().' - '.$this->getDateEndAsString().')';
     }
 
 }

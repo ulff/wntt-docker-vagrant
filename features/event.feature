@@ -21,3 +21,10 @@ Feature: adding events
     When I go to "event" list
     Then I should see "Olive Oil"
     And I should see "Olivia Buisness Centre"
+
+  Scenario: removing all events
+    Given I am on "event" list
+    When I check "all_elements"
+    And I press "OK"
+    And I press "Yes, execute"
+    Then I should see form notification "successfully deleted"
