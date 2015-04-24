@@ -3,6 +3,7 @@
 namespace Sysla\WeNeedToTalk\WnttApiBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @MongoDB\Document(collection="stands")
@@ -17,6 +18,7 @@ class Stand
 
     /**
      * @MongoDB\String
+     * @Assert\NotBlank()
      */
     protected $number;
 
@@ -27,6 +29,7 @@ class Stand
 
     /**
      * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Event", cascade={"remove"})
+     * @Assert\NotBlank()
      */
     protected $event;
 

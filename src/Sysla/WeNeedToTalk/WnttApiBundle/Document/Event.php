@@ -3,6 +3,7 @@
 namespace Sysla\WeNeedToTalk\WnttApiBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @MongoDB\Document(collection="events")
@@ -16,6 +17,7 @@ class Event
 
     /**
      * @MongoDB\String
+     * @Assert\NotBlank()
      */
     protected $name;
 
@@ -26,11 +28,13 @@ class Event
 
     /**
      * @MongoDB\Date
+     * @Assert\NotBlank()
      */
     protected $dateStart;
 
     /**
      * @MongoDB\Date
+     * @Assert\NotBlank()
      */
     protected $dateEnd;
 
