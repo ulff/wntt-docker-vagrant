@@ -11,10 +11,13 @@ class EventAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('name', 'text', array('label' => 'Name'))
-            ->add('location', 'text', array('label' => 'Location'))
-            ->add('dateStart', 'date', array('label' => 'Start date'))
-            ->add('dateEnd', 'date', array('label' => 'End date'))
+            ->add('name', 'text', ['label' => 'Name'])
+            ->add('location', 'text', [
+                'label' => 'Location',
+                'required' => false
+            ])
+            ->add('dateStart', 'date', ['label' => 'Start date'])
+            ->add('dateEnd', 'date', ['label' => 'End date'])
         ;
     }
 

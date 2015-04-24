@@ -11,9 +11,15 @@ class CompanyAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('name', 'text', array('label' => 'Name'))
-            ->add('websiteUrl', 'text', array('label' => 'Website URL'))
-            ->add('logoUrl', 'text', array('label' => 'Logo URL'))
+            ->add('name', 'text', ['label' => 'Name'])
+            ->add('websiteUrl', 'text', [
+                'label' => 'Website URL',
+                'required' => false
+            ])
+            ->add('logoUrl', 'text', [
+                'label' => 'Logo URL',
+                'required' => false
+            ])
         ;
     }
 

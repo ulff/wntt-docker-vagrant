@@ -15,6 +15,19 @@ Feature: adding companies
     And I press "Create"
     Then I should see form notification "successfully created"
 
+  Scenario: allow creating company with empty website or logourl
+    Given I am on "create company" form
+    When I fill in the following:
+      | Name        | C2         |
+    And I press "Create"
+    Then I should see form notification "successfully created"
+
+  Scenario: do not create company with empty name
+    Given I am on "create company" form
+    And I press "Create"
+    Then I should be on "create company" form
+    And I should not see "successfully created"
+
   Scenario: browse companies
     Given "Company" exists with data
       | Name        | Company 2nd              |
