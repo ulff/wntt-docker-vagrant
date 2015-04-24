@@ -26,9 +26,14 @@ class Stand
     protected $hall;
 
     /**
-     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Event")
+     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Event", cascade={"remove"})
      */
     protected $event;
+
+    /**
+     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Company")
+     */
+    protected $company;
 
     /**
      * @return string
@@ -92,6 +97,22 @@ class Stand
     public function setEvent($event)
     {
         $this->event = $event;
+    }
+
+    /**
+     * @return \Sysla\WeNeedToTalk\WnttApiBundle\Document\Company
+     */
+    public function getCompany()
+    {
+        return $this->company;
+    }
+
+    /**
+     * @param \Sysla\WeNeedToTalk\WnttApiBundle\Document\Company $company
+     */
+    public function setCompany($company)
+    {
+        $this->company = $company;
     }
 
     public function getClassName()

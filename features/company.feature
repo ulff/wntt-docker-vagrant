@@ -24,3 +24,10 @@ Feature: adding companies
     Then I should see "Company 2nd"
     And I should see "http://c2.com"
     And I should see "http://c2.com/!Pomorskie"
+
+  Scenario: removing all companies
+    Given I am on "company" list
+    When I check "all_elements"
+    And I press "OK"
+    And I press "Yes, execute"
+    Then I should see form notification "successfully deleted"

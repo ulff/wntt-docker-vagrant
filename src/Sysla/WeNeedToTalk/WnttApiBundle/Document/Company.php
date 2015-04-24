@@ -98,4 +98,9 @@ class Company
         $classCanonicalName = explode('\\', get_class($this));
         return end($classCanonicalName);
     }
+
+    public function __toString()
+    {
+        return $this->getName();
+    }
 }
