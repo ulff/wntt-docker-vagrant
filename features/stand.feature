@@ -17,6 +17,21 @@ Feature: adding stands to events
     And I press "Create"
     Then I should see form notification "successfully created"
 
+  Scenario: allow creating stand with empty hall
+    Given I am on "create stand" form
+    When I fill in the following:
+      | Number      | S3        |
+    And I press "Create"
+    Then I should see form notification "successfully created"
+
+  Scenario: do not create stand with empty number
+    Given I am on "create stand" form
+    When I fill in the following:
+      | Hall        | Feature B |
+    And I press "Create"
+    Then I should be on "create stand" form
+    And I should not see "successfully created"
+
   Scenario: browse stands
     Given "Stand" exists with data
       | Hall        | Feature A |
