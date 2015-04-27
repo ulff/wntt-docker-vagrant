@@ -69,12 +69,30 @@ Feature: adding users
     And I press "Yes, delete"
     Then I should see form notification "deleted successfully"
 
+  Scenario: assigning company to user
+    Given "Company" exists with data
+      | Name          | Company with user   |
+      | Website URL   | http://cu.com       |
+      | Logo URL      | http://cu.com/logo  |
+    And "User" exists with data
+      | identifiedBy  | test-scenario6  |
+      | Username      | test-scenario6  |
+      | Email         | scenario6@wntt  |
+      | Password      | password6       |
+      | Phone number  | 001 002 006     |
+    And I am on edit "user" "test-scenario6" form
+    When I select "Company with user" from "Company"
+    And I fill in "Password" with "password6"
+    And I press "Update"
+    Then I should see form notification "successfully updated"
+
   Scenario: batch delete selected users
     Given I am on "user" list
     When I check following items from grid:
       | test-scenario3 |
       | test-scenario4 |
       | test-scenario5 |
+      | test-scenario6 |
     And I press "OK"
     And I press "Yes, execute"
     Then I should see form notification "successfully deleted"
