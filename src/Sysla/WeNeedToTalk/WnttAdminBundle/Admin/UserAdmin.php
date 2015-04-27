@@ -19,13 +19,17 @@ class UserAdmin extends Admin
                 'required' => false
             ])
             ->add('roles', 'choice', [
-                    'choices' => [
-                        'ROLE_USER' => 'User',
-                        'ROLE_ADMIN' => 'Admin',
-                    ],
-                    'multiple' => true,
-                    'required' => true
-                ])
+                'choices' => [
+                    'ROLE_USER' => 'User',
+                    'ROLE_ADMIN' => 'Admin',
+                ],
+                'multiple' => true,
+                'required' => true
+            ])
+            ->add('company', 'sonata_type_model', [
+                'class' => 'Sysla\WeNeedToTalk\WnttApiBundle\Document\Company',
+                'required' => false
+            ])
         ;
     }
 
@@ -46,6 +50,7 @@ class UserAdmin extends Admin
                     ]
                 ]
             )
+            ->add('company')
 
             ->add('_action', 'actions', [
                 'actions' => [

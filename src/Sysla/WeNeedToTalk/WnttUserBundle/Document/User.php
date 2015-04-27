@@ -22,6 +22,11 @@ class User extends BaseUser
      */
     protected $phoneNumber;
 
+    /**
+     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Company")
+     */
+    protected $company;
+
     public function __construct()
     {
         parent::__construct();
@@ -58,6 +63,22 @@ class User extends BaseUser
     public function setPhoneNumber($phoneNumber)
     {
         $this->phoneNumber = $phoneNumber;
+    }
+
+    /**
+     * @return \Sysla\WeNeedToTalk\WnttApiBundle\Document\Company
+     */
+    public function getCompany()
+    {
+        return $this->company;
+    }
+
+    /**
+     * @param \Sysla\WeNeedToTalk\WnttApiBundle\Document\Company $company
+     */
+    public function setCompany($company)
+    {
+        $this->company = $company;
     }
 
     public function getClassName()
