@@ -69,12 +69,77 @@ Feature: adding users
     And I press "Yes, delete"
     Then I should see form notification "deleted successfully"
 
+  Scenario: assigning company to user
+    Given "Company" exists with data
+      | Name          | Company with user   |
+      | Website URL   | http://cu.com       |
+      | Logo URL      | http://cu.com/logo  |
+    And "User" exists with data
+      | identifiedBy  | test-scenario6  |
+      | Username      | test-scenario6  |
+      | Email         | scenario6@wntt  |
+      | Password      | password6       |
+      | Phone number  | 001 002 006     |
+    And I am on edit "user" "test-scenario6" form
+    When I select "Company with user" from "Company"
+    And I press "Update"
+    Then I should see form notification "successfully updated"
+
+  Scenario: set user as contact person
+    Given I am on edit "user" "test-scenario6" form
+    And I check "Is contact person"
+    And I press "Update"
+    Then I should see form notification "successfully updated"
+    And the "Is contact person" checkbox should be checked
+
+  Scenario: set user is not a contact person
+    Given I am on edit "user" "test-scenario6" form
+    And I uncheck "Is contact person"
+    And I press "Update"
+    Then I should see form notification "successfully updated"
+    And the "Is contact person" checkbox should not be checked
+
+  Scenario: cannot set user without company as a contact person
+    Given "User" exists with data
+      | identifiedBy  | test-scenario7  |
+      | Username      | test-scenario7  |
+      | Email         | scenario7@wntt  |
+      | Password      | password7       |
+      | Phone number  | 001 002 007     |
+    And I am on edit "user" "test-scenario7" form
+    And I check "Is contact person"
+    And I press "Update"
+    Then I should see "Invalid User state"
+
+  Scenario: user can be assigned to company and set as contact person
+    Given "User" exists with data
+      | identifiedBy  | test-scenario8  |
+      | Username      | test-scenario8  |
+      | Email         | scenario8@wntt  |
+      | Password      | password8       |
+      | Phone number  | 001 002 008     |
+    And I am on edit "user" "test-scenario8" form
+    And I select "Company with user" from "Company"
+    And I check "Is contact person"
+    And I press "Update"
+    Then I should see form notification "successfully updated"
+    And the "Is contact person" checkbox should be checked
+
+  Scenario: when user is being unassigned from company he cannot be a contact person
+    When I go to edit "user" "test-scenario8" form
+    And I select "" from "Company"
+    And I press "Update"
+    Then I should see "Invalid User state"
+
   Scenario: batch delete selected users
     Given I am on "user" list
     When I check following items from grid:
       | test-scenario3 |
       | test-scenario4 |
       | test-scenario5 |
+      | test-scenario6 |
+      | test-scenario7 |
+      | test-scenario8 |
     And I press "OK"
     And I press "Yes, execute"
     Then I should see form notification "successfully deleted"
