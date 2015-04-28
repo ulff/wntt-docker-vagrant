@@ -4,11 +4,12 @@ default:
     suites:
         web_features:
             paths:    [ %paths.base%/features ]
-            contexts: [ WebContext ]
+            contexts: [ AdminContext ]
 
     extensions:
-            Behat\MinkExtension:
-                  base_url: "http://127.0.0.1/"
-                  sessions:
-                    default:
-                      goutte: ~
+        Behat\MinkExtension:
+            base_url: "http://127.0.0.1/"
+            sessions:
+              default:
+                goutte: ~
+        Codifico\ParameterBagExtension\ServiceContainer\ParameterBagExtension: ~

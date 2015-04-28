@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="We Need To Talk" default="quality">
 
-    <target name="sleep">
-        <exec command="sleep 3" passthru="true"/>
+    <target name="prepare">
+        <exec command="sleep 15" passthru="true"/>
+        <exec command="chown -R www:www /var/www/app/cache /var/www/app/logs"/>
     </target>
 
-    <target name="behat" depends="sleep">
+    <target name="behat" depends="prepare">
         <exec executable="bin/behat" passthru="true" checkreturn="true"/>
     </target>
 
-    <target name="phpspec" depends="sleep">
+    <target name="phpspec" depends="prepare">
         <exec command="bin/phpspec run" passthru="true" checkreturn="true"/>
     </target>
 

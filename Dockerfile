@@ -5,3 +5,7 @@ ADD . /var/www
 ## install phing
 RUN pear channel-discover pear.phing.info
 RUN pear install phing/phing
+
+ENV SYMFONY__MONGO__HOST mongo
+
+CMD ["/var/www/bin/setup.sh"]
