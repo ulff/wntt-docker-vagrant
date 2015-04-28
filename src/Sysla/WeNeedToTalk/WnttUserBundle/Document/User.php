@@ -27,6 +27,11 @@ class User extends BaseUser
      */
     protected $company;
 
+    /**
+     * @MongoDB\Boolean
+     */
+    protected $isContactPerson;
+
     public function __construct()
     {
         parent::__construct();
@@ -79,6 +84,22 @@ class User extends BaseUser
     public function setCompany($company)
     {
         $this->company = $company;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getIsContactPerson()
+    {
+        return $this->isContactPerson;
+    }
+
+    /**
+     * @param boolean $isContactPerson
+     */
+    public function setIsContactPerson($isContactPerson)
+    {
+        $this->isContactPerson = $isContactPerson;
     }
 
     public function getClassName()
