@@ -95,3 +95,18 @@ fos_user:
     db_driver: mongodb
     firewall_name: main
     user_class: Sysla\WeNeedToTalk\WnttUserBundle\Document\User
+
+fos_rest:
+    routing_loader:
+        default_format: json
+
+nelmio_api_doc: ~
+
+fos_oauth_server:
+    db_driver: mongodb
+    client_class:        Sysla\WeNeedToTalk\WnttOAuthBundle\Document\Client
+    access_token_class:  Sysla\WeNeedToTalk\WnttOAuthBundle\Document\AccessToken
+    refresh_token_class: Sysla\WeNeedToTalk\WnttOAuthBundle\Document\RefreshToken
+    auth_code_class:     Sysla\WeNeedToTalk\WnttOAuthBundle\Document\AuthCode
+    service:
+        user_provider: fos_user.user_manager
