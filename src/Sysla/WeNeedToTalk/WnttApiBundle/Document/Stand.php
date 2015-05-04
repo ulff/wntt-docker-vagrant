@@ -118,10 +118,30 @@ class Stand
         $this->company = $company;
     }
 
+    /**
+     * @return boolean
+     */
+    public function hasEvent()
+    {
+        $event = $this->getEvent();
+        return !empty($event);
+    }
+
+    /**
+     * @return string
+     */
     public function getClassName()
     {
         $classCanonicalName = explode('\\', get_class($this));
         return end($classCanonicalName);
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->hasEvent() ? $this->getNumber().' ('.$this->getEvent()->getName().')' : '';
     }
 
 }
