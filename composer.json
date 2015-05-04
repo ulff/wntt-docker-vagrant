@@ -32,7 +32,11 @@
         "sonata-project/media-bundle": "~2.3",
         "jms/serializer-bundle": "0.13.*",
         "friendsofsymfony/user-bundle": "~2.0@dev",
-        "codifico/parameter-bag-extension": "dev-master"
+        "codifico/parameter-bag-extension": "dev-master",
+        "friendsofsymfony/rest-bundle": "~1.5",
+        "nelmio/api-doc-bundle": "~2.8",
+        "friendsofsymfony/oauth-server-bundle": "dev-master",
+        "behat/symfony2-extension": "~2.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"

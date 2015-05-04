@@ -1,0 +1,4 @@
+events:
+    type:     rest
+    resource: Sysla\WeNeedToTalk\WnttApiBundle\Controller\EventsController
+    prefix:   /api/v1/

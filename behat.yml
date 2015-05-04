@@ -2,9 +2,13 @@
 
 default:
     suites:
-        web_features:
-            paths:    [ %paths.base%/features ]
+        admin_features:
+            paths:    [ %paths.base%/features/admin ]
             contexts: [ AdminContext ]
+
+        api_features:
+            paths:    [ %paths.base%/features/api ]
+            contexts: [ ApiContext ]
 
     extensions:
         Behat\MinkExtension:
@@ -13,3 +17,4 @@ default:
               default:
                 goutte: ~
         Codifico\ParameterBagExtension\ServiceContainer\ParameterBagExtension: ~
+        Behat\Symfony2Extension: ~
