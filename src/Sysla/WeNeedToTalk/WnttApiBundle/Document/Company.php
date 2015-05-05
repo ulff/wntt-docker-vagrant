@@ -4,10 +4,15 @@ namespace Sysla\WeNeedToTalk\WnttApiBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 
 /**
  * @MongoDB\Document(collection="companies")
+ * @Hateoas\Relation(
+ *     "self",
+ *      href = "expr('/api/v1/companies/' ~ object.getId())"
+ * )
  */
 class Company
 {

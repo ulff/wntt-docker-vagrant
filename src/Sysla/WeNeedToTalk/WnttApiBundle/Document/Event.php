@@ -4,9 +4,15 @@ namespace Sysla\WeNeedToTalk\WnttApiBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @MongoDB\Document(collection="events")
+ * @Hateoas\Relation(
+ *     "self",
+ *      href = "expr('/api/v1/events/' ~ object.getId())"
+ * )
+ *
  */
 class Event
 {

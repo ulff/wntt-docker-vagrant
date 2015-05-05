@@ -8,6 +8,9 @@ use Behat\MinkExtension\Context\MinkContext;
 use Behat\Symfony2Extension\Context\KernelDictionary;
 use OAuth2\OAuth2;
 use Codifico\ParameterBagExtension\Context\ParameterBagDictionary;
+use Sysla\WeNeedToTalk\WnttApiBundle\Document as Document;
+use Sysla\WeNeedToTalk\WnttUserBundle\Document\User;
+use Sysla\WeNeedToTalk\WnttApiBundle\Exception as Exception;
 
 class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
 {
@@ -26,6 +29,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     public function iMakeRequest($method, $uri)
     {
         $uri = '/app_dev.php'.$uri;
+        $uri = $this->extractFromParameterBag($uri);
         $this->request($method, $uri);
     }
 
@@ -105,6 +109,96 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
         $this->headers[$name] = $value;
     }
 
+    /**
+     * @Given following :documentName exists:
+     */
+    public function followingDocumentExists($documentName, TableNode $table)
+    {
+        switch($documentName) {
+            case 'Category':
+                $this->ensureCategoryExists($table->getRowsHash());
+                break;
+            case 'Company':
+                $this->ensureCompanyExists($table->getRowsHash());
+                break;
+            case 'Event':
+                $this->ensureEventExists($table->getRowsHash());
+                break;
+            case 'Stand':
+                $this->ensureStandExists($table->getRowsHash());
+                break;
+            case 'Presentation':
+                $this->ensurePresentationExists($table->getRowsHash());
+                break;
+            case 'User':
+                $this->ensureUserExists($table->getRowsHash());
+                break;
+            default:
+                throw new \Exception("Class $documentName not found");
+        }
+    }
+
+    /**
+     * @Then the response should be JSON
+     */
+    public function theResponseShouldBeJson()
+    {
+        $response = $this->getClient()->getResponse()->getContent();
+        if(json_decode($response) === null) {
+            throw new Exception\JsonExpectedException();
+        }
+    }
+
+    /**
+     * @Then the response JSON should be a collection
+     */
+    public function theResponseJsonShouldBeACollection()
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        if(!is_array($response)) {
+            throw new Exception\CollectionExpectedException();
+        }
+        return;
+    }
+
+    /**
+     * @Then the response JSON should be a single object
+     */
+    public function theResponseJsonShouldBeASingleObject()
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        if(!is_object($response)) {
+            throw new Exception\SingleObjectExpectedException();
+        }
+        return;
+    }
+
+    /**
+     * @Then the repsonse JSON should have :property field
+     */
+    public function theRepsonseJsonShouldHaveField($property)
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        if(!isset($response->$property)) {
+            throw new Exception\NotFoundPropertyException($property);
+        }
+        return;
+    }
+
+    /**
+     * @Then the repsonse JSON should have :property field with value :expectedValue
+     */
+    public function theRepsonseJsonShouldHaveFieldWithValue($property, $expectedValue)
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        if(!isset($response->$property)) {
+            throw new Exception\NotFoundPropertyException($property);
+        } elseif($response->$property != $expectedValue) {
+            throw new Exception\IncorrectPropertyValueException($property, $expectedValue, $response->$property);
+        }
+        return;
+    }
+
     protected function request($method, $uri, array $params = array(), array $headers = array())
     {
         $headers = array_merge($headers, $this->headers);
@@ -128,6 +222,179 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     {
         $driver = $this->getSession()->getDriver();
         return $driver->getClient();
+    }
+
+    protected function extractFromParameterBag($uri)
+    {
+        preg_match_all('/{([A-Z0-9_ :]+)}/i', $uri, $matches);
+        foreach($matches[1] as $match) {
+            $parameterBagValue = $this->getParameterBag()->get($match);
+            $uri = preg_replace('/({[A-Z0-9_ :]+})/i', $parameterBagValue, $uri);
+        }
+        return $uri;
+    }
+
+    protected function ensureCategoryExists($categoryData)
+    {
+        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+
+        $category = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+            ->findOneByName($categoryData['name']);
+
+        if(empty($category)) {
+            $category = new Document\Category();
+            $category->setName($categoryData['name']);
+
+            $dm->persist($category);
+            $dm->flush();
+        }
+
+        $this->getParameterBag()->set('Category:'.$categoryData['identifiedBy'], $category->getId());
+    }
+
+    protected function ensureCompanyExists($companyData)
+    {
+        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+
+        $company = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+            ->findOneByName($companyData['name']);
+
+        if(empty($company)) {
+            $company = new Document\Company();
+            $company->setName($companyData['name']);
+            $company->setLogoUrl(@$companyData['logoUrl']);
+            $company->setWebsiteUrl(@$companyData['websiteUrl']);
+
+            $dm->persist($company);
+            $dm->flush();
+        }
+
+        $this->getParameterBag()->set('Company:'.$companyData['identifiedBy'], $company->getId());
+    }
+
+    protected function ensureEventExists($eventData)
+    {
+        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+
+        $event = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
+            ->findOneByName($eventData['name']);
+
+        if(empty($event)) {
+            $event = new Document\Event();
+            $event->setName($eventData['name']);
+            $event->setLocation(@$eventData['location']);
+            $event->setDateStart(new \DateTime($eventData['dateStart']));
+            $event->setDateEnd(new \DateTime($eventData['dateEnd']));
+
+            $dm->persist($event);
+            $dm->flush();
+        }
+
+        $this->getParameterBag()->set('Event:'.$eventData['identifiedBy'], $event->getId());
+    }
+
+    protected function ensureStandExists($standData)
+    {
+        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+
+        $stand = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
+            ->findOneByNumber($standData['number']);
+
+        if(empty($stand)) {
+            $stand = new Document\Stand();
+            $stand->setNumber($standData['number']);
+            $stand->setHall(@$standData['hall']);
+
+            $eventId = $this->getParameterBag()->get('Event:'.$standData['event']);
+            $event = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
+                ->findOneById($eventId);
+            $stand->setEvent($event);
+
+            if(isset($standData['company'])) {
+                $companyId = $this->getParameterBag()->get('Company:'.$standData['company']);
+                $company = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+                    ->findOneById($companyId);
+                $stand->setCompany($company);
+            }
+
+            $dm->persist($stand);
+            $dm->flush();
+        }
+
+        $this->getParameterBag()->set('Stand:'.$standData['identifiedBy'], $stand->getId());
+    }
+
+    protected function ensurePresentationExists($presentationData)
+    {
+        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+
+        $presentation = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
+            ->findOneByVideoUrl($presentationData['videoUrl']);
+
+        if(empty($presentation)) {
+            $presentation = new Document\Presentation();
+            $presentation->setVideoUrl($presentationData['videoUrl']);
+            $presentation->setDescription(@$presentationData['description']);
+
+            $standId = $this->getParameterBag()->get('Stand:'.$presentationData['stand']);
+            $stand = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
+                ->findOneById($standId);
+            $presentation->setStand($stand);
+
+            if(isset($presentationData['company'])) {
+                $companyId = $this->getParameterBag()->get('Company:'.$presentationData['company']);
+                $company = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+                    ->findOneById($companyId);
+                $presentation->setCompany($company);
+            }
+
+            if(isset($presentationData['categories'])) {
+                $categories = [];
+                foreach(explode(';', $presentationData['categories']) as $categoryName) {
+                    $categoryId = $this->getParameterBag()->get('Category:'.$categoryName);
+                    $category = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+                        ->findOneById($categoryId);
+                    if(!empty($category)) {
+                        $categories[] = $category;
+                    }
+                }
+                $presentation->setCategories($categories);
+            }
+
+            $dm->persist($presentation);
+            $dm->flush();
+        }
+
+        $this->getParameterBag()->set('Presentation:'.$presentationData['identifiedBy'], $presentation->getId());
+    }
+
+    protected function ensureUserExists($userData)
+    {
+        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+
+        $user = $dm->getRepository('SyslaWeeNeedToTalkWnttUserBundle:User')
+            ->findOneByUsername($userData['username']);
+
+        if(empty($user)) {
+            $user = new User();
+            $user->setUsername($userData['username']);
+            $user->setEmail($userData['email']);
+            if(isset($userData['roles'])) {
+                $user->setRoles(explode(';', $userData['roles']));
+            }
+
+            if(isset($userData['company'])) {
+                $companyId = $this->getParameterBag()->get('Company:'.$userData['company']);
+                $company = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+                    ->findOneById($companyId);
+                $user->setCompany($company);
+            }
+
+            $dm->persist($user);
+            $dm->flush();
+        }
+
+        $this->getParameterBag()->set('User:'.$userData['identifiedBy'], $user->getId());
     }
 
 }
