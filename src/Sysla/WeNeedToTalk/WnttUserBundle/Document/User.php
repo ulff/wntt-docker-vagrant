@@ -5,10 +5,24 @@ namespace Sysla\WeNeedToTalk\WnttUserBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use FOS\UserBundle\Model\User as BaseUser;
+use JMS\Serializer\Annotation as Serializer;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @MongoDB\Document(collection="users")
  * @MongoDBUnique(fields="username")
+ * @Hateoas\Relation(
+ *     name = "company",
+ *     href = "expr('/api/v1/companies/' ~ object.getCompany().getId())",
+ *     attributes = {
+ *         "id" = "expr(object.getCompany().getId())",
+ *     },
+ *     exclusion = @Hateoas\Exclusion(excludeIf = "expr(null === object.getCompany())")
+ * )
+ * @Hateoas\Relation(
+ *     "self",
+ *      href = "expr('/api/v1/users/' ~ object.getId())"
+ * )
  */
 class User extends BaseUser
 {
@@ -24,6 +38,7 @@ class User extends BaseUser
 
     /**
      * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Company")
+     * @Serializer\Exclude
      */
     protected $company;
 
