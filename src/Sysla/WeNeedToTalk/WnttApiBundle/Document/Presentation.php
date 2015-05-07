@@ -4,9 +4,29 @@ namespace Sysla\WeNeedToTalk\WnttApiBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation as Serializer;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @MongoDB\Document(collection="presentations")
+ * @Hateoas\Relation(
+ *     name = "company",
+ *     href = "expr('/api/v1/companies/' ~ object.getCompany().getId())",
+ *     attributes = {
+ *         "id" = "expr(object.getCompany().getId())",
+ *     },
+ * )
+ * @Hateoas\Relation(
+ *     name = "stand",
+ *     href = "expr('/api/v1/stands/' ~ object.getStand().getId())",
+ *     attributes = {
+ *         "id" = "expr(object.getStand().getId())",
+ *     },
+ * )
+ * @Hateoas\Relation(
+ *     "self",
+ *      href = "expr('/api/v1/presentations/' ~ object.getId())"
+ * )
  */
 class Presentation
 {
@@ -27,14 +47,16 @@ class Presentation
     protected $description;
 
     /**
-     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Company")
+     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Company", cascade={"remove"})
      * @Assert\NotBlank()
+     * @Serializer\Exclude
      */
     protected $company;
 
     /**
      * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand", cascade={"remove"})
      * @Assert\NotBlank()
+     * @Serializer\Exclude
      */
     protected $stand;
 
