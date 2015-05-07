@@ -4,11 +4,17 @@ namespace Sysla\WeNeedToTalk\WnttApiBundle\Controller;
 
 use FOS\RestBundle\Controller\FOSRestController;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use FOS\RestBundle\Request\ParamFetcher;
+use FOS\RestBundle\Controller\Annotations\QueryParam;
 
 class PresentationController extends FOSRestController
 {
     /**
      * Returns collection of Presentation objects
+     *
+     * @QueryParam(name="type", nullable=true, requirements="(free|premium)")
+     *
+     * @param ParamFetcher $paramFetcher
      *
      * @ApiDoc(
      *  resource=true,
@@ -19,11 +25,17 @@ class PresentationController extends FOSRestController
      *     }
      * )
      */
-    public function getPresentationsAction()
+    public function getPresentationsAction(ParamFetcher $paramFetcher)
     {
+        $queryParams = [];
+        $type = $paramFetcher->get('type');
+        if(!empty($type)) {
+            $queryParams['isPremium'] = $type == 'premium' ? true : false;
+        }
+
         $presentations = $this->get('doctrine_mongodb')
             ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
-            ->findAll();
+            ->findBy($queryParams);
 
         $view = $this->view($presentations, 200);
         return $this->handleView($view);

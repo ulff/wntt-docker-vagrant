@@ -68,7 +68,7 @@ class Presentation
     /**
      * @MongoDB\Boolean
      */
-    protected $isPremium;
+    protected $isPremium = false;
 
     /**
      * @return string
