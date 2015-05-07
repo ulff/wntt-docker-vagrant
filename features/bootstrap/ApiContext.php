@@ -179,9 +179,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     public function theRepsonseJsonShouldHaveField($property)
     {
         $response = json_decode($this->getClient()->getResponse()->getContent());
-        if(!isset($response->$property)) {
-            throw new Exception\NotFoundPropertyException($property);
-        }
+        $this->assertDocumentHasProperty($response, $property);
         return;
     }
 
@@ -191,10 +189,30 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     public function theRepsonseJsonShouldHaveFieldWithValue($property, $expectedValue)
     {
         $response = json_decode($this->getClient()->getResponse()->getContent());
-        if(!isset($response->$property)) {
-            throw new Exception\NotFoundPropertyException($property);
-        } elseif($response->$property != $expectedValue) {
-            throw new Exception\IncorrectPropertyValueException($property, $expectedValue, $response->$property);
+        $this->assertDocumentHasPropertyWithValue($response, $property, $expectedValue);
+        return;
+    }
+
+    /**
+     * @Then all response collection items should have :property field with value :expectedValue
+     */
+    public function allResponseCollectionItemsShouldHaveFieldWithValue($property, $expectedValue)
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        foreach($response as $document) {
+            $this->assertDocumentHasPropertyWithValue($document, $property, $expectedValue);
+        }
+        return;
+    }
+
+    /**
+     * @Then all response collection items should have :property field set to :expectedBoolean
+     */
+    public function allResponseCollectionItemsShouldHaveFieldSetTo($property, $expectedBoolean)
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        foreach($response as $document) {
+            $this->assertDocumentHasPropertyWithBooleanValue($document, $property, $expectedBoolean);
         }
         return;
     }
@@ -232,6 +250,30 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
             $uri = preg_replace('/({[A-Z0-9_ :]+})/i', $parameterBagValue, $uri);
         }
         return $uri;
+    }
+
+    protected function assertDocumentHasProperty($document, $property)
+    {
+        if(!isset($document->$property)) {
+            throw new Exception\NotFoundPropertyException($property);
+        }
+    }
+
+    protected function assertDocumentHasPropertyWithValue($document, $property, $expectedValue)
+    {
+        $this->assertDocumentHasProperty($document, $property);
+        if($document->$property != $expectedValue) {
+            throw new Exception\IncorrectPropertyValueException($property, $expectedValue, $document->$property);
+        }
+    }
+
+    protected function assertDocumentHasPropertyWithBooleanValue($document, $property, $expectedValue)
+    {
+        $expectedBoolean = ($expectedValue == 'true' ? true : false);
+        $this->assertDocumentHasProperty($document, $property);
+        if($document->$property !== $expectedBoolean) {
+            throw new Exception\IncorrectPropertyValueException($property, $expectedValue, $document->$property === true ? 'true' : 'false');
+        }
     }
 
     protected function ensureCategoryExists($categoryData)
@@ -335,6 +377,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
             $presentation = new Document\Presentation();
             $presentation->setVideoUrl($presentationData['videoUrl']);
             $presentation->setDescription(@$presentationData['description']);
+            $presentation->setIsPremium(@$presentationData['isPremium'] == 'true' ? true : false);
 
             $standId = $this->getParameterBag()->get('Stand:'.$presentationData['stand']);
             $stand = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')

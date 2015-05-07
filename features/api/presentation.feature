@@ -25,6 +25,20 @@ Feature: getting presentations through API
       | event         | Event Api 1     |
       | company       | Company Api     |
 
+    And following "Stand" exists:
+      | identifiedBy  | EvtApi1_F_1333  |
+      | number        | 1333            |
+      | hall          | F               |
+      | event         | Event Api 1     |
+      | company       | Company Api     |
+
+    And following "Stand" exists:
+      | identifiedBy  | EvtApi1_F_1334  |
+      | number        | 1334            |
+      | hall          | F               |
+      | event         | Event Api 1     |
+      | company       | Company Api     |
+
     And following "Category" exists:
       | identifiedBy | Gas |
       | name         | Gas |
@@ -40,6 +54,21 @@ Feature: getting presentations through API
       | company      | Company Api                  |
       | stand        | EvtApi1_F_1332               |
       | categories   | Gas;Oil                      |
+      | isPremium    | true                         |
+
+    And following "Presentation" exists:
+      | identifiedBy | company api 2                |
+      | videoUrl     | http://company.api/2         |
+      | company      | Company Api                  |
+      | stand        | EvtApi1_F_1333               |
+      | isPremium    | true                         |
+
+    And following "Presentation" exists:
+      | identifiedBy | company api free             |
+      | videoUrl     | http://company.api/free      |
+      | company      | Company Api                  |
+      | stand        | EvtApi1_F_1334               |
+      | isPremium    | false                        |
 
 
   Scenario: get list of all presentations
@@ -57,3 +86,16 @@ Feature: getting presentations through API
     And the repsonse JSON should have "description" field with value "Presentation for API testing"
     And the repsonse JSON should have "video_url" field with value "http://company.api/prezi"
 
+  Scenario: get list of premium presentations
+    When I make request "GET" "/api/v1/presentations?type=premium"
+    Then the response status code should be 200
+    And the response should be JSON
+    And the response JSON should be a collection
+    And all response collection items should have "is_premium" field set to "true"
+
+  Scenario: get list of free presentations
+    When I make request "GET" "/api/v1/presentations?type=free"
+    Then the response status code should be 200
+    And the response should be JSON
+    And the response JSON should be a collection
+    And all response collection items should have "is_premium" field set to "false"
