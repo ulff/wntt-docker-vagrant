@@ -7,6 +7,7 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use FOS\UserBundle\Model\User as BaseUser;
 use JMS\Serializer\Annotation as Serializer;
 use Hateoas\Configuration\Annotation as Hateoas;
+use Sysla\WeNeedToTalk\WnttApiBundle\Document\Document;
 
 /**
  * @MongoDB\Document(collection="users")
@@ -24,7 +25,7 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *      href = "expr('/api/v1/users/' ~ object.getId())"
  * )
  */
-class User extends BaseUser
+class User extends BaseUser implements Document
 {
     /**
      * @MongoDB\Id(strategy="auto")
@@ -37,7 +38,7 @@ class User extends BaseUser
     protected $phoneNumber;
 
     /**
-     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Company")
+     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Company", cascade={"remove"})
      * @Serializer\Exclude
      */
     protected $company;

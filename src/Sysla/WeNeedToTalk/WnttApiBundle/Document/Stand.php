@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as Serializer;
 use Hateoas\Configuration\Annotation as Hateoas;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @MongoDB\Document(collection="stands")
@@ -29,7 +30,7 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *      href = "expr('/api/v1/stands/' ~ object.getId())"
  * )
  */
-class Stand
+class Stand implements Document
 {
 
     /**
@@ -49,17 +50,22 @@ class Stand
     protected $hall;
 
     /**
-     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Event", cascade={"remove"})
+     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Event", inversedBy="stands")
      * @Assert\NotBlank()
      * @Serializer\Exclude
      */
     protected $event;
 
     /**
-     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Company")
+     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Company", inversedBy="stands")
      * @Serializer\Exclude
      */
     protected $company;
+
+    /**
+     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation", mappedBy="stand", cascade={"remove"})
+     */
+    protected $presentation;
 
     /**
      * @return string

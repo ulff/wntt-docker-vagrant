@@ -28,7 +28,7 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *      href = "expr('/api/v1/presentations/' ~ object.getId())"
  * )
  */
-class Presentation
+class Presentation implements Document
 {
     /**
      * @MongoDB\Id
@@ -61,7 +61,7 @@ class Presentation
     protected $stand;
 
     /**
-     * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Category", cascade={"remove"})
+     * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Category")
      */
     protected $categories;
 

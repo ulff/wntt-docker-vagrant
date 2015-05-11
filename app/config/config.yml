@@ -4,6 +4,7 @@ imports:
     - { resource: services.yml }
     - { resource: @SyslaWeeNeedToTalkWnttAdminBundle/Resources/config/admin.yml }
     - { resource: @SyslaWeeNeedToTalkWnttAdminBundle/Resources/config/services.yml }
+    - { resource: @SyslaWeeNeedToTalkWnttApiBundle/Resources/config/services.yml }
 
 framework:
     #esi:             ~
