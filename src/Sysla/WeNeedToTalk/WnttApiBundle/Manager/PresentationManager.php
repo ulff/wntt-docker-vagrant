@@ -1,0 +1,54 @@
+<?php
+namespace Sysla\WeNeedToTalk\WnttApiBundle\Manager;
+
+use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+use Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation;
+use Sysla\WeNeedToTalk\WnttApiBundle\Document\Document;
+
+class PresentationManager extends AbstractDocumentManager
+{
+    public function __construct(ManagerRegistry $documentManager)
+    {
+        $this->documentName = 'Presentation';
+        parent::__construct($documentManager);
+    }
+
+    protected function createDocumentFromRequest(array $presentationData)
+    {
+        $presentation = new Presentation();
+        $this->updateDocumentFromRequest($presentation, $presentationData);
+
+        return $presentation;
+    }
+
+    protected function updateDocumentFromRequest(Document $presentation, array $presentationData)
+    {
+        /** @var $presentation Presentation */
+        $presentation->setVideoUrl($presentationData['videoUrl']);
+        $presentation->setDescription($presentationData['description']);
+        $presentation->setIsPremium($presentationData['isPremium'] == 'true' ? true : false);
+
+        $categories = [];
+        $categoryIds = $presentationData['categories'];
+        if(is_array($categoryIds)) {
+            foreach($categoryIds as $categoryId) {
+                $category = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+                    ->findOneById($categoryId);
+                $categories[] = $category;
+            }
+        } elseif (!empty($categoryIds)) {
+            $category = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+                ->findOneById($presentationData['categories']);
+            $categories[] = $category;
+        }
+        $presentation->setCategories($categories);
+
+        $company = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+            ->findOneById($presentationData['company']);
+        $presentation->setCompany($company);
+
+        $stand = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
+            ->findOneById($presentationData['stand']);
+        $presentation->setStand($stand);
+    }
+}

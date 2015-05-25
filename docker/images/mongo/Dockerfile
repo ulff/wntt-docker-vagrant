@@ -1,1 +1,1 @@
-FROM openshift/centos-mongodb
+FROM mongo

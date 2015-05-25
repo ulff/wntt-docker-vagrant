@@ -14,7 +14,7 @@ use Hateoas\Configuration\Annotation as Hateoas;
  * )
  *
  */
-class Event
+class Event implements Document
 {
     /**
      * @MongoDB\Id
@@ -43,6 +43,11 @@ class Event
      * @Assert\NotBlank()
      */
     protected $dateEnd;
+
+    /**
+     * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand", mappedBy="event", cascade={"remove"})
+     */
+    protected $stands;
 
     /**
      * @return string

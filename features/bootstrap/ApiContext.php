@@ -39,6 +39,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     public function iMakeRequestWithParams($method, $uri, TableNode $table)
     {
         $uri = '/app_dev.php'.$uri;
+        $uri = $this->extractFromParameterBag($uri);
         $this->request($method, $uri, $table->getRowsHash());
     }
 
@@ -48,12 +49,10 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     public function iMakeRequestWithParameterBagParams($method, $uri, TableNode $table)
     {
         $uri = '/app_dev.php'.$uri;
+        $uri = $this->extractFromParameterBag($uri);
         $params = [];
         foreach($table->getRowsHash() as $field => $value) {
-            if(in_array($value, ['CLIENT_PUBLIC_ID', 'CLIENT_SECRET'])) {
-                $value = $this->getParameterBag()->get($value);
-            }
-            $params[$field] = $value;
+            $params[$field] = $this->getParameterBag()->replace($value);;
         }
         $this->request($method, $uri, $params);
     }
@@ -217,6 +216,28 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
         return;
     }
 
+    /**
+     * @Then :documentName should be created with :property set to :value
+     */
+    public function documentShouldBeCreatedWithPropertySetToValue($documentName, $property, $value)
+    {
+        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+
+        if(ucfirst($documentName) == 'User') {
+            $document = $dm->getRepository('SyslaWeeNeedToTalkWnttUserBundle:'.ucfirst($documentName))
+                ->findOneBy(array($property => $value));
+        } else {
+            $document = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:'.ucfirst($documentName))
+                ->findOneBy(array($property => $value));
+        }
+
+        if (empty($document)) {
+            throw new \Exception(sprintf('Document %s hasn\'t been created', $documentName));
+        }
+
+        $this->getParameterBag()->set(ucfirst($documentName).'_last_created', $document->getId());
+    }
+
     protected function request($method, $uri, array $params = array(), array $headers = array())
     {
         $headers = array_merge($headers, $this->headers);
@@ -244,11 +265,8 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
 
     protected function extractFromParameterBag($uri)
     {
-        preg_match_all('/{([A-Z0-9_ :]+)}/i', $uri, $matches);
-        foreach($matches[1] as $match) {
-            $parameterBagValue = $this->getParameterBag()->get($match);
-            $uri = preg_replace('/({[A-Z0-9_ :]+})/i', $parameterBagValue, $uri);
-        }
+        $uri = $this->getParameterBag()->replace($uri);
+        $uri = str_replace(['{', '}'], '', $uri);
         return $uri;
     }
 
@@ -291,7 +309,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
             $dm->flush();
         }
 
-        $this->getParameterBag()->set('Category:'.$categoryData['identifiedBy'], $category->getId());
+        $this->getParameterBag()->set('Category_'.$categoryData['identifiedBy'], $category->getId());
     }
 
     protected function ensureCompanyExists($companyData)
@@ -311,7 +329,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
             $dm->flush();
         }
 
-        $this->getParameterBag()->set('Company:'.$companyData['identifiedBy'], $company->getId());
+        $this->getParameterBag()->set('Company_'.$companyData['identifiedBy'], $company->getId());
     }
 
     protected function ensureEventExists($eventData)
@@ -332,7 +350,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
             $dm->flush();
         }
 
-        $this->getParameterBag()->set('Event:'.$eventData['identifiedBy'], $event->getId());
+        $this->getParameterBag()->set('Event_'.$eventData['identifiedBy'], $event->getId());
     }
 
     protected function ensureStandExists($standData)
@@ -347,13 +365,13 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
             $stand->setNumber($standData['number']);
             $stand->setHall(@$standData['hall']);
 
-            $eventId = $this->getParameterBag()->get('Event:'.$standData['event']);
+            $eventId = $this->getParameterBag()->get('Event_'.$standData['event']);
             $event = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
                 ->findOneById($eventId);
             $stand->setEvent($event);
 
             if(isset($standData['company'])) {
-                $companyId = $this->getParameterBag()->get('Company:'.$standData['company']);
+                $companyId = $this->getParameterBag()->get('Company_'.$standData['company']);
                 $company = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
                     ->findOneById($companyId);
                 $stand->setCompany($company);
@@ -363,7 +381,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
             $dm->flush();
         }
 
-        $this->getParameterBag()->set('Stand:'.$standData['identifiedBy'], $stand->getId());
+        $this->getParameterBag()->set('Stand_'.$standData['identifiedBy'], $stand->getId());
     }
 
     protected function ensurePresentationExists($presentationData)
@@ -379,13 +397,13 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
             $presentation->setDescription(@$presentationData['description']);
             $presentation->setIsPremium(@$presentationData['isPremium'] == 'true' ? true : false);
 
-            $standId = $this->getParameterBag()->get('Stand:'.$presentationData['stand']);
+            $standId = $this->getParameterBag()->get('Stand_'.$presentationData['stand']);
             $stand = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
                 ->findOneById($standId);
             $presentation->setStand($stand);
 
             if(isset($presentationData['company'])) {
-                $companyId = $this->getParameterBag()->get('Company:'.$presentationData['company']);
+                $companyId = $this->getParameterBag()->get('Company_'.$presentationData['company']);
                 $company = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
                     ->findOneById($companyId);
                 $presentation->setCompany($company);
@@ -394,7 +412,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
             if(isset($presentationData['categories'])) {
                 $categories = [];
                 foreach(explode(';', $presentationData['categories']) as $categoryName) {
-                    $categoryId = $this->getParameterBag()->get('Category:'.$categoryName);
+                    $categoryId = $this->getParameterBag()->get('Category_'.$categoryName);
                     $category = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
                         ->findOneById($categoryId);
                     if(!empty($category)) {
@@ -408,7 +426,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
             $dm->flush();
         }
 
-        $this->getParameterBag()->set('Presentation:'.$presentationData['identifiedBy'], $presentation->getId());
+        $this->getParameterBag()->set('Presentation_'.$presentationData['identifiedBy'], $presentation->getId());
     }
 
     protected function ensureUserExists($userData)
@@ -427,7 +445,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
             }
 
             if(isset($userData['company'])) {
-                $companyId = $this->getParameterBag()->get('Company:'.$userData['company']);
+                $companyId = $this->getParameterBag()->get('Company_'.$userData['company']);
                 $company = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
                     ->findOneById($companyId);
                 $user->setCompany($company);
@@ -437,7 +455,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
             $dm->flush();
         }
 
-        $this->getParameterBag()->set('User:'.$userData['identifiedBy'], $user->getId());
+        $this->getParameterBag()->set('User_'.$userData['identifiedBy'], $user->getId());
     }
 
 }
