@@ -96,6 +96,7 @@ class PresentationController extends FOSRestController
     public function postPresentationAction(Request $request)
     {
         $presentationData = $this->retrievePresentationData($request);
+        $this->checkPermission($presentationData['company']);
         $this->validatePresentationData($presentationData);
 
         /** @var $presentationManager PresentationManager */
@@ -143,6 +144,7 @@ class PresentationController extends FOSRestController
         }
 
         $presentationData = $this->retrievePresentationData($request);
+        $this->checkPermission($presentationData['company']);
         $this->validatePresentationData($presentationData);
 
         /** @var $presentationManager PresentationManager */
@@ -179,6 +181,8 @@ class PresentationController extends FOSRestController
         if (empty($presentation)) {
             throw $this->createNotFoundException('No presentation found for id '.$id);
         }
+
+        $this->checkPermission($presentation->getCompany()->getId());
 
         /** @var $presentationManager PresentationManager */
         $presentationManager = $this->get('wnttapi.manager.presentation');
@@ -241,6 +245,14 @@ class PresentationController extends FOSRestController
             ->findOneById($presentationData['stand']);
         if(empty($stand)) {
             throw new HttpException(400, "Invalid parameter: stand with ID: '{$presentationData['stand']}' not found!");
+        }
+    }
+
+    protected function checkPermission($documentId)
+    {
+        $permissionVerifier = $this->get('wnttapi.service.permission_verifier');
+        if(!$permissionVerifier->hasPermission('Presentation', $this->getUser(), $documentId)) {
+            throw $this->createAccessDeniedException('Cannot affect presentation owned by not your company!');
         }
     }
 }

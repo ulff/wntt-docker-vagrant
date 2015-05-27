@@ -108,3 +108,15 @@ Feature: getting users through API
   Scenario: cannot delete user without user context
     When I make request "DELETE" "/api/v1/users/{User_username_api}"
     Then the response status code should be 403
+
+  Scenario: user without admin proviledges cannot update not himself
+    Given I am authorized client with username "user" and password "user"
+    When I make request "PUT" "/api/v1/users/{User_username_api}"
+    Then the response status code should be 403
+    And the response should contain "Cannot affect not your account"
+
+  Scenario: user without admin proviledges cannot delete not himself
+    Given I am authorized client with username "user" and password "user"
+    When I make request "DELETE" "/api/v1/users/{User_username_api}"
+    Then the response status code should be 403
+    And the response should contain "Cannot affect not your account"
