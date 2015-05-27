@@ -4,12 +4,17 @@ namespace Sysla\WeNeedToTalk\WnttApiBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 
 /**
  * @MongoDB\Document(collection="companies")
+ * @Hateoas\Relation(
+ *     "self",
+ *      href = "expr('/api/v1/companies/' ~ object.getId())"
+ * )
  */
-class Company
+class Company implements Document
 {
     /**
      * @MongoDB\Id
@@ -31,6 +36,21 @@ class Company
      * @MongoDB\String
      */
     protected $logoUrl;
+
+    /**
+     * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand", mappedBy="company", cascade={"remove"})
+     */
+    protected $stands;
+
+    /**
+     * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation", mappedBy="company", cascade={"remove"})
+     */
+    protected $presentations;
+
+    /**
+     * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttUserBundle\Document\User", mappedBy="company", cascade={"remove"})
+     */
+    protected $users;
 
     /**
      * @return string

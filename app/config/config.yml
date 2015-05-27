@@ -4,6 +4,7 @@ imports:
     - { resource: services.yml }
     - { resource: @SyslaWeeNeedToTalkWnttAdminBundle/Resources/config/admin.yml }
     - { resource: @SyslaWeeNeedToTalkWnttAdminBundle/Resources/config/services.yml }
+    - { resource: @SyslaWeeNeedToTalkWnttApiBundle/Resources/config/services.yml }
 
 framework:
     #esi:             ~
@@ -99,6 +100,7 @@ fos_user:
 fos_rest:
     routing_loader:
         default_format: json
+    param_fetcher_listener: true
 
 nelmio_api_doc: ~
 

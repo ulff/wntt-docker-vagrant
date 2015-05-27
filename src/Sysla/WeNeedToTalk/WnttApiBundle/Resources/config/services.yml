@@ -1,0 +1,27 @@
+services:
+    wnttapi.manager.category:
+        class: Sysla\WeNeedToTalk\WnttApiBundle\Manager\CategoryManager
+        arguments: [@doctrine_mongodb]
+
+    wnttapi.manager.company:
+        class: Sysla\WeNeedToTalk\WnttApiBundle\Manager\CompanyManager
+        arguments: [@doctrine_mongodb]
+
+    wnttapi.manager.event:
+        class: Sysla\WeNeedToTalk\WnttApiBundle\Manager\EventManager
+        arguments: [@doctrine_mongodb]
+
+    wnttapi.manager.presentation:
+        class: Sysla\WeNeedToTalk\WnttApiBundle\Manager\PresentationManager
+        arguments: [@doctrine_mongodb]
+
+    wnttapi.manager.stand:
+        class: Sysla\WeNeedToTalk\WnttApiBundle\Manager\StandManager
+        arguments: [@doctrine_mongodb]
+
+    wnttapi.manager.user:
+        class: Sysla\WeNeedToTalk\WnttApiBundle\Manager\UserManager
+        arguments: [@doctrine_mongodb]
+
+    wnttapi.service.permission_verifier:
+        class: Sysla\WeNeedToTalk\WnttApiBundle\Service\PermissionVerifier

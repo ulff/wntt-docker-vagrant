@@ -36,10 +36,12 @@
         "friendsofsymfony/rest-bundle": "~1.5",
         "nelmio/api-doc-bundle": "~2.8",
         "friendsofsymfony/oauth-server-bundle": "dev-master",
-        "behat/symfony2-extension": "~2.0"
+        "behat/symfony2-extension": "~2.0",
+        "willdurand/hateoas-bundle": "0.5.*"
     },
     "require-dev": {
-        "sensio/generator-bundle": "~2.3"
+        "sensio/generator-bundle": "~2.3",
+        "doctrine/doctrine-fixtures-bundle": "dev-master"
     },
     "scripts": {
         "post-root-package-install": [

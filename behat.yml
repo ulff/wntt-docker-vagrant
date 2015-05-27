@@ -16,5 +16,7 @@ default:
             sessions:
               default:
                 goutte: ~
-        Codifico\ParameterBagExtension\ServiceContainer\ParameterBagExtension: ~
+        Codifico\ParameterBagExtension\ServiceContainer\ParameterBagExtension:
+            parameter_bag:
+                class: Codifico\ParameterBagExtension\Bag\InMemoryPlaceholderBag
         Behat\Symfony2Extension: ~

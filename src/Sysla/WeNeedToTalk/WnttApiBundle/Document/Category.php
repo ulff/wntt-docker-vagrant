@@ -4,11 +4,17 @@ namespace Sysla\WeNeedToTalk\WnttApiBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation as Serializer;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @MongoDB\Document(collection="categories")
+ * @Hateoas\Relation(
+ *     "self",
+ *      href = "expr('/api/v1/categories/' ~ object.getId())"
+ * )
  */
-class Category
+class Category implements Document
 {
     /**
      * @MongoDB\Id
@@ -20,6 +26,12 @@ class Category
      * @Assert\NotBlank()
      */
     protected $name;
+
+    /**
+     * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation", mappedBy="categories", cascade={"remove"})
+     * @Serializer\Exclude
+     */
+    protected $presentations;
 
     /**
      * @return string

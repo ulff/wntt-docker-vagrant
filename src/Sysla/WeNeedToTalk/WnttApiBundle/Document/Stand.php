@@ -4,11 +4,33 @@ namespace Sysla\WeNeedToTalk\WnttApiBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation as Serializer;
+use Hateoas\Configuration\Annotation as Hateoas;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @MongoDB\Document(collection="stands")
+ * @Hateoas\Relation(
+ *     name = "event",
+ *     href = "expr('/api/v1/events/' ~ object.getEvent().getId())",
+ *     attributes = {
+ *         "id" = "expr(object.getEvent().getId())",
+ *     },
+ * )
+ * @Hateoas\Relation(
+ *     name = "company",
+ *     href = "expr('/api/v1/companies/' ~ object.getCompany().getId())",
+ *     attributes = {
+ *         "id" = "expr(object.getCompany().getId())",
+ *     },
+ *     exclusion = @Hateoas\Exclusion(excludeIf = "expr(null === object.getCompany())")
+ * )
+ * @Hateoas\Relation(
+ *     "self",
+ *      href = "expr('/api/v1/stands/' ~ object.getId())"
+ * )
  */
-class Stand
+class Stand implements Document
 {
 
     /**
@@ -28,15 +50,22 @@ class Stand
     protected $hall;
 
     /**
-     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Event", cascade={"remove"})
+     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Event", inversedBy="stands")
      * @Assert\NotBlank()
+     * @Serializer\Exclude
      */
     protected $event;
 
     /**
-     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Company")
+     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Company", inversedBy="stands")
+     * @Serializer\Exclude
      */
     protected $company;
+
+    /**
+     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation", mappedBy="stand", cascade={"remove"})
+     */
+    protected $presentation;
 
     /**
      * @return string
@@ -118,10 +147,30 @@ class Stand
         $this->company = $company;
     }
 
+    /**
+     * @return boolean
+     */
+    public function hasEvent()
+    {
+        $event = $this->getEvent();
+        return !empty($event);
+    }
+
+    /**
+     * @return string
+     */
     public function getClassName()
     {
         $classCanonicalName = explode('\\', get_class($this));
         return end($classCanonicalName);
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->hasEvent() ? $this->getNumber().' ('.$this->getEvent()->getName().')' : '';
     }
 
 }

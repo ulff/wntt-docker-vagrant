@@ -8,6 +8,9 @@ use Behat\MinkExtension\Context\MinkContext;
 use Behat\Symfony2Extension\Context\KernelDictionary;
 use OAuth2\OAuth2;
 use Codifico\ParameterBagExtension\Context\ParameterBagDictionary;
+use Sysla\WeNeedToTalk\WnttApiBundle\Document as Document;
+use Sysla\WeNeedToTalk\WnttUserBundle\Document\User;
+use Sysla\WeNeedToTalk\WnttApiBundle\Exception as Exception;
 
 class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
 {
@@ -26,6 +29,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     public function iMakeRequest($method, $uri)
     {
         $uri = '/app_dev.php'.$uri;
+        $uri = $this->extractFromParameterBag($uri);
         $this->request($method, $uri);
     }
 
@@ -35,6 +39,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     public function iMakeRequestWithParams($method, $uri, TableNode $table)
     {
         $uri = '/app_dev.php'.$uri;
+        $uri = $this->extractFromParameterBag($uri);
         $this->request($method, $uri, $table->getRowsHash());
     }
 
@@ -44,12 +49,10 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     public function iMakeRequestWithParameterBagParams($method, $uri, TableNode $table)
     {
         $uri = '/app_dev.php'.$uri;
+        $uri = $this->extractFromParameterBag($uri);
         $params = [];
         foreach($table->getRowsHash() as $field => $value) {
-            if(in_array($value, ['CLIENT_PUBLIC_ID', 'CLIENT_SECRET'])) {
-                $value = $this->getParameterBag()->get($value);
-            }
-            $params[$field] = $value;
+            $params[$field] = $this->getParameterBag()->replace($value);;
         }
         $this->request($method, $uri, $params);
     }
@@ -64,7 +67,8 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
         $client = $clientManager->createClient();
         $client->setName('test-client-name');
         $client->setAllowedGrantTypes([
-            OAuth2::GRANT_TYPE_CLIENT_CREDENTIALS
+            OAuth2::GRANT_TYPE_CLIENT_CREDENTIALS,
+            OAuth2::GRANT_TYPE_USER_CREDENTIALS
         ]);
         $clientManager->updateClient($client);
 
@@ -98,11 +102,168 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     }
 
     /**
+     * @Given I am authorized client with username :login and password :password
+     */
+    public function iAmAuthorizedClientWithUsernameAndPassword($login, $password)
+    {
+        $this->clientIsCreated();
+        $this->request('POST', '/app_dev.php/oauth/v2/token', [
+            'client_id' => $this->getParameterBag()->get('CLIENT_PUBLIC_ID'),
+            'client_secret' => $this->getParameterBag()->get('CLIENT_SECRET'),
+            'response_type' => 'code',
+            'grant_type' => 'password',
+            'username' => $login,
+            'password' => $password
+        ]);
+
+        $clientManager = $this->getContainer()->get('fos_oauth_server.client_manager.default');
+        $client = $clientManager->findClientByPublicId($this->getParameterBag()->get('CLIENT_PUBLIC_ID'));
+
+        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+
+        $accessToken = $dm->getRepository('SyslaWeeNeedToTalkWnttOAuthBundle:AccessToken')
+            ->findOneBy(array('client.id' => $client->getId()));
+
+        $this->getParameterBag()->set('ACCESS_TOKEN', $accessToken->getToken());
+        $this->iSetHeaderWithValue('Authorization', 'Bearer ' . $this->getParameterBag()->get('ACCESS_TOKEN'));
+    }
+
+    /**
      * @Given /^I set header "([^"]*)" with value "([^"]*)"$/
      */
     public function iSetHeaderWithValue($name, $value)
     {
         $this->headers[$name] = $value;
+    }
+
+    /**
+     * @Given following :documentName exists:
+     */
+    public function followingDocumentExists($documentName, TableNode $table)
+    {
+        switch($documentName) {
+            case 'Category':
+                $this->ensureCategoryExists($table->getRowsHash());
+                break;
+            case 'Company':
+                $this->ensureCompanyExists($table->getRowsHash());
+                break;
+            case 'Event':
+                $this->ensureEventExists($table->getRowsHash());
+                break;
+            case 'Stand':
+                $this->ensureStandExists($table->getRowsHash());
+                break;
+            case 'Presentation':
+                $this->ensurePresentationExists($table->getRowsHash());
+                break;
+            case 'User':
+                $this->ensureUserExists($table->getRowsHash());
+                break;
+            default:
+                throw new \Exception("Class $documentName not found");
+        }
+    }
+
+    /**
+     * @Then the response should be JSON
+     */
+    public function theResponseShouldBeJson()
+    {
+        $response = $this->getClient()->getResponse()->getContent();
+        if(json_decode($response) === null) {
+            throw new Exception\JsonExpectedException();
+        }
+    }
+
+    /**
+     * @Then the response JSON should be a collection
+     */
+    public function theResponseJsonShouldBeACollection()
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        if(!is_array($response)) {
+            throw new Exception\CollectionExpectedException();
+        }
+        return;
+    }
+
+    /**
+     * @Then the response JSON should be a single object
+     */
+    public function theResponseJsonShouldBeASingleObject()
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        if(!is_object($response)) {
+            throw new Exception\SingleObjectExpectedException();
+        }
+        return;
+    }
+
+    /**
+     * @Then the repsonse JSON should have :property field
+     */
+    public function theRepsonseJsonShouldHaveField($property)
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        $this->assertDocumentHasProperty($response, $property);
+        return;
+    }
+
+    /**
+     * @Then the repsonse JSON should have :property field with value :expectedValue
+     */
+    public function theRepsonseJsonShouldHaveFieldWithValue($property, $expectedValue)
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        $this->assertDocumentHasPropertyWithValue($response, $property, $expectedValue);
+        return;
+    }
+
+    /**
+     * @Then all response collection items should have :property field with value :expectedValue
+     */
+    public function allResponseCollectionItemsShouldHaveFieldWithValue($property, $expectedValue)
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        foreach($response as $document) {
+            $this->assertDocumentHasPropertyWithValue($document, $property, $expectedValue);
+        }
+        return;
+    }
+
+    /**
+     * @Then all response collection items should have :property field set to :expectedBoolean
+     */
+    public function allResponseCollectionItemsShouldHaveFieldSetTo($property, $expectedBoolean)
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        foreach($response as $document) {
+            $this->assertDocumentHasPropertyWithBooleanValue($document, $property, $expectedBoolean);
+        }
+        return;
+    }
+
+    /**
+     * @Then :documentName should be created with :property set to :value
+     */
+    public function documentShouldBeCreatedWithPropertySetToValue($documentName, $property, $value)
+    {
+        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+
+        if(ucfirst($documentName) == 'User') {
+            $document = $dm->getRepository('SyslaWeeNeedToTalkWnttUserBundle:'.ucfirst($documentName))
+                ->findOneBy(array($property => $value));
+        } else {
+            $document = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:'.ucfirst($documentName))
+                ->findOneBy(array($property => $value));
+        }
+
+        if (empty($document)) {
+            throw new \Exception(sprintf('Document %s hasn\'t been created', $documentName));
+        }
+
+        $this->getParameterBag()->set(ucfirst($documentName).'_last_created', $document->getId());
     }
 
     protected function request($method, $uri, array $params = array(), array $headers = array())
@@ -128,6 +289,201 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     {
         $driver = $this->getSession()->getDriver();
         return $driver->getClient();
+    }
+
+    protected function extractFromParameterBag($uri)
+    {
+        $uri = $this->getParameterBag()->replace($uri);
+        $uri = str_replace(['{', '}'], '', $uri);
+        return $uri;
+    }
+
+    protected function assertDocumentHasProperty($document, $property)
+    {
+        if(!isset($document->$property)) {
+            throw new Exception\NotFoundPropertyException($property);
+        }
+    }
+
+    protected function assertDocumentHasPropertyWithValue($document, $property, $expectedValue)
+    {
+        $this->assertDocumentHasProperty($document, $property);
+        if($document->$property != $expectedValue) {
+            throw new Exception\IncorrectPropertyValueException($property, $expectedValue, $document->$property);
+        }
+    }
+
+    protected function assertDocumentHasPropertyWithBooleanValue($document, $property, $expectedValue)
+    {
+        $expectedBoolean = ($expectedValue == 'true' ? true : false);
+        $this->assertDocumentHasProperty($document, $property);
+        if($document->$property !== $expectedBoolean) {
+            throw new Exception\IncorrectPropertyValueException($property, $expectedValue, $document->$property === true ? 'true' : 'false');
+        }
+    }
+
+    protected function ensureCategoryExists($categoryData)
+    {
+        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+
+        $category = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+            ->findOneByName($categoryData['name']);
+
+        if(empty($category)) {
+            $category = new Document\Category();
+            $category->setName($categoryData['name']);
+
+            $dm->persist($category);
+            $dm->flush();
+        }
+
+        $this->getParameterBag()->set('Category_'.$categoryData['identifiedBy'], $category->getId());
+    }
+
+    protected function ensureCompanyExists($companyData)
+    {
+        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+
+        $company = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+            ->findOneByName($companyData['name']);
+
+        if(empty($company)) {
+            $company = new Document\Company();
+            $company->setName($companyData['name']);
+            $company->setLogoUrl(@$companyData['logoUrl']);
+            $company->setWebsiteUrl(@$companyData['websiteUrl']);
+
+            $dm->persist($company);
+            $dm->flush();
+        }
+
+        $this->getParameterBag()->set('Company_'.$companyData['identifiedBy'], $company->getId());
+    }
+
+    protected function ensureEventExists($eventData)
+    {
+        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+
+        $event = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
+            ->findOneByName($eventData['name']);
+
+        if(empty($event)) {
+            $event = new Document\Event();
+            $event->setName($eventData['name']);
+            $event->setLocation(@$eventData['location']);
+            $event->setDateStart(new \DateTime($eventData['dateStart']));
+            $event->setDateEnd(new \DateTime($eventData['dateEnd']));
+
+            $dm->persist($event);
+            $dm->flush();
+        }
+
+        $this->getParameterBag()->set('Event_'.$eventData['identifiedBy'], $event->getId());
+    }
+
+    protected function ensureStandExists($standData)
+    {
+        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+
+        $stand = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
+            ->findOneByNumber($standData['number']);
+
+        if(empty($stand)) {
+            $stand = new Document\Stand();
+            $stand->setNumber($standData['number']);
+            $stand->setHall(@$standData['hall']);
+
+            $eventId = $this->getParameterBag()->get('Event_'.$standData['event']);
+            $event = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
+                ->findOneById($eventId);
+            $stand->setEvent($event);
+
+            if(isset($standData['company'])) {
+                $companyId = $this->getParameterBag()->get('Company_'.$standData['company']);
+                $company = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+                    ->findOneById($companyId);
+                $stand->setCompany($company);
+            }
+
+            $dm->persist($stand);
+            $dm->flush();
+        }
+
+        $this->getParameterBag()->set('Stand_'.$standData['identifiedBy'], $stand->getId());
+    }
+
+    protected function ensurePresentationExists($presentationData)
+    {
+        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+
+        $presentation = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
+            ->findOneByVideoUrl($presentationData['videoUrl']);
+
+        if(empty($presentation)) {
+            $presentation = new Document\Presentation();
+            $presentation->setVideoUrl($presentationData['videoUrl']);
+            $presentation->setDescription(@$presentationData['description']);
+            $presentation->setIsPremium(@$presentationData['isPremium'] == 'true' ? true : false);
+
+            $standId = $this->getParameterBag()->get('Stand_'.$presentationData['stand']);
+            $stand = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
+                ->findOneById($standId);
+            $presentation->setStand($stand);
+
+            if(isset($presentationData['company'])) {
+                $companyId = $this->getParameterBag()->get('Company_'.$presentationData['company']);
+                $company = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+                    ->findOneById($companyId);
+                $presentation->setCompany($company);
+            }
+
+            if(isset($presentationData['categories'])) {
+                $categories = [];
+                foreach(explode(';', $presentationData['categories']) as $categoryName) {
+                    $categoryId = $this->getParameterBag()->get('Category_'.$categoryName);
+                    $category = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+                        ->findOneById($categoryId);
+                    if(!empty($category)) {
+                        $categories[] = $category;
+                    }
+                }
+                $presentation->setCategories($categories);
+            }
+
+            $dm->persist($presentation);
+            $dm->flush();
+        }
+
+        $this->getParameterBag()->set('Presentation_'.$presentationData['identifiedBy'], $presentation->getId());
+    }
+
+    protected function ensureUserExists($userData)
+    {
+        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+
+        $user = $dm->getRepository('SyslaWeeNeedToTalkWnttUserBundle:User')
+            ->findOneByUsername($userData['username']);
+
+        if(empty($user)) {
+            $user = new User();
+            $user->setUsername($userData['username']);
+            $user->setEmail($userData['email']);
+            if(isset($userData['roles'])) {
+                $user->setRoles(explode(';', $userData['roles']));
+            }
+
+            if(isset($userData['company'])) {
+                $companyId = $this->getParameterBag()->get('Company_'.$userData['company']);
+                $company = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+                    ->findOneById($companyId);
+                $user->setCompany($company);
+            }
+
+            $dm->persist($user);
+            $dm->flush();
+        }
+
+        $this->getParameterBag()->set('User_'.$userData['identifiedBy'], $user->getId());
     }
 
 }

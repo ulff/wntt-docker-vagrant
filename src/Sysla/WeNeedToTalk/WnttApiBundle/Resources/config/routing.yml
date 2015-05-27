@@ -1,4 +1,31 @@
 events:
     type:     rest
-    resource: Sysla\WeNeedToTalk\WnttApiBundle\Controller\EventsController
+    resource: Sysla\WeNeedToTalk\WnttApiBundle\Controller\EventController
     prefix:   /api/v1/
+
+presentations:
+    type:     rest
+    resource: Sysla\WeNeedToTalk\WnttApiBundle\Controller\PresentationController
+    prefix:   /api/v1/
+
+categories:
+    type:     rest
+    resource: Sysla\WeNeedToTalk\WnttApiBundle\Controller\CategoryController
+    prefix:   /api/v1/
+
+companies:
+    type:     rest
+    resource: Sysla\WeNeedToTalk\WnttApiBundle\Controller\CompanyController
+    prefix:   /api/v1/
+
+stands:
+    type:     rest
+    resource: Sysla\WeNeedToTalk\WnttApiBundle\Controller\StandController
+    prefix:   /api/v1/
+
+users:
+    type:     rest
+    resource: Sysla\WeNeedToTalk\WnttApiBundle\Controller\UserController
+    prefix:   /api/v1/
+
+

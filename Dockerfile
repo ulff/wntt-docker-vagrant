@@ -8,4 +8,3 @@ RUN pear install phing/phing
 
 ENV SYMFONY__MONGO__HOST mongo
 
-CMD ["/var/www/bin/setup.sh"]
