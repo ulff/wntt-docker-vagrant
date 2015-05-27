@@ -27,6 +27,8 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Document\Document;
  */
 class User extends BaseUser implements Document
 {
+    const ROLE_ADMIN = 'ROLE_ADMIN';
+
     /**
      * @MongoDB\Id(strategy="auto")
      */
@@ -122,6 +124,11 @@ class User extends BaseUser implements Document
     {
         $classCanonicalName = explode('\\', get_class($this));
         return end($classCanonicalName);
+    }
+
+    public function hasAdminRights()
+    {
+        return $this->hasRole(static::ROLE_SUPER_ADMIN) || $this->hasRole(static::ROLE_ADMIN);
     }
 
 }

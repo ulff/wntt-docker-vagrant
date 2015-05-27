@@ -31,6 +31,7 @@ Feature: getting companies through API
     And the repsonse JSON should have "logo_url" field with value "http://company.api/logo.png"
 
   Scenario: create company
+    Given I am authorized client with username "admin" and password "admin"
     When I make request "POST" "/api/v1/companies" with params:
       | name        | Created company name  |
       | websiteUrl  | http://wuwuwu/        |
@@ -45,6 +46,7 @@ Feature: getting companies through API
     And the repsonse JSON should have "logo_url" field with value "http://logogo/"
 
   Scenario: update company
+    Given I am authorized client with username "admin" and password "admin"
     When I make request "PUT" "/api/v1/companies/{Company_last_created}" with params:
       | name        | Created company new name  |
       | websiteUrl  | http://wuwuwu/new         |
@@ -58,12 +60,14 @@ Feature: getting companies through API
     And the repsonse JSON should have "logo_url" field with value "http://logogo/new"
 
   Scenario: delete company
+    Given I am authorized client with username "admin" and password "admin"
     When I make request "DELETE" "/api/v1/companies/{Company_last_created}"
     Then the response status code should be 204
     And I make request "HEAD" "/api/v1/companies/{Company_last_created}"
     And the response status code should be 404
 
   Scenario: do not create company when empty param name
+    Given I am authorized client with username "admin" and password "admin"
     When I make request "POST" "/api/v1/companies" with params:
       | websiteUrl  | http://wuwuwu/        |
       | logoUrl     | http://logogo/        |
@@ -71,3 +75,14 @@ Feature: getting companies through API
     And the response should be JSON
     And the repsonse JSON should have "error" field
 
+  Scenario: cannot create company without user context
+    When I make request "POST" "/api/v1/companies"
+    Then the response status code should be 403
+
+  Scenario: cannot update company without user context
+    When I make request "PUT" "/api/v1/companies/{Company_Company Api}"
+    Then the response status code should be 403
+
+  Scenario: cannot delete company without user context
+    When I make request "DELETE" "/api/v1/companies/{Company_Company Api}"
+    Then the response status code should be 403

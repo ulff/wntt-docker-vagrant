@@ -67,7 +67,8 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
         $client = $clientManager->createClient();
         $client->setName('test-client-name');
         $client->setAllowedGrantTypes([
-            OAuth2::GRANT_TYPE_CLIENT_CREDENTIALS
+            OAuth2::GRANT_TYPE_CLIENT_CREDENTIALS,
+            OAuth2::GRANT_TYPE_USER_CREDENTIALS
         ]);
         $clientManager->updateClient($client);
 
@@ -86,6 +87,33 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
             'client_secret' => $this->getParameterBag()->get('CLIENT_SECRET'),
             'response_type' => 'code',
             'grant_type' => 'client_credentials'
+        ]);
+
+        $clientManager = $this->getContainer()->get('fos_oauth_server.client_manager.default');
+        $client = $clientManager->findClientByPublicId($this->getParameterBag()->get('CLIENT_PUBLIC_ID'));
+
+        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+
+        $accessToken = $dm->getRepository('SyslaWeeNeedToTalkWnttOAuthBundle:AccessToken')
+            ->findOneBy(array('client.id' => $client->getId()));
+
+        $this->getParameterBag()->set('ACCESS_TOKEN', $accessToken->getToken());
+        $this->iSetHeaderWithValue('Authorization', 'Bearer ' . $this->getParameterBag()->get('ACCESS_TOKEN'));
+    }
+
+    /**
+     * @Given I am authorized client with username :login and password :password
+     */
+    public function iAmAuthorizedClientWithUsernameAndPassword($login, $password)
+    {
+        $this->clientIsCreated();
+        $this->request('POST', '/app_dev.php/oauth/v2/token', [
+            'client_id' => $this->getParameterBag()->get('CLIENT_PUBLIC_ID'),
+            'client_secret' => $this->getParameterBag()->get('CLIENT_SECRET'),
+            'response_type' => 'code',
+            'grant_type' => 'password',
+            'username' => $login,
+            'password' => $password
         ]);
 
         $clientManager = $this->getContainer()->get('fos_oauth_server.client_manager.default');

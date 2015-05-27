@@ -101,6 +101,7 @@ Feature: getting presentations through API
     And all response collection items should have "is_premium" field set to "false"
     
   Scenario: create presentation
+    Given I am authorized client with username "admin" and password "admin"
     When I make request "POST" "/api/v1/presentations" with parameter-bag params:
       | videoUrl        | http://show/me        |
       | description     | Some description      |
@@ -115,6 +116,7 @@ Feature: getting presentations through API
     And the repsonse JSON should have "description" field with value "Some description"
 
   Scenario: update presentation
+    Given I am authorized client with username "admin" and password "admin"
     When I make request "PUT" "/api/v1/presentations/{Presentation_last_created}" with parameter-bag params:
       | videoUrl        | http://show/me/2      |
       | description     | Some description 2    |
@@ -128,12 +130,14 @@ Feature: getting presentations through API
     And the repsonse JSON should have "description" field with value "Some description 2"
 
   Scenario: delete presentation
+    Given I am authorized client with username "admin" and password "admin"
     When I make request "DELETE" "/api/v1/presentations/{Presentation_last_created}"
     Then the response status code should be 204
     And I make request "HEAD" "/api/v1/presentations/{Presentation_last_created}"
     And the response status code should be 404
 
   Scenario Outline: do not create presentation when empty or invalid param
+    Given I am authorized client with username "admin" and password "admin"
     When I make request "POST" "/api/v1/presentations" with parameter-bag params:
       | videoUrl        | <videoUrl>      |
       | description     | <description>   |
@@ -150,3 +154,17 @@ Feature: getting presentations through API
     | http://show/me/2 | Some description 2 | Company_Company Api |                      |
     | http://show/me/2 | Some description 2 | not-existing        | Stand_EvtApi1_F_1334 |
     | http://show/me/2 | Some description 2 | Company_Company Api | not-existing         |
+
+  Scenario: cannot create presentation without user context
+    When I make request "POST" "/api/v1/presentations"
+    Then the response status code should be 403
+
+  Scenario: cannot update presentation without user context
+    When I make request "PUT" "/api/v1/presentations/{Presentation_company api prezi}"
+    Then the response status code should be 403
+
+  Scenario: cannot delete presentation without user context
+    When I make request "DELETE" "/api/v1/presentations/{Presentation_company api prezi}"
+    Then the response status code should be 403
+
+

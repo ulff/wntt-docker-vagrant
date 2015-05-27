@@ -40,6 +40,7 @@ Feature: getting users through API
     And the repsonse JSON should have "email" field with value "user1@email.api"
 
   Scenario: create user
+    Given I am authorized client with username "admin" and password "admin"
     When I make request "POST" "/api/v1/users" with parameter-bag params:
       | username        | user_api_created      |
       | password        | password              |
@@ -57,6 +58,7 @@ Feature: getting users through API
     And the repsonse JSON should have "phone_number" field with value "668 678"
 
   Scenario: update user
+    Given I am authorized client with username "admin" and password "admin"
     When I make request "PUT" "/api/v1/users/{User_last_created}" with parameter-bag params:
       | username        | user_api_updated      |
       | password        | password              |
@@ -73,12 +75,14 @@ Feature: getting users through API
     And the repsonse JSON should have "phone_number" field with value "668 678 2"
 
   Scenario: delete user
+    Given I am authorized client with username "admin" and password "admin"
     When I make request "DELETE" "/api/v1/users/{User_last_created}"
     Then the response status code should be 204
     And I make request "HEAD" "/api/v1/users/{User_last_created}"
     And the response status code should be 404
 
   Scenario Outline: do not create user when empty or invalid param
+    Given I am authorized client with username "admin" and password "admin"
     When I make request "POST" "/api/v1/users" with parameter-bag params:
       | username        | <username>      |
       | password        | <password>      |
@@ -96,3 +100,11 @@ Feature: getting users through API
     | user_api_created  |                     | user@api          | Company_Company Api | true          | 668 678     |
     | user_api_created  | password            |                   | Company_Company Api | true          | 668 678     |
     | user_api_created  | password            | user@api          | not-existing        | true          | 668 678     |
+
+  Scenario: cannot update user without user context
+    When I make request "PUT" "/api/v1/users/{User_username_api}"
+    Then the response status code should be 403
+
+  Scenario: cannot delete user without user context
+    When I make request "DELETE" "/api/v1/users/{User_username_api}"
+    Then the response status code should be 403

@@ -12,7 +12,7 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Manager\EventManager;
 class EventController extends FOSRestController
 {
     /**
-     * Returns collection of Event objects
+     * Returns collection of Event objects.
      *
      * @ApiDoc(
      *  resource=true,
@@ -34,7 +34,7 @@ class EventController extends FOSRestController
     }
 
     /**
-     * Returns Event object by given ID
+     * Returns Event object by given ID.
      *
      * @ApiDoc(
      *  resource=true,
@@ -61,6 +61,8 @@ class EventController extends FOSRestController
     }
     
     /**
+     * Creates new Event object. ROLE_ADMIN is minimum required role to perform this action.
+     *
      * @ApiDoc(
      *   resource=true,
      *   description="Creates Event object",
@@ -95,6 +97,8 @@ class EventController extends FOSRestController
     }
 
     /**
+     * Updates existing Event object with given ID. ROLE_ADMIN is minimum required role to perform this action.
+     *
      * @ApiDoc(
      *   resource=true,
      *   description="Updates Event object",
@@ -138,6 +142,8 @@ class EventController extends FOSRestController
     }
 
     /**
+     * Deletes existing Event object with given ID. ROLE_ADMIN is minimum required role to perform this action.
+     *
      * @ApiDoc(
      *   resource=true,
      *   description="Deletes Event object",

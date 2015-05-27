@@ -12,7 +12,7 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Manager\StandManager;
 class StandController extends FOSRestController
 {
     /**
-     * Returns collection of Stand objects
+     * Returns collection of Stand objects.
      *
      * @ApiDoc(
      *  resource=true,
@@ -34,7 +34,7 @@ class StandController extends FOSRestController
     }
 
     /**
-     * Returns Stand object by given ID
+     * Returns Stand object by given ID.
      *
      * @ApiDoc(
      *  resource=true,
@@ -61,6 +61,8 @@ class StandController extends FOSRestController
     }
     
     /**
+     * Creates new Stand object. ROLE_ADMIN is minimum required role to perform this action.
+     *
      * @ApiDoc(
      *   resource=true,
      *   description="Creates Stand object",
@@ -94,6 +96,8 @@ class StandController extends FOSRestController
     }
 
     /**
+     * Updates existing Stand object with given ID. ROLE_ADMIN is minimum required role to perform this action.
+     *
      * @ApiDoc(
      *   resource=true,
      *   description="Updates Stand object",
@@ -137,6 +141,8 @@ class StandController extends FOSRestController
     }
 
     /**
+     * Deletes existing Stand object with given ID. ROLE_ADMIN is minimum required role to perform this action.
+     *
      * @ApiDoc(
      *   resource=true,
      *   description="Deletes Stand object",
