@@ -124,6 +124,8 @@ class CompanyController extends FOSRestController
             throw $this->createNotFoundException('No company found for id '.$id);
         }
 
+        $this->checkPermission($id);
+
         $companyData = $this->retrieveCompanyData($request);
         $this->validateCompanyData($companyData);
 
@@ -162,6 +164,8 @@ class CompanyController extends FOSRestController
             throw $this->createNotFoundException('No company found for id '.$id);
         }
 
+        $this->checkPermission($id);
+
         /** @var $companyManager CompanyManager */
         $companyManager = $this->get('wnttapi.manager.company');
         $companyManager->deleteDocument($company);
@@ -183,6 +187,14 @@ class CompanyController extends FOSRestController
     {
         if (empty($companyData['name'])) {
             throw new HttpException(400, 'Missing required parameters: name');
+        }
+    }
+
+    protected function checkPermission($documentId)
+    {
+        $permissionVerifier = $this->get('wnttapi.service.permission_verifier');
+        if(!$permissionVerifier->hasPermission('Company', $this->getUser(), $documentId)) {
+            throw $this->createAccessDeniedException('Cannot affect not your company!');
         }
     }
 }

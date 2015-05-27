@@ -167,4 +167,22 @@ Feature: getting presentations through API
     When I make request "DELETE" "/api/v1/presentations/{Presentation_company api prezi}"
     Then the response status code should be 403
 
+  Scenario: user without admin proviledges cannot create presentation owned by not his company
+    Given I am authorized client with username "user" and password "user"
+    When I make request "POST" "/api/v1/presentations"
+    Then the response status code should be 403
+    And the response should contain "Cannot affect presentation owned by not your company"
+
+  Scenario: user without admin proviledges cannot update presentation owned by not his company
+    Given I am authorized client with username "user" and password "user"
+    When I make request "PUT" "/api/v1/presentations/{Presentation_company api prezi}"
+    Then the response status code should be 403
+    And the response should contain "Cannot affect presentation owned by not your company"
+
+  Scenario: user without admin proviledges cannot delete presentation owned by not his company
+    Given I am authorized client with username "user" and password "user"
+    When I make request "DELETE" "/api/v1/presentations/{Presentation_company api prezi}"
+    Then the response status code should be 403
+    And the response should contain "Cannot affect presentation owned by not your company"
+
 

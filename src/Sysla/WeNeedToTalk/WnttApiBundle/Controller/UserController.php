@@ -130,6 +130,8 @@ class UserController extends FOSRestController
             throw $this->createNotFoundException('No user found for id '.$id);
         }
 
+        $this->checkPermission($id);
+
         $userData = $this->retrieveUserData($request);
         $this->validateUserData($userData);
 
@@ -168,6 +170,8 @@ class UserController extends FOSRestController
             throw $this->createNotFoundException('No user found for id '.$id);
         }
 
+        $this->checkPermission($id);
+
         /** @var $userManager UserManager */
         $userManager = $this->get('wnttapi.manager.user');
         $userManager->deleteDocument($user);
@@ -202,10 +206,20 @@ class UserController extends FOSRestController
             throw new HttpException(400, 'Missing required parameters: email');
         }
 
-        $company = $documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
-            ->findOneById($userData['company']);
-        if(empty($company)) {
-            throw new HttpException(400, "Invalid parameter: company with ID: '{$userData['company']}' not found!");
+        if(!empty($userData['company'])) {
+            $company = $documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+                ->findOneById($userData['company']);
+            if (empty($company)) {
+                throw new HttpException(400, "Invalid parameter: company with ID: '{$userData['company']}' not found!");
+            }
+        }
+    }
+
+    protected function checkPermission($documentId)
+    {
+        $permissionVerifier = $this->get('wnttapi.service.permission_verifier');
+        if(!$permissionVerifier->hasPermission('User', $this->getUser(), $documentId)) {
+            throw $this->createAccessDeniedException('Cannot affect not your account!');
         }
     }
 }

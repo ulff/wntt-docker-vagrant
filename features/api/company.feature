@@ -86,3 +86,16 @@ Feature: getting companies through API
   Scenario: cannot delete company without user context
     When I make request "DELETE" "/api/v1/companies/{Company_Company Api}"
     Then the response status code should be 403
+
+  Scenario: user without admin proviledges cannot update not his company
+    Given I am authorized client with username "user" and password "user"
+    When I make request "PUT" "/api/v1/companies/{Company_Company Api}"
+    Then the response status code should be 403
+    And the response should contain "Cannot affect not your company"
+
+  Scenario: user without admin proviledges cannot delete not his company
+    Given I am authorized client with username "user" and password "user"
+    When I make request "DELETE" "/api/v1/companies/{Company_Company Api}"
+    Then the response status code should be 403
+    And the response should contain "Cannot affect not your company"
+
