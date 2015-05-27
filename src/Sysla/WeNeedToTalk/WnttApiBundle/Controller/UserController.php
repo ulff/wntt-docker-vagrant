@@ -12,7 +12,7 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Manager\UserManager;
 class UserController extends FOSRestController
 {
     /**
-     * Returns collection of User objects
+     * Returns collection of User objects.
      *
      * @ApiDoc(
      *  resource=true,
@@ -34,7 +34,7 @@ class UserController extends FOSRestController
     }
 
     /**
-     * Returns User object by given ID
+     * Returns User object by given ID.
      *
      * @ApiDoc(
      *  resource=true,
@@ -61,6 +61,8 @@ class UserController extends FOSRestController
     }
 
     /**
+     * Creates new User object. Works without user context.
+     *
      * @ApiDoc(
      *   resource=true,
      *   description="Creates User object",
@@ -95,6 +97,8 @@ class UserController extends FOSRestController
     }
 
     /**
+     * Updates existing User object with given ID. ROLE_USER is minimum required role to perform this action.
+     *
      * @ApiDoc(
      *   resource=true,
      *   description="Updates User object",
@@ -138,6 +142,8 @@ class UserController extends FOSRestController
     }
 
     /**
+     * Deletes existing User object with given ID. ROLE_USER is minimum required role to perform this action.
+     *
      * @ApiDoc(
      *   resource=true,
      *   description="Deletes User object",

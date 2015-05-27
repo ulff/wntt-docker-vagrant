@@ -12,7 +12,7 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Manager\CompanyManager;
 class CompanyController extends FOSRestController
 {
     /**
-     * Returns collection of Company objects
+     * Returns collection of Company objects.
      *
      * @ApiDoc(
      *  resource=true,
@@ -34,7 +34,7 @@ class CompanyController extends FOSRestController
     }
 
     /**
-     * Returns Company object by given ID
+     * Returns Company object by given ID.
      *
      * @ApiDoc(
      *  resource=true,
@@ -61,6 +61,8 @@ class CompanyController extends FOSRestController
     }
 
     /**
+     * Creates new Company object. ROLE_USER is minimum required role to perform this action.
+     *
      * @ApiDoc(
      *   resource=true,
      *   description="Creates Company object",
@@ -90,6 +92,8 @@ class CompanyController extends FOSRestController
     }
 
     /**
+     * Updates existing Company object with given ID. ROLE_USER is minimum required role to perform this action.
+     *
      * @ApiDoc(
      *   resource=true,
      *   description="Updates Company object",
@@ -132,6 +136,8 @@ class CompanyController extends FOSRestController
     }
 
     /**
+     * Deletes existing Company object with given ID. ROLE_USER is minimum required role to perform this action.
+     *
      * @ApiDoc(
      *   resource=true,
      *   description="Deletes Company object",

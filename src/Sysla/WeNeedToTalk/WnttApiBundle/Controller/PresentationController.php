@@ -14,7 +14,7 @@ use FOS\RestBundle\Controller\Annotations\QueryParam;
 class PresentationController extends FOSRestController
 {
     /**
-     * Returns collection of Presentation objects
+     * Returns collection of Presentation objects.
      *
      * @QueryParam(name="type", nullable=true, requirements="(free|premium)")
      *
@@ -46,7 +46,7 @@ class PresentationController extends FOSRestController
     }
 
     /**
-     * Returns Presentation object by given ID
+     * Returns Presentation object by given ID.
      *
      * @ApiDoc(
      *  resource=true,
@@ -73,6 +73,8 @@ class PresentationController extends FOSRestController
     }
 
     /**
+     * Creates new Presentation object. ROLE_USER is minimum required role to perform this action.
+     *
      * @ApiDoc(
      *   resource=true,
      *   description="Creates Presentation object",
@@ -105,6 +107,8 @@ class PresentationController extends FOSRestController
     }
 
     /**
+     * Updates existing Presentation object with given ID. ROLE_USER is minimum required role to perform this action.
+     *
      * @ApiDoc(
      *   resource=true,
      *   description="Updates Presentation object",
@@ -150,6 +154,8 @@ class PresentationController extends FOSRestController
     }
 
     /**
+     * Deletes existing Presentation object with given ID. ROLE_USER is minimum required role to perform this action.
+     *
      * @ApiDoc(
      *   resource=true,
      *   description="Deletes Presentation object",

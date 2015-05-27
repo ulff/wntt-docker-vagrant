@@ -37,6 +37,7 @@ Feature: getting events through API
     And the repsonse JSON should have "date_end" field with value "2014-02-04T00:00:00+0000"
     
   Scenario: create event
+    Given I am authorized client with username "admin" and password "admin"
     When I make request "POST" "/api/v1/events" with params:
       | name        | Created event name  |
       | location    | Narvik              |
@@ -53,6 +54,7 @@ Feature: getting events through API
     And the repsonse JSON should have "date_end" field with value "2015-02-24T00:00:00+0000"
 
   Scenario: update event
+    Given I am authorized client with username "admin" and password "admin"
     When I make request "PUT" "/api/v1/events/{Event_last_created}" with params:
       | name        | Updated event name  |
       | location    | Stavanger           |
@@ -68,12 +70,14 @@ Feature: getting events through API
     And the repsonse JSON should have "date_end" field with value "2015-02-27T00:00:00+0000"
 
   Scenario: delete event
+    Given I am authorized client with username "admin" and password "admin"
     When I make request "DELETE" "/api/v1/events/{Event_last_created}"
     Then the response status code should be 204
     And I make request "HEAD" "/api/v1/events/{Event_last_created}"
     And the response status code should be 404
 
   Scenario: do not create event when empty param name
+    Given I am authorized client with username "admin" and password "admin"
     When I make request "POST" "/api/v1/events" with params:
       | location    | Tromso              |
       | dateStart   | 2015-02-23          |
@@ -83,6 +87,7 @@ Feature: getting events through API
     And the repsonse JSON should have "error" field
 
   Scenario: do not create event when empty param dateStart
+    Given I am authorized client with username "admin" and password "admin"
     When I make request "POST" "/api/v1/events" with params:
       | name        | Exhibition name     |
       | location    | Tromso              |
@@ -92,6 +97,7 @@ Feature: getting events through API
     And the repsonse JSON should have "error" field
 
   Scenario: do not create event when empty param dateEnd
+    Given I am authorized client with username "admin" and password "admin"
     When I make request "POST" "/api/v1/events" with params:
       | name        | Exhibition name     |
       | location    | Tromso              |
@@ -100,6 +106,32 @@ Feature: getting events through API
     And the response should be JSON
     And the repsonse JSON should have "error" field
 
+  Scenario: cannot create event without user context
+    When I make request "POST" "/api/v1/events"
+    Then the response status code should be 403
+
+  Scenario: cannot update event without user context
+    When I make request "PUT" "/api/v1/events/{Event_Event Api 1}"
+    Then the response status code should be 403
+
+  Scenario: cannot delete event without user context
+    When I make request "DELETE" "/api/v1/events/{Event_Event Api 1}"
+    Then the response status code should be 403
+
+  Scenario: cannot create event without admin priviledges
+    Given I am authorized client with username "user" and password "user"
+    When I make request "POST" "/api/v1/events"
+    Then the response status code should be 403
+
+  Scenario: cannot update event without admin priviledges
+    Given I am authorized client with username "user" and password "user"
+    When I make request "PUT" "/api/v1/events/{Event_Event Api 1}"
+    Then the response status code should be 403
+
+  Scenario: cannot delete event without admin priviledges
+    Given I am authorized client with username "user" and password "user"
+    When I make request "DELETE" "/api/v1/events/{Event_Event Api 1}"
+    Then the response status code should be 403
 
 
 

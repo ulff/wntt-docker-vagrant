@@ -12,7 +12,7 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Manager\CategoryManager;
 class CategoryController extends FOSRestController
 {
     /**
-     * Returns collection of Category objects
+     * Returns collection of Category objects.
      *
      * @ApiDoc(
      *  resource=true,
@@ -34,7 +34,7 @@ class CategoryController extends FOSRestController
     }
 
     /**
-     * Returns Category object by given ID
+     * Returns Category object by given ID.
      *
      * @ApiDoc(
      *  resource=true,
@@ -61,6 +61,8 @@ class CategoryController extends FOSRestController
     }
 
     /**
+     * Creates new Category object. ROLE_USER is minimum required role to perform this action.
+     *
      * @ApiDoc(
      *   resource=true,
      *   description="Creates Category object",
@@ -88,6 +90,8 @@ class CategoryController extends FOSRestController
     }
 
     /**
+     * Updates existing Category object with given ID. ROLE_ADMIN is minimum required role to perform this action.
+     *
      * @ApiDoc(
      *   resource=true,
      *   description="Updates Category object",
@@ -128,6 +132,8 @@ class CategoryController extends FOSRestController
     }
 
     /**
+     * Deletes existing Category object with given ID. ROLE_ADMIN is minimum required role to perform this action.
+     *
      * @ApiDoc(
      *   resource=true,
      *   description="Deletes Category object",

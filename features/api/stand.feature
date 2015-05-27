@@ -46,6 +46,7 @@ Feature: getting stands through API
     And the repsonse JSON should have "hall" field with value "F"
 
   Scenario: create stand
+    Given I am authorized client with username "admin" and password "admin"
     When I make request "POST" "/api/v1/stands" with parameter-bag params:
       | number          | 578                   |
       | hall            | A                     |
@@ -60,6 +61,7 @@ Feature: getting stands through API
     And the repsonse JSON should have "hall" field with value "A"
 
   Scenario: update stand
+    Given I am authorized client with username "admin" and password "admin"
     When I make request "PUT" "/api/v1/stands/{Stand_last_created}" with parameter-bag params:
       | number          | 678                   |
       | hall            | B                     |
@@ -73,12 +75,14 @@ Feature: getting stands through API
     And the repsonse JSON should have "hall" field with value "B"
 
   Scenario: delete stand
+    Given I am authorized client with username "admin" and password "admin"
     When I make request "DELETE" "/api/v1/stands/{Stand_last_created}"
     Then the response status code should be 204
     And I make request "HEAD" "/api/v1/stands/{Stand_last_created}"
     And the response status code should be 404
 
   Scenario Outline: do not create stand when empty or invalid param
+    Given I am authorized client with username "admin" and password "admin"
     When I make request "POST" "/api/v1/stands" with parameter-bag params:
       | number        | <number>    |
       | hall          | <hall>      |
@@ -95,3 +99,29 @@ Feature: getting stands through API
     | 1332            | F               | not-existing      | Company Api       |
     | 1332            | F               | Event Api 3       | not-existing      |
 
+  Scenario: cannot create stand without user context
+    When I make request "POST" "/api/v1/stands"
+    Then the response status code should be 403
+
+  Scenario: cannot update stand without user context
+    When I make request "PUT" "/api/v1/stands/{Stand_EvtApi1_F_1332}"
+    Then the response status code should be 403
+
+  Scenario: cannot delete stand without user context
+    When I make request "DELETE" "/api/v1/stands/{Stand_EvtApi1_F_1332}"
+    Then the response status code should be 403
+
+  Scenario: cannot create stand without admin priviledges
+    Given I am authorized client with username "user" and password "user"
+    When I make request "POST" "/api/v1/stands"
+    Then the response status code should be 403
+
+  Scenario: cannot update stand without admin priviledges
+    Given I am authorized client with username "user" and password "user"
+    When I make request "PUT" "/api/v1/stands/{Stand_EvtApi1_F_1332}"
+    Then the response status code should be 403
+
+  Scenario: cannot delete stand without admin priviledges
+    Given I am authorized client with username "user" and password "user"
+    When I make request "DELETE" "/api/v1/stands/{Stand_EvtApi1_F_1332}"
+    Then the response status code should be 403
