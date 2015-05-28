@@ -8,7 +8,10 @@ use JMS\Serializer\Annotation as Serializer;
 use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
- * @MongoDB\Document(collection="presentations")
+ * @MongoDB\Document(
+ *      collection="presentations",
+ *      repositoryClass="Sysla\WeNeedToTalk\WnttApiBundle\Repository\PresentationRepository"
+ * )
  * @Hateoas\Relation(
  *     name = "company",
  *     href = "expr('/api/v1/companies/' ~ object.getCompany().getId())",
