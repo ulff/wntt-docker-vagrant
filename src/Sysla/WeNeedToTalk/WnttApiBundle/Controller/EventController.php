@@ -176,6 +176,37 @@ class EventController extends FOSRestController
         return $this->handleView($view);
     }
 
+    /**
+     * Returns collection of Presentation objects by given Event ID.
+     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Returns collection of Presentation objects by given Event ID.",
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         401="Returned when client is requesting without or with invalid access_token",
+     *     }
+     * )
+     */
+    public function getEventPresentationsAction(Request $request, $eventId)
+    {
+        /** @var $event Event */
+        $event = $this->get('doctrine_mongodb')
+            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
+            ->find($eventId);
+
+        if (empty($event)) {
+            throw $this->createNotFoundException('No event found for id '.$eventId);
+        }
+
+        $presentations = $this->get('doctrine_mongodb')
+            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
+            ->findByEvent($eventId);
+
+        $view = $this->view($presentations, 200);
+        return $this->handleView($view);
+    }
+
     protected function retrieveEventData(Request $request)
     {
         return [

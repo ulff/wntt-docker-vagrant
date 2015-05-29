@@ -11,6 +11,12 @@ Feature: getting presentations through API
       | location      | Honningsvag |
       | dateStart     | 2014-02-02  |
       | dateEnd       | 2014-02-04  |
+    And following "Event" exists:
+      | identifiedBy  | Event Api 2 |
+      | name          | Event Api 2 |
+      | location      | Narvik      |
+      | dateStart     | 2014-03-04  |
+      | dateEnd       | 2014-03-07  |
 
     And following "Company" exists:
       | identifiedBy  | Company Api                 |
@@ -37,6 +43,13 @@ Feature: getting presentations through API
       | number        | 1334            |
       | hall          | F               |
       | event         | Event Api 1     |
+      | company       | Company Api     |
+
+    And following "Stand" exists:
+      | identifiedBy  | EvtApi2_A_1     |
+      | number        | 1               |
+      | hall          | A               |
+      | event         | Event Api 2     |
       | company       | Company Api     |
 
     And following "Category" exists:
@@ -70,6 +83,12 @@ Feature: getting presentations through API
       | stand        | EvtApi1_F_1334               |
       | isPremium    | false                        |
 
+    And following "Presentation" exists:
+      | identifiedBy | company api 3                |
+      | videoUrl     | http://company.api23/23      |
+      | company      | Company Api                  |
+      | stand        | EvtApi2_A_1                  |
+      | isPremium    | false                        |
 
   Scenario: get list of all presentations
     When I make request "GET" "/api/v1/presentations"
@@ -99,7 +118,13 @@ Feature: getting presentations through API
     And the response should be JSON
     And the response JSON should be a collection
     And all response collection items should have "is_premium" field set to "false"
-    
+
+  Scenario: get list of particular event presentations
+    When I make request "GET" "/api/v1/events/{Event_Event Api 1}/presentations"
+    Then the response status code should be 200
+    And the response should be JSON
+    And the response JSON should be a collection
+
   Scenario: create presentation
     Given I am authorized client with username "admin" and password "admin"
     When I make request "POST" "/api/v1/presentations" with parameter-bag params:
