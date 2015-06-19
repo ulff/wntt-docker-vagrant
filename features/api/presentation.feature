@@ -17,49 +17,47 @@ Feature: getting presentations through API
       | location      | Narvik      |
       | dateStart     | 2014-03-04  |
       | dateEnd       | 2014-03-07  |
-
     And following "Company" exists:
       | identifiedBy  | Company Api                 |
       | name          | Company Api                 |
       | websiteUrl    | http://company.api          |
       | logoUrl       | http://company.api/logo.png |
-
     And following "Stand" exists:
       | identifiedBy  | EvtApi1_F_1332  |
       | number        | 1332            |
       | hall          | F               |
       | event         | Event Api 1     |
       | company       | Company Api     |
-
     And following "Stand" exists:
       | identifiedBy  | EvtApi1_F_1333  |
       | number        | 1333            |
       | hall          | F               |
       | event         | Event Api 1     |
       | company       | Company Api     |
-
     And following "Stand" exists:
       | identifiedBy  | EvtApi1_F_1334  |
       | number        | 1334            |
       | hall          | F               |
       | event         | Event Api 1     |
       | company       | Company Api     |
-
+    And following "Stand" exists:
+      | identifiedBy  | EvtApi1_F_1335  |
+      | number        | 1335            |
+      | hall          | F               |
+      | event         | Event Api 1     |
+      | company       | Company Api     |
     And following "Stand" exists:
       | identifiedBy  | EvtApi2_A_1     |
       | number        | 1               |
       | hall          | A               |
       | event         | Event Api 2     |
       | company       | Company Api     |
-
     And following "Category" exists:
       | identifiedBy | Gas |
       | name         | Gas |
-
     And following "Category" exists:
       | identifiedBy | Oil |
       | name         | Oil |
-
     And following "Presentation" exists:
       | identifiedBy | company api prezi            |
       | videoUrl     | http://company.api/prezi     |
@@ -68,21 +66,18 @@ Feature: getting presentations through API
       | stand        | EvtApi1_F_1332               |
       | categories   | Gas;Oil                      |
       | isPremium    | true                         |
-
     And following "Presentation" exists:
       | identifiedBy | company api 2                |
       | videoUrl     | http://company.api/2         |
       | company      | Company Api                  |
       | stand        | EvtApi1_F_1333               |
       | isPremium    | true                         |
-
     And following "Presentation" exists:
       | identifiedBy | company api free             |
       | videoUrl     | http://company.api/free      |
       | company      | Company Api                  |
       | stand        | EvtApi1_F_1334               |
       | isPremium    | false                        |
-
     And following "Presentation" exists:
       | identifiedBy | company api 3                |
       | videoUrl     | http://company.api23/23      |
@@ -131,7 +126,7 @@ Feature: getting presentations through API
       | videoUrl        | http://show/me        |
       | description     | Some description      |
       | company         | Company_Company Api   |
-      | stand           | Stand_EvtApi1_F_1334  |
+      | stand           | Stand_EvtApi1_F_1335  |
     Then "Presentation" should be created with "videoUrl" set to "http://show/me"
     And the response status code should be 201
     And the response should be JSON
@@ -146,7 +141,7 @@ Feature: getting presentations through API
       | videoUrl        | http://show/me/2      |
       | description     | Some description 2    |
       | company         | Company_Company Api   |
-      | stand           | Stand_EvtApi1_F_1334  |
+      | stand           | Stand_EvtApi1_F_1335  |
     Then the response status code should be 200
     And the response should be JSON
     And the response JSON should be a single object
@@ -179,6 +174,26 @@ Feature: getting presentations through API
     | http://show/me/2 | Some description 2 | Company_Company Api |                      |
     | http://show/me/2 | Some description 2 | not-existing        | Stand_EvtApi1_F_1334 |
     | http://show/me/2 | Some description 2 | Company_Company Api | not-existing         |
+
+  Scenario: cannot create presentation on occupied stand
+    Given I am authorized client with username "admin" and password "admin"
+    When I make request "POST" "/api/v1/presentations" with parameter-bag params:
+      | videoUrl        | http://show/me/two    |
+      | description     | Some description two  |
+      | company         | Company_Company Api   |
+      | stand           | Stand_EvtApi1_F_1334  |
+    Then the response status code should be 400
+    And the response should contain "already has presentation"
+
+  Scenario: cannot update presentation to occupied stand
+    Given I am authorized client with username "admin" and password "admin"
+    When I make request "PUT" "/api/v1/presentations/{Presentation_company api prezi}" with parameter-bag params:
+      | videoUrl        | http://show/me/2      |
+      | description     | Some description 2    |
+      | company         | Company_Company Api   |
+      | stand           | Stand_EvtApi1_F_1334  |
+    Then the response status code should be 400
+    And the response should contain "already has presentation"
 
   Scenario: cannot create presentation without user context
     When I make request "POST" "/api/v1/presentations"

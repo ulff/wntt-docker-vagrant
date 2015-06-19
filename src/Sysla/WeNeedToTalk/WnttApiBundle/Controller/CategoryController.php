@@ -6,6 +6,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Category;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\CategoryManager;
 
@@ -81,9 +82,15 @@ class CategoryController extends FOSRestController
         $categoryData = $this->retrieveCategoryData($request);
         $this->validateCategoryData($categoryData);
 
-        /** @var $categoryManager CategoryManager */
-        $categoryManager = $this->get('wnttapi.manager.category');
-        $category = $categoryManager->createDocument($categoryData, ['name' => $categoryData['name']]);
+        try {
+            /** @var $categoryManager CategoryManager */
+            $categoryManager = $this->get('wnttapi.manager.category');
+            $category = $categoryManager->createDocument($categoryData, ['name' => $categoryData['name']]);
+        } catch(DocumentValidationException $e) {
+            throw new HttpException(400, $e->getMessage());
+        } catch(\Exception $e) {
+            throw new HttpException(500, 'Unknown error occured during processing request');
+        }
 
         $view = $this->view($category, 201);
         return $this->handleView($view);
@@ -123,9 +130,15 @@ class CategoryController extends FOSRestController
         $categoryData = $this->retrieveCategoryData($request);
         $this->validateCategoryData($categoryData);
 
-        /** @var $categoryManager CategoryManager */
-        $categoryManager = $this->get('wnttapi.manager.category');
-        $category = $categoryManager->updateDocument($category, $categoryData);
+        try {
+            /** @var $categoryManager CategoryManager */
+            $categoryManager = $this->get('wnttapi.manager.category');
+            $category = $categoryManager->updateDocument($category, $categoryData);
+        } catch(DocumentValidationException $e) {
+            throw new HttpException(400, $e->getMessage());
+        } catch(\Exception $e) {
+            throw new HttpException(500, 'Unknown error occured during processing request');
+        }
 
         $view = $this->view($category, 200);
         return $this->handleView($view);
@@ -158,9 +171,13 @@ class CategoryController extends FOSRestController
             throw $this->createNotFoundException('No category found for id '.$id);
         }
 
-        /** @var $categoryManager CategoryManager */
-        $categoryManager = $this->get('wnttapi.manager.category');
-        $categoryManager->deleteDocument($category);
+        try {
+            /** @var $categoryManager CategoryManager */
+            $categoryManager = $this->get('wnttapi.manager.category');
+            $categoryManager->deleteDocument($category);
+        } catch(\Exception $e) {
+            throw new HttpException(500, 'Unknown error occured during processing request');
+        }
 
         $view = $this->view(null, 204);
         return $this->handleView($view);

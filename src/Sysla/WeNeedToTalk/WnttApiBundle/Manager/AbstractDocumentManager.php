@@ -4,6 +4,7 @@ namespace Sysla\WeNeedToTalk\WnttApiBundle\Manager;
 
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Document;
+use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DuplicatedDocumentException;
 
 abstract class AbstractDocumentManager
@@ -25,20 +26,17 @@ abstract class AbstractDocumentManager
      */
     public function createDocument(array $documentData, array $checkIfExistsBy)
     {
-        $document = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:'.$this->documentName)
+        $document = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:' . $this->documentName)
             ->findOneBy($checkIfExistsBy);
 
         if (!empty($document)) {
             throw new DuplicatedDocumentException($this->documentName);
         }
 
-        try {
-            $document = $this->createDocumentFromRequest($documentData);
-            $this->documentManager->persist($document);
-            $this->documentManager->flush();
-        } catch (\Exception $e) {
-            return null;
-        }
+        $this->validateDocumentData($documentData);
+        $document = $this->createDocumentFromRequest($documentData);
+        $this->documentManager->persist($document);
+        $this->documentManager->flush();
 
         return $document;
     }
@@ -50,13 +48,10 @@ abstract class AbstractDocumentManager
      */
     public function updateDocument(Document $document, array $documentData)
     {
-        try {
-            $this->updateDocumentFromRequest($document, $documentData);
-            $this->documentManager->persist($document);
-            $this->documentManager->flush();
-        } catch (\Exception $e) {
-            return null;
-        }
+        $this->validateDocumentData($documentData, $document);
+        $this->updateDocumentFromRequest($document, $documentData);
+        $this->documentManager->persist($document);
+        $this->documentManager->flush();
 
         return $document;
     }
@@ -73,4 +68,6 @@ abstract class AbstractDocumentManager
     abstract protected function createDocumentFromRequest(array $documentData);
 
     abstract protected function updateDocumentFromRequest(Document $document, array $documentData);
+
+    abstract protected function validateDocumentData(array $documentData, Document $document = null);
 }

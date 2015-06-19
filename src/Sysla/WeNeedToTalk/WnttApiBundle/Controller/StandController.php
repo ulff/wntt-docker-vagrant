@@ -6,6 +6,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\StandManager;
 
@@ -84,12 +85,18 @@ class StandController extends FOSRestController
         $standData = $this->retrieveStandData($request);
         $this->validateStandData($standData);
 
-        /** @var $standManager StandManager */
-        $standManager = $this->get('wnttapi.manager.stand');
-        $stand = $standManager->createDocument($standData, [
-            'number' => $standData['number'],
-            'event.id' => $standData['event']
-        ]);
+        try {
+            /** @var $standManager StandManager */
+            $standManager = $this->get('wnttapi.manager.stand');
+            $stand = $standManager->createDocument($standData, [
+                'number' => $standData['number'],
+                'event.id' => $standData['event']
+            ]);
+        } catch(DocumentValidationException $e) {
+            throw new HttpException(400, $e->getMessage());
+        } catch(\Exception $e) {
+            throw new HttpException(500, 'Unknown error occured during processing request');
+        }
 
         $view = $this->view($stand, 201);
         return $this->handleView($view);
@@ -132,9 +139,15 @@ class StandController extends FOSRestController
         $standData = $this->retrieveStandData($request);
         $this->validateStandData($standData);
 
-        /** @var $standManager StandManager */
-        $standManager = $this->get('wnttapi.manager.stand');
-        $stand = $standManager->updateDocument($stand, $standData);
+        try {
+            /** @var $standManager StandManager */
+            $standManager = $this->get('wnttapi.manager.stand');
+            $stand = $standManager->updateDocument($stand, $standData);
+        } catch(DocumentValidationException $e) {
+            throw new HttpException(400, $e->getMessage());
+        } catch(\Exception $e) {
+            throw new HttpException(500, 'Unknown error occured during processing request');
+        }
 
         $view = $this->view($stand, 200);
         return $this->handleView($view);
@@ -167,9 +180,13 @@ class StandController extends FOSRestController
             throw $this->createNotFoundException('No stand found for id '.$id);
         }
 
-        /** @var $standManager StandManager */
-        $standManager = $this->get('wnttapi.manager.stand');
-        $standManager->deleteDocument($stand);
+        try {
+            /** @var $standManager StandManager */
+            $standManager = $this->get('wnttapi.manager.stand');
+            $standManager->deleteDocument($stand);
+        } catch(\Exception $e) {
+            throw new HttpException(500, 'Unknown error occured during processing request');
+        }
 
         $view = $this->view(null, 204);
         return $this->handleView($view);

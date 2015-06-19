@@ -35,4 +35,8 @@ class StandManager extends AbstractDocumentManager
             ->findOneById($standData['event']);
         $stand->setEvent($event);
     }
+
+    protected function validateDocumentData(array $standData, Document $stand = null)
+    {
+    }
 }

@@ -4,8 +4,8 @@ namespace Sysla\WeNeedToTalk\WnttApiBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation as Serializer;
 use Hateoas\Configuration\Annotation as Hateoas;
-
 
 /**
  * @MongoDB\Document(collection="companies")
@@ -39,16 +39,19 @@ class Company implements Document
 
     /**
      * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand", mappedBy="company", cascade={"remove"})
+     * @Serializer\Exclude
      */
     protected $stands;
 
     /**
      * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation", mappedBy="company", cascade={"remove"})
+     * @Serializer\Exclude
      */
     protected $presentations;
 
     /**
      * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttUserBundle\Document\User", mappedBy="company", cascade={"remove"})
+     * @Serializer\Exclude
      */
     protected $users;
 

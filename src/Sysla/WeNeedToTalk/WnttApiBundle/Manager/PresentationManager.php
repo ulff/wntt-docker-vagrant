@@ -4,6 +4,7 @@ namespace Sysla\WeNeedToTalk\WnttApiBundle\Manager;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Document;
+use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
 
 class PresentationManager extends AbstractDocumentManager
 {
@@ -50,5 +51,20 @@ class PresentationManager extends AbstractDocumentManager
         $stand = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
             ->findOneById($presentationData['stand']);
         $presentation->setStand($stand);
+    }
+
+    protected function validateDocumentData(array $presentationData, Document $presentation = null)
+    {
+        /** @var $stand \Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand */
+        $stand = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
+            ->findOneById($presentationData['stand']);
+
+        $existingPresentation = $stand->getPresentation();
+        if (empty($presentation) && !empty($existingPresentation)) {
+            throw new DocumentValidationException("Stand '{$stand->getId()}' already has presentation '{$existingPresentation->getId()}' assigned");
+        }
+        if (!empty($presentation) && $presentation->getId() != $existingPresentation->getId()) {
+            throw new DocumentValidationException("Stand '{$stand->getId()}' already has presentation '{$existingPresentation->getId()}' assigned");
+        }
     }
 }

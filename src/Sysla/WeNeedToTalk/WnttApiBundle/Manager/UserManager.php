@@ -5,6 +5,7 @@ use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Sysla\WeNeedToTalk\WnttUserBundle\Document\User;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Document;
 use FOS\UserBundle\Doctrine\UserManager as BaseUserManager;
+use Sysla\WeNeedToTalk\WnttApiBundle\Exception\UserExistsException;
 
 class UserManager extends AbstractDocumentManager
 {
@@ -26,11 +27,28 @@ class UserManager extends AbstractDocumentManager
         $document = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttUserBundle:'.$this->documentName)
             ->findOneBy($checkIfExistsBy);
 
-        if (empty($document)) {
-            $document = $this->createDocumentFromRequest($documentData);
-            $this->documentManager->persist($document);
-            $this->documentManager->flush();
+        if (!empty($document)) {
+            throw new UserExistsException();
         }
+
+        $this->validateDocumentData($documentData);
+        $document = $this->createDocumentFromRequest($documentData);
+        $this->documentManager->persist($document);
+        $this->documentManager->flush();
+
+        return $document;
+    }
+
+    /**
+     * @param Document $document
+     * @param array $documentData
+     * @return Document
+     */
+    public function patchDocument(Document $document, array $documentData)
+    {
+        $this->patchDocumentFromRequest($document, $documentData);
+        $this->documentManager->persist($document);
+        $this->documentManager->flush();
 
         return $document;
     }
@@ -70,5 +88,43 @@ class UserManager extends AbstractDocumentManager
             $userRoles[] = 'ROLE_ADMIN';
         }
         $user->setRoles($userRoles);
+    }
+
+    protected function patchDocumentFromRequest(Document $user, array $userData)
+    {
+        /** @var $user User */
+        if(isset($userData['username'])) {
+            $user->setUsername($userData['username']);
+        }
+        if(isset($userData['email'])) {
+            $user->setEmail($userData['email']);
+        }
+        if(isset($userData['password'])) {
+            $user->setPlainPassword($userData['password']);
+        }
+        if(isset($userData['phoneNumber'])) {
+            $user->setPhoneNumber($userData['phoneNumber']);
+        }
+
+        if(isset($userData['company'])) {
+            $companyId = $userData['company'];
+            if (!empty($companyId)) {
+                $company = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+                    ->findOneById($userData['company']);
+                $user->setCompany($company);
+            }
+        }
+
+        if(isset($userData['isAdmin'])) {
+            $userRoles = ['ROLE_USER'];
+            if ($userData['isAdmin'] == 'true') {
+                $userRoles[] = 'ROLE_ADMIN';
+            }
+            $user->setRoles($userRoles);
+        }
+    }
+
+    protected function validateDocumentData(array $userData, Document $user = null)
+    {
     }
 }

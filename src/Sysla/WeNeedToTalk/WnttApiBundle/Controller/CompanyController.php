@@ -6,6 +6,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Company;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\CompanyManager;
 
@@ -83,9 +84,15 @@ class CompanyController extends FOSRestController
         $companyData = $this->retrieveCompanyData($request);
         $this->validateCompanyData($companyData);
 
-        /** @var $companyManager CompanyManager */
-        $companyManager = $this->get('wnttapi.manager.company');
-        $company = $companyManager->createDocument($companyData, ['name' => $companyData['name']]);
+        try {
+            /** @var $companyManager CompanyManager */
+            $companyManager = $this->get('wnttapi.manager.company');
+            $company = $companyManager->createDocument($companyData, ['name' => $companyData['name']]);
+        } catch(DocumentValidationException $e) {
+            throw new HttpException(400, $e->getMessage());
+        } catch(\Exception $e) {
+            throw new HttpException(500, 'Unknown error occured during processing request');
+        }
 
         $view = $this->view($company, 201);
         return $this->handleView($view);
@@ -129,9 +136,15 @@ class CompanyController extends FOSRestController
         $companyData = $this->retrieveCompanyData($request);
         $this->validateCompanyData($companyData);
 
-        /** @var $companyManager CompanyManager */
-        $companyManager = $this->get('wnttapi.manager.company');
-        $company = $companyManager->updateDocument($company, $companyData);
+        try {
+            /** @var $companyManager CompanyManager */
+            $companyManager = $this->get('wnttapi.manager.company');
+            $company = $companyManager->updateDocument($company, $companyData);
+        } catch(DocumentValidationException $e) {
+            throw new HttpException(400, $e->getMessage());
+        } catch(\Exception $e) {
+            throw new HttpException(500, 'Unknown error occured during processing request');
+        }
 
         $view = $this->view($company, 200);
         return $this->handleView($view);
@@ -166,9 +179,13 @@ class CompanyController extends FOSRestController
 
         $this->checkPermission($id);
 
-        /** @var $companyManager CompanyManager */
-        $companyManager = $this->get('wnttapi.manager.company');
-        $companyManager->deleteDocument($company);
+        try {
+            /** @var $companyManager CompanyManager */
+            $companyManager = $this->get('wnttapi.manager.company');
+            $companyManager->deleteDocument($company);
+        } catch(\Exception $e) {
+            throw new HttpException(500, 'Unknown error occured during processing request');
+        }
 
         $view = $this->view(null, 204);
         return $this->handleView($view);
