@@ -6,13 +6,21 @@ use FOS\RestBundle\Controller\FOSRestController;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Sysla\WeNeedToTalk\WnttApiBundle\Exception\UserExistsException;
+use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
 use Sysla\WeNeedToTalk\WnttUserBundle\Document\User;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\UserManager;
+use FOS\RestBundle\Request\ParamFetcher;
+use FOS\RestBundle\Controller\Annotations\QueryParam;
 
 class UserController extends FOSRestController
 {
     /**
      * Returns collection of User objects.
+     *
+     * @QueryParam(name="username", nullable=true, requirements="\w+")
+     *
+     * @param ParamFetcher $paramFetcher
      *
      * @ApiDoc(
      *  resource=true,
@@ -23,11 +31,17 @@ class UserController extends FOSRestController
      *     }
      * )
      */
-    public function getUsersAction()
+    public function getUsersAction(ParamFetcher $paramFetcher)
     {
+        $queryParams = [];
+        $username = $paramFetcher->get('username');
+        if(!empty($username)) {
+            $queryParams['username'] = $username;
+        }
+
         $users = $this->get('doctrine_mongodb')
             ->getRepository('SyslaWeeNeedToTalkWnttUserBundle:User')
-            ->findAll();
+            ->findBy($queryParams);
 
         $view = $this->view($users, 200);
         return $this->handleView($view);
@@ -67,10 +81,12 @@ class UserController extends FOSRestController
      *   resource=true,
      *   description="Creates User object",
      *   parameters={
-     *      {"name"="number", "dataType"="string", "description"="user number", "required"=true},
-     *      {"name"="user", "dataType"="string", "description"="user's event ID", "required"=true},
-     *      {"name"="hall", "dataType"="string", "description"="user's hall", "required"=false},
+     *      {"name"="username", "dataType"="string", "description"="user name", "required"=true},
+     *      {"name"="email", "dataType"="string", "description"="user's email", "required"=true},
+     *      {"name"="password", "dataType"="string", "description"="user's password", "required"=true},
      *      {"name"="company", "dataType"="string", "description"="user's company ID", "required"=false},
+     *      {"name"="isAdmin", "dataType"="string", "description"="user has admin priviledges", "required"=false, "format"="true|false"},
+     *      {"name"="phoneNumber", "dataType"="string", "description"="user's phone number", "required"=false},
      *   },
      *   statusCodes={
      *      201="Returned when successfully created",
@@ -84,13 +100,21 @@ class UserController extends FOSRestController
         $userData = $this->retrieveUserData($request);
         $this->validateUserData($userData);
 
-        /** @var $userManager UserManager */
-        $userManager = $this->get('wnttapi.manager.user');
-        $baseUserManager = $this->container->get('fos_user.user_manager');
-        $userManager->setBaseUserManager($baseUserManager);
-        $user = $userManager->createDocument($userData, [
-            'username' => $userData['username']
-        ]);
+        try {
+            /** @var $userManager UserManager */
+            $userManager = $this->get('wnttapi.manager.user');
+            $baseUserManager = $this->container->get('fos_user.user_manager');
+            $userManager->setBaseUserManager($baseUserManager);
+            $user = $userManager->createDocument($userData, [
+                'username' => $userData['username']
+            ]);
+        } catch(UserExistsException $e) {
+            throw new HttpException(409, $e->getMessage());
+        } catch(DocumentValidationException $e) {
+            throw new HttpException(400, $e->getMessage());
+        } catch(\Exception $e) {
+            throw new HttpException(500, 'Unknown error occured during processing request');
+        }
 
         $view = $this->view($user, 201);
         return $this->handleView($view);
@@ -106,10 +130,12 @@ class UserController extends FOSRestController
      *      {"name"="id", "dataType"="string", "description"="user id"}
      *   },
      *   parameters={
-     *      {"name"="number", "dataType"="string", "description"="user number", "required"=true},
-     *      {"name"="user", "dataType"="string", "description"="user's event ID", "required"=true},
-     *      {"name"="hall", "dataType"="string", "description"="user's hall", "required"=false},
+     *      {"name"="username", "dataType"="string", "description"="user name", "required"=true},
+     *      {"name"="email", "dataType"="string", "description"="user's email", "required"=true},
+     *      {"name"="password", "dataType"="string", "description"="user's password", "required"=true},
      *      {"name"="company", "dataType"="string", "description"="user's company ID", "required"=false},
+     *      {"name"="isAdmin", "dataType"="string", "description"="true or false", "required"=false},
+     *      {"name"="phoneNumber", "dataType"="string", "description"="user's phone number", "required"=false},
      *   },
      *   statusCodes={
      *      200="Returned when successfully updated",
@@ -135,9 +161,71 @@ class UserController extends FOSRestController
         $userData = $this->retrieveUserData($request);
         $this->validateUserData($userData);
 
-        /** @var $userManager UserManager */
-        $userManager = $this->get('wnttapi.manager.user');
-        $user = $userManager->updateDocument($user, $userData);
+        try {
+            /** @var $userManager UserManager */
+            $userManager = $this->get('wnttapi.manager.user');
+            $user = $userManager->updateDocument($user, $userData);
+        } catch(DocumentValidationException $e) {
+            throw new HttpException(400, $e->getMessage());
+        } catch(\Exception $e) {
+            throw new HttpException(500, 'Unknown error occured during processing request');
+        }
+
+        $view = $this->view($user, 200);
+        return $this->handleView($view);
+    }
+
+    /**
+     * Selectively updates existing User object with given ID, affecting only properties defined in request.
+     * ROLE_USER is minimum required role to perform this action.
+     *
+     * @ApiDoc(
+     *   resource=true,
+     *   description="Selectively updates defined properties of User object",
+     *   requirements={
+     *      {"name"="id", "dataType"="string", "description"="user id"}
+     *   },
+     *   parameters={
+     *      {"name"="username", "dataType"="string", "description"="user name", "required"=false},
+     *      {"name"="email", "dataType"="string", "description"="user's email", "required"=false},
+     *      {"name"="password", "dataType"="string", "description"="user's password", "required"=false},
+     *      {"name"="company", "dataType"="string", "description"="user's company ID", "required"=false},
+     *      {"name"="isAdmin", "dataType"="string", "description"="true or false", "required"=false},
+     *      {"name"="phoneNumber", "dataType"="string", "description"="user's phone number", "required"=false},
+     *   },
+     *   statusCodes={
+     *      200="Returned when successfully updated",
+     *      400="Returned on invalid request (e.g. missing obligatory param, or invalid referenced object ID)",
+     *      401="Returned when client is requesting without or with invalid access_token",
+     *      404="Returned when the object with given ID is not found"
+     *   }
+     * )
+     */
+    public function patchUserAction(Request $request, $id)
+    {
+        /** @var $user User */
+        $user = $this->get('doctrine_mongodb')
+            ->getRepository('SyslaWeeNeedToTalkWnttUserBundle:User')
+            ->find($id);
+
+        if (empty($user)) {
+            throw $this->createNotFoundException('No user found for id '.$id);
+        }
+
+        $this->checkPermission($id);
+
+        $userData = $this->retrievePatchUserData($request);
+        $this->validatePatchUserData($userData);
+
+        try {
+            /** @var $userManager UserManager */
+            $userManager = $this->get('wnttapi.manager.user');
+            $user = $userManager->patchDocument($user, $userData);
+        } catch(DocumentValidationException $e) {
+            throw new HttpException(400, $e->getMessage());
+        } catch(\Exception $e) {
+            throw new HttpException(500, 'Unknown error occured during processing request');
+        }
 
         $view = $this->view($user, 200);
         return $this->handleView($view);
@@ -172,9 +260,13 @@ class UserController extends FOSRestController
 
         $this->checkPermission($id);
 
-        /** @var $userManager UserManager */
-        $userManager = $this->get('wnttapi.manager.user');
-        $userManager->deleteDocument($user);
+        try {
+            /** @var $userManager UserManager */
+            $userManager = $this->get('wnttapi.manager.user');
+            $userManager->deleteDocument($user);
+        } catch(\Exception $e) {
+            throw new HttpException(500, 'Unknown error occured during processing request');
+        }
 
         $view = $this->view(null, 204);
         return $this->handleView($view);
@@ -203,6 +295,55 @@ class UserController extends FOSRestController
             throw new HttpException(400, 'Missing required parameters: password');
         }
         if (empty($userData['email'])) {
+            throw new HttpException(400, 'Missing required parameters: email');
+        }
+
+        if(!empty($userData['company'])) {
+            $company = $documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+                ->findOneById($userData['company']);
+            if (empty($company)) {
+                throw new HttpException(400, "Invalid parameter: company with ID: '{$userData['company']}' not found!");
+            }
+        }
+    }
+
+    protected function retrievePatchUserData(Request $request)
+    {
+        $data = [];
+
+        if($request->get('username') !== null) {
+            $data['username'] = $request->get('username');
+        }
+        if($request->get('email') !== null) {
+            $data['email'] = $request->get('email');
+        }
+        if($request->get('password') !== null) {
+            $data['password'] = $request->get('password');
+        }
+        if($request->get('phoneNumber') !== null) {
+            $data['phoneNumber'] = $request->get('phoneNumber');
+        }
+        if($request->get('company') !== null) {
+            $data['company'] = $request->get('company');
+        }
+        if($request->get('isAdmin') !== null) {
+            $data['isAdmin'] = $request->get('isAdmin');
+        }
+
+        return $data;
+    }
+
+    protected function validatePatchUserData($userData)
+    {
+        $documentManager = $this->get('doctrine_mongodb')->getManager();
+
+        if (isset($userData['username']) && empty($userData['username'])) {
+            throw new HttpException(400, 'Missing required parameters: username');
+        }
+        if (isset($userData['password']) && empty($userData['password'])) {
+            throw new HttpException(400, 'Missing required parameters: password');
+        }
+        if (isset($userData['email']) && empty($userData['email'])) {
             throw new HttpException(400, 'Missing required parameters: email');
         }
 

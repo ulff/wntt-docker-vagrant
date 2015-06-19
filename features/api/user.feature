@@ -74,6 +74,18 @@ Feature: getting users through API
     And the repsonse JSON should have "email" field with value "user2@api"
     And the repsonse JSON should have "phone_number" field with value "668 678 2"
 
+  Scenario: patch update user
+    Given I am authorized client with username "admin" and password "admin"
+    When I make request "PATCH" "/api/v1/users/{User_last_created}" with parameter-bag params:
+      | phoneNumber     | 668 678 3             |
+    Then the response status code should be 200
+    And the response should be JSON
+    And the response JSON should be a single object
+    And the repsonse JSON should have "id" field
+    And the repsonse JSON should have "username" field with value "user_api_updated"
+    And the repsonse JSON should have "email" field with value "user2@api"
+    And the repsonse JSON should have "phone_number" field with value "668 678 3"
+
   Scenario: delete user
     Given I am authorized client with username "admin" and password "admin"
     When I make request "DELETE" "/api/v1/users/{User_last_created}"
@@ -120,3 +132,12 @@ Feature: getting users through API
     When I make request "DELETE" "/api/v1/users/{User_username_api}"
     Then the response status code should be 403
     And the response should contain "Cannot affect not your account"
+
+  Scenario: cannot create user with existing username
+    Given I am authorized client with username "admin" and password "admin"
+    When I make request "POST" "/api/v1/users" with parameter-bag params:
+      | username        | user                  |
+      | password        | password              |
+      | email           | user@api              |
+    Then the response status code should be 409
+    And the response should contain "User with given username already exists"

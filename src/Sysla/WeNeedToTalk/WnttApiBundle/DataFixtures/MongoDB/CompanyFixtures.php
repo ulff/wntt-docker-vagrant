@@ -19,8 +19,9 @@ class CompanyFixtures extends AbstractFixture implements OrderedFixtureInterface
         $this->addReference('company_1st', $company);
 
         $company = new Company();
-        $company->setName('Company 2nd');
-        $company->setWebsiteUrl('http://company2.com');
+        $company->setName('Schibsted Media Group');
+        $company->setWebsiteUrl('http://schibsted.com');
+        $company->setLogoUrl('http://www.schibsted.com/Global/LogoTypes/Logos%202014/SMG_Large_2014_RGB.jpg');
         $manager->persist($company);
         $this->addReference('company_2nd', $company);
 

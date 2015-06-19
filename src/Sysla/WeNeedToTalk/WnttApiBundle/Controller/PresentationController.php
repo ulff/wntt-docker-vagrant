@@ -7,6 +7,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation;
+use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\PresentationManager;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
@@ -99,9 +100,15 @@ class PresentationController extends FOSRestController
         $this->checkPermission($presentationData['company']);
         $this->validatePresentationData($presentationData);
 
-        /** @var $presentationManager PresentationManager */
-        $presentationManager = $this->get('wnttapi.manager.presentation');
-        $presentation = $presentationManager->createDocument($presentationData, ['videoUrl' => $presentationData['videoUrl']]);
+        try {
+            /** @var $presentationManager PresentationManager */
+            $presentationManager = $this->get('wnttapi.manager.presentation');
+            $presentation = $presentationManager->createDocument($presentationData, ['videoUrl' => $presentationData['videoUrl']]);
+        } catch(DocumentValidationException $e) {
+            throw new HttpException(400, $e->getMessage());
+        } catch(\Exception $e) {
+            throw new HttpException(500, 'Unknown error occured during processing request');
+        }
 
         $view = $this->view($presentation, 201);
         return $this->handleView($view);
@@ -147,9 +154,15 @@ class PresentationController extends FOSRestController
         $this->checkPermission($presentationData['company']);
         $this->validatePresentationData($presentationData);
 
-        /** @var $presentationManager PresentationManager */
-        $presentationManager = $this->get('wnttapi.manager.presentation');
-        $presentation = $presentationManager->updateDocument($presentation, $presentationData);
+        try {
+            /** @var $presentationManager PresentationManager */
+            $presentationManager = $this->get('wnttapi.manager.presentation');
+            $presentation = $presentationManager->updateDocument($presentation, $presentationData);
+        } catch(DocumentValidationException $e) {
+            throw new HttpException(400, $e->getMessage());
+        } catch(\Exception $e) {
+            throw new HttpException(500, 'Unknown error occured during processing request');
+        }
 
         $view = $this->view($presentation, 200);
         return $this->handleView($view);
@@ -184,9 +197,13 @@ class PresentationController extends FOSRestController
 
         $this->checkPermission($presentation->getCompany()->getId());
 
-        /** @var $presentationManager PresentationManager */
-        $presentationManager = $this->get('wnttapi.manager.presentation');
-        $presentationManager->deleteDocument($presentation);
+        try {
+            /** @var $presentationManager PresentationManager */
+            $presentationManager = $this->get('wnttapi.manager.presentation');
+            $presentationManager->deleteDocument($presentation);
+        } catch(\Exception $e) {
+            throw new HttpException(500, 'Unknown error occured during processing request');
+        }
 
         $view = $this->view(null, 204);
         return $this->handleView($view);

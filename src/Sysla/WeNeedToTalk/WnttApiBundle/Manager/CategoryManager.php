@@ -26,4 +26,8 @@ class CategoryManager extends AbstractDocumentManager
         /** @var $category Category */
         $category->setName($categoryData['name']);
     }
+
+    protected function validateDocumentData(array $categoryData, Document $category = null)
+    {
+    }
 }

@@ -134,6 +134,7 @@ class StandFixtures extends AbstractFixture implements OrderedFixtureInterface
         $stand = new Stand();
         $stand->setEvent($manager->merge($this->getReference('event_ot_2015')));
         $stand->setNumber(1);
+        $stand->setHall('A');
         $stand->setCompany($manager->merge($this->getReference('company_2nd')));
         $manager->persist($stand);
         $this->addReference('stand_ot_2015_1', $stand);
@@ -141,24 +142,28 @@ class StandFixtures extends AbstractFixture implements OrderedFixtureInterface
         $stand = new Stand();
         $stand->setEvent($manager->merge($this->getReference('event_ot_2015')));
         $stand->setNumber(2);
+        $stand->setHall('A');
         $manager->persist($stand);
         $this->addReference('stand_ot_2015_2', $stand);
 
         $stand = new Stand();
         $stand->setEvent($manager->merge($this->getReference('event_ot_2015')));
         $stand->setNumber(3);
+        $stand->setHall('A');
         $manager->persist($stand);
         $this->addReference('stand_ot_2015_3', $stand);
 
         $stand = new Stand();
         $stand->setEvent($manager->merge($this->getReference('event_ot_2015')));
         $stand->setNumber(4);
+        $stand->setHall('A');
         $manager->persist($stand);
         $this->addReference('stand_ot_2015_4', $stand);
 
         $stand = new Stand();
         $stand->setEvent($manager->merge($this->getReference('event_ot_2015')));
         $stand->setNumber(5);
+        $stand->setHall('A');
         $stand->setCompany($manager->merge($this->getReference('company_1st')));
         $manager->persist($stand);
         $this->addReference('stand_ot_2015_5', $stand);

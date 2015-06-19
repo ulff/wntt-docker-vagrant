@@ -28,4 +28,8 @@ class CompanyManager extends AbstractDocumentManager
         $company->setWebsiteUrl($companyData['websiteUrl']);
         $company->setLogoUrl($companyData['logoUrl']);
     }
+
+    protected function validateDocumentData(array $companyData, Document $company = null)
+    {
+    }
 }

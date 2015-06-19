@@ -6,6 +6,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Event;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\EventManager;
 
@@ -84,13 +85,19 @@ class EventController extends FOSRestController
         $eventData = $this->retrieveEventData($request);
         $this->validateEventData($eventData);
 
-        /** @var $eventManager EventManager */
-        $eventManager = $this->get('wnttapi.manager.event');
-        $event = $eventManager->createDocument($eventData, [
-            'name' => $eventData['name'],
-            'dateStart' => $eventData['dateStart'],
-            'dateEnd' => $eventData['dateEnd']
-        ]);
+        try {
+            /** @var $eventManager EventManager */
+            $eventManager = $this->get('wnttapi.manager.event');
+            $event = $eventManager->createDocument($eventData, [
+                'name' => $eventData['name'],
+                'dateStart' => $eventData['dateStart'],
+                'dateEnd' => $eventData['dateEnd']
+            ]);
+        } catch(DocumentValidationException $e) {
+            throw new HttpException(400, $e->getMessage());
+        } catch(\Exception $e) {
+            throw new HttpException(500, 'Unknown error occured during processing request');
+        }
 
         $view = $this->view($event, 201);
         return $this->handleView($view);
@@ -133,9 +140,15 @@ class EventController extends FOSRestController
         $eventData = $this->retrieveEventData($request);
         $this->validateEventData($eventData);
 
-        /** @var $eventManager EventManager */
-        $eventManager = $this->get('wnttapi.manager.event');
-        $event = $eventManager->updateDocument($event, $eventData);
+        try {
+            /** @var $eventManager EventManager */
+            $eventManager = $this->get('wnttapi.manager.event');
+            $event = $eventManager->updateDocument($event, $eventData);
+        } catch(DocumentValidationException $e) {
+            throw new HttpException(400, $e->getMessage());
+        } catch(\Exception $e) {
+            throw new HttpException(500, 'Unknown error occured during processing request');
+        }
 
         $view = $this->view($event, 200);
         return $this->handleView($view);
@@ -168,9 +181,13 @@ class EventController extends FOSRestController
             throw $this->createNotFoundException('No event found for id '.$id);
         }
 
-        /** @var $eventManager EventManager */
-        $eventManager = $this->get('wnttapi.manager.event');
-        $eventManager->deleteDocument($event);
+        try {
+            /** @var $eventManager EventManager */
+            $eventManager = $this->get('wnttapi.manager.event');
+            $eventManager->deleteDocument($event);
+        } catch(\Exception $e) {
+            throw new HttpException(500, 'Unknown error occured during processing request');
+        }
 
         $view = $this->view(null, 204);
         return $this->handleView($view);

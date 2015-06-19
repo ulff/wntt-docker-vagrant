@@ -29,4 +29,8 @@ class EventManager extends AbstractDocumentManager
         $event->setDateStart(new \DateTime($eventData['dateStart']));
         $event->setDateEnd(new \DateTime($eventData['dateEnd']));
     }
+
+    protected function validateDocumentData(array $eventData, Document $event = null)
+    {
+    }
 }

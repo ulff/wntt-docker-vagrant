@@ -148,6 +148,14 @@ class Stand implements Document
     }
 
     /**
+     * @return \Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation
+     */
+    public function getPresentation()
+    {
+        return $this->presentation;
+    }
+
+    /**
      * @return boolean
      */
     public function hasEvent()
