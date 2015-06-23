@@ -26,13 +26,13 @@ Feature: getting categories through API
   Scenario: create category
     Given I am authorized client with username "admin" and password "admin"
     When I make request "POST" "/api/v1/categories" with params:
-      | name        | Created category  |
-    Then "Category" should be created with "name" set to "Created category"
+      | name        | Created cat 2  |
+    Then "Category" should be created with "name" set to "Created cat 2"
     And the response status code should be 201
     And the response should be JSON
     And the response JSON should be a single object
     And the repsonse JSON should have "id" field
-    And the repsonse JSON should have "name" field with value "Created category"
+    And the repsonse JSON should have "name" field with value "Created cat 2"
 
   Scenario: update category
     Given I am authorized client with username "admin" and password "admin"

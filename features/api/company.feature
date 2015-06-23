@@ -6,7 +6,7 @@ Feature: getting companies through API
   Background:
     Given I am authorized client
     And following "Company" exists:
-      | identifiedBy  | Company Api                 |
+      | identifiedBy  | Company_Api                 |
       | name          | Company Api                 |
       | websiteUrl    | http://company.api          |
       | logoUrl       | http://company.api/logo.png |
@@ -21,7 +21,7 @@ Feature: getting companies through API
     And the response JSON should be a collection
 
   Scenario: get one company
-    When I make request "GET" "/api/v1/companies/{Company_Company Api}"
+    When I make request "GET" "/api/v1/companies/{Company_Company_Api}"
     Then the response status code should be 200
     And the response should be JSON
     And the response JSON should be a single object
@@ -80,22 +80,22 @@ Feature: getting companies through API
     Then the response status code should be 403
 
   Scenario: cannot update company without user context
-    When I make request "PUT" "/api/v1/companies/{Company_Company Api}"
+    When I make request "PUT" "/api/v1/companies/{Company_Company_Api}"
     Then the response status code should be 403
 
   Scenario: cannot delete company without user context
-    When I make request "DELETE" "/api/v1/companies/{Company_Company Api}"
+    When I make request "DELETE" "/api/v1/companies/{Company_Company_Api}"
     Then the response status code should be 403
 
   Scenario: user without admin proviledges cannot update not his company
     Given I am authorized client with username "user" and password "user"
-    When I make request "PUT" "/api/v1/companies/{Company_Company Api}"
+    When I make request "PUT" "/api/v1/companies/{Company_Company_Api}"
     Then the response status code should be 403
     And the response should contain "Cannot affect not your company"
 
   Scenario: user without admin proviledges cannot delete not his company
     Given I am authorized client with username "user" and password "user"
-    When I make request "DELETE" "/api/v1/companies/{Company_Company Api}"
+    When I make request "DELETE" "/api/v1/companies/{Company_Company_Api}"
     Then the response status code should be 403
     And the response should contain "Cannot affect not your company"
 

@@ -46,6 +46,12 @@ class User extends BaseUser implements Document
     protected $company;
 
     /**
+     * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Appointment", mappedBy="user", cascade={"remove"})
+     * @Serializer\Exclude
+     */
+    protected $appointments;
+
+    /**
      * @MongoDB\Boolean
      */
     protected $isContactPerson;

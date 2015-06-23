@@ -68,3 +68,14 @@ services:
             - ~
         calls:
             - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]
+
+    sonata.admin.appointment:
+        class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\AppointmentAdmin
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Users", label: "Appointments" }
+        arguments:
+            - ~
+            - Sysla\WeNeedToTalk\WnttApiBundle\Document\Appointment
+            - ~
+        calls:
+            - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]

@@ -7,6 +7,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
+use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DuplicatedDocumentException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Category;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\CategoryManager;
 
@@ -86,6 +87,8 @@ class CategoryController extends FOSRestController
             /** @var $categoryManager CategoryManager */
             $categoryManager = $this->get('wnttapi.manager.category');
             $category = $categoryManager->createDocument($categoryData, ['name' => $categoryData['name']]);
+        } catch(DuplicatedDocumentException $e) {
+            throw new HttpException(409, $e->getMessage());
         } catch(DocumentValidationException $e) {
             throw new HttpException(400, $e->getMessage());
         } catch(\Exception $e) {

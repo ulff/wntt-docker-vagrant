@@ -6,7 +6,7 @@ Feature: getting events through API
   Background:
     Given I am authorized client
     And following "Event" exists:
-      | identifiedBy  | Event Api 1 |
+      | identifiedBy  | Event_Api_1 |
       | name          | Event Api 1 |
       | location      | Honningsvag |
       | dateStart     | 2014-02-02  |
@@ -26,7 +26,7 @@ Feature: getting events through API
     And the response JSON should be a collection
 
   Scenario: get one event
-    When I make request "GET" "/api/v1/events/{Event_Event Api 1}"
+    When I make request "GET" "/api/v1/events/{Event_Event_Api_1}"
     Then the response status code should be 200
     And the response should be JSON
     And the response JSON should be a single object
@@ -111,11 +111,11 @@ Feature: getting events through API
     Then the response status code should be 403
 
   Scenario: cannot update event without user context
-    When I make request "PUT" "/api/v1/events/{Event_Event Api 1}"
+    When I make request "PUT" "/api/v1/events/{Event_Event_Api_1}"
     Then the response status code should be 403
 
   Scenario: cannot delete event without user context
-    When I make request "DELETE" "/api/v1/events/{Event_Event Api 1}"
+    When I make request "DELETE" "/api/v1/events/{Event_Event_Api_1}"
     Then the response status code should be 403
 
   Scenario: cannot create event without admin priviledges
@@ -125,12 +125,12 @@ Feature: getting events through API
 
   Scenario: cannot update event without admin priviledges
     Given I am authorized client with username "user" and password "user"
-    When I make request "PUT" "/api/v1/events/{Event_Event Api 1}"
+    When I make request "PUT" "/api/v1/events/{Event_Event_Api_1}"
     Then the response status code should be 403
 
   Scenario: cannot delete event without admin priviledges
     Given I am authorized client with username "user" and password "user"
-    When I make request "DELETE" "/api/v1/events/{Event_Event Api 1}"
+    When I make request "DELETE" "/api/v1/events/{Event_Event_Api_1}"
     Then the response status code should be 403
 
 

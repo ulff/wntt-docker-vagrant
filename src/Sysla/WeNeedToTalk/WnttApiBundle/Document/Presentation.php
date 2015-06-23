@@ -69,6 +69,12 @@ class Presentation implements Document
     protected $categories;
 
     /**
+     * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Appointment", mappedBy="presentation", cascade={"remove"})
+     * @Serializer\Exclude
+     */
+    protected $appointments;
+
+    /**
      * @MongoDB\Boolean
      */
     protected $isPremium = false;
@@ -192,5 +198,13 @@ class Presentation implements Document
     {
         $classCanonicalName = explode('\\', get_class($this));
         return end($classCanonicalName);
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getVideoUrl();
     }
 }
