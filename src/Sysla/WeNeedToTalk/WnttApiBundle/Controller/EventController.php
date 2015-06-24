@@ -7,6 +7,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
+use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DuplicatedDocumentException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Event;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\EventManager;
 
@@ -93,6 +94,8 @@ class EventController extends FOSRestController
                 'dateStart' => $eventData['dateStart'],
                 'dateEnd' => $eventData['dateEnd']
             ]);
+        } catch(DuplicatedDocumentException $e) {
+            throw new HttpException(409, $e->getMessage());
         } catch(DocumentValidationException $e) {
             throw new HttpException(400, $e->getMessage());
         } catch(\Exception $e) {

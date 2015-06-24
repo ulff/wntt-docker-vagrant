@@ -23,5 +23,10 @@ services:
         class: Sysla\WeNeedToTalk\WnttApiBundle\Manager\UserManager
         arguments: [@doctrine_mongodb]
 
+    wnttapi.manager.appointment:
+        class: Sysla\WeNeedToTalk\WnttApiBundle\Manager\AppointmentManager
+        arguments: [@doctrine_mongodb]
+
     wnttapi.service.permission_verifier:
         class: Sysla\WeNeedToTalk\WnttApiBundle\Service\PermissionVerifier
+        arguments: [@doctrine_mongodb]

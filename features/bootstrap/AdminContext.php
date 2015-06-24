@@ -68,7 +68,7 @@ class AdminContext extends MinkContext implements Context, SnippetAcceptingConte
      */
     public function documentExistsWithData($document, TableNode $table)
     {
-        $identifiedBy = '';
+        $identifiedBy = uniqid();
         $this->iAmOnForm('create '.strtolower($document));
         foreach($table->getRowsHash() as $field => $value) {
             if($field == 'identifiedBy') {
@@ -81,7 +81,7 @@ class AdminContext extends MinkContext implements Context, SnippetAcceptingConte
 
         $editPageUrl = explode('/', $this->getSession()->getCurrentUrl());
         if(array_pop($editPageUrl) == 'edit') {
-            $this->getParameterBag()->set(ucfirst($document).':'.$identifiedBy, array_pop($editPageUrl));
+            $this->getParameterBag()->set(ucfirst($document).'_'.$identifiedBy, array_pop($editPageUrl));
         }
 
     }
@@ -92,7 +92,7 @@ class AdminContext extends MinkContext implements Context, SnippetAcceptingConte
      */
     public function iAmOnEditForm($document, $identifiedBy)
     {
-        $mongoId = $this->getParameterBag()->get(ucfirst($document).':'.$identifiedBy);
+        $mongoId = $this->getParameterBag()->get(ucfirst($document).'_'.$identifiedBy);
 
         switch($document) {
             case 'user':
@@ -146,7 +146,7 @@ class AdminContext extends MinkContext implements Context, SnippetAcceptingConte
         $document = $editPageUrl[count($editPageUrl)-2];
 
         foreach($table->getRows() as $row) {
-            $mongoId = $this->getParameterBag()->get(ucfirst($document).':'.reset($row));
+            $mongoId = $this->getParameterBag()->get(ucfirst($document).'_'.reset($row));
             $checkboxList = $this->getSession()->getPage()->findAll('xpath', "//input[@value='$mongoId']");
             $checkbox = reset($checkboxList);
             $checkbox->check();

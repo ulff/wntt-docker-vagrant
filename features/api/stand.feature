@@ -6,14 +6,14 @@ Feature: getting stands through API
   Background:
     Given I am authorized client
     And following "Event" exists:
-      | identifiedBy  | Event Api 3 |
+      | identifiedBy  | Event_Api_3 |
       | name          | Event Api 3 |
       | location      | Honningsvag |
       | dateStart     | 2014-02-02  |
       | dateEnd       | 2014-02-04  |
 
     And following "Company" exists:
-      | identifiedBy  | Company Api                 |
+      | identifiedBy  | Company_Api                 |
       | name          | Company Api                 |
       | websiteUrl    | http://company.api          |
       | logoUrl       | http://company.api/logo.png |
@@ -22,13 +22,13 @@ Feature: getting stands through API
       | identifiedBy  | EvtApi1_F_1332  |
       | number        | 1332            |
       | hall          | F               |
-      | event         | Event Api 3     |
-      | company       | Company Api     |
+      | event         | Event_Api_3     |
+      | company       | Company_Api     |
 
     And following "Stand" exists:
       | identifiedBy  | EvtApi1_1234    |
       | number        | 1234            |
-      | event         | Event Api 3     |
+      | event         | Event_Api_3     |
 
   Scenario: get list of all stands
     When I make request "GET" "/api/v1/stands"
@@ -50,8 +50,8 @@ Feature: getting stands through API
     When I make request "POST" "/api/v1/stands" with parameter-bag params:
       | number          | 578                   |
       | hall            | A                     |
-      | company         | Company_Company Api   |
-      | event           | Event_Event Api 3     |
+      | company         | Company_Company_Api   |
+      | event           | Event_Event_Api_3     |
     Then "Stand" should be created with "number" set to "578"
     And the response status code should be 201
     And the response should be JSON
@@ -65,8 +65,8 @@ Feature: getting stands through API
     When I make request "PUT" "/api/v1/stands/{Stand_last_created}" with parameter-bag params:
       | number          | 678                   |
       | hall            | B                     |
-      | company         | Company_Company Api   |
-      | event           | Event_Event Api 3     |
+      | company         | Company_Company_Api   |
+      | event           | Event_Event_Api_3     |
     Then the response status code should be 200
     And the response should be JSON
     And the response JSON should be a single object
@@ -94,10 +94,10 @@ Feature: getting stands through API
 
   Examples:
     | number          | hall            | event             | company           |
-    |                 | F               | Event Api 3       | Company Api       |
-    | 1332            | F               |                   | Company Api       |
-    | 1332            | F               | not-existing      | Company Api       |
-    | 1332            | F               | Event Api 3       | not-existing      |
+    |                 | F               | Event_Api_3       | Company_Api       |
+    | 1332            | F               |                   | Company_Api       |
+    | 1332            | F               | not-existing      | Company_Api       |
+    | 1332            | F               | Event_Api_3       | not-existing      |
 
   Scenario: cannot create stand without user context
     When I make request "POST" "/api/v1/stands"

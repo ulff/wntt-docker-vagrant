@@ -42,15 +42,15 @@ Feature: adding stands to events
 
   Scenario: assign company to stand
     Given "Company" exists with data
-      | identifiedBy  | Company with stand        |
+      | identifiedBy  | Company_with_stand        |
       | Name          | Company with stand        |
       | Website URL   | http://com.pany           |
       | Logo URL      | http://com.pany/logo      |
     And "Stand" exists with data
-      | identifiedBy  | Feature A, FA-S1  |
+      | identifiedBy  | FAS1              |
       | Hall          | Feature A         |
       | Number        | FA-S1             |
-    When I am on edit "stand" "Feature A, FA-S1" form
+    When I am on edit "stand" "FAS1" form
     And I select "Company with stand" from "Company"
     And I press "Update"
     Then I should see form notification "successfully updated"

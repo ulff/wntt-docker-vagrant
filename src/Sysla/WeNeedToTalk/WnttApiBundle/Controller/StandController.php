@@ -7,6 +7,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
+use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DuplicatedDocumentException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\StandManager;
 
@@ -92,6 +93,8 @@ class StandController extends FOSRestController
                 'number' => $standData['number'],
                 'event.id' => $standData['event']
             ]);
+        } catch(DuplicatedDocumentException $e) {
+            throw new HttpException(409, $e->getMessage());
         } catch(DocumentValidationException $e) {
             throw new HttpException(400, $e->getMessage());
         } catch(\Exception $e) {

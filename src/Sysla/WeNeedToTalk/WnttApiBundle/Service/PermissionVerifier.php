@@ -2,9 +2,20 @@
 namespace Sysla\WeNeedToTalk\WnttApiBundle\Service;
 
 use Sysla\WeNeedToTalk\WnttUserBundle\Document\User;
+use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 
 class PermissionVerifier
 {
+    protected $documentManager;
+
+    /**
+     * @param ManagerRegistry $documentManager
+     */
+    public function __construct(ManagerRegistry $documentManager)
+    {
+        $this->documentManager = $documentManager->getManager();
+    }
+
     public function hasPermission($context, User $clientUser, $documentId)
     {
         if($clientUser->hasAdminRights()) {
@@ -40,6 +51,15 @@ class PermissionVerifier
             return false;
         }
         return $clientCompany->getId() == $documentId;
+    }
+
+    protected function verifyAppointment(User $clientUser, $documentId)
+    {
+        /** @var $appointment \Sysla\WeNeedToTalk\WnttApiBundle\Document\Appointment */
+        $appointment = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Appointment')
+            ->findOneById($documentId);
+
+        return $appointment->getUser()->getId() == $clientUser->getId();
     }
 
 }
