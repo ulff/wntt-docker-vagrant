@@ -247,6 +247,18 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     }
 
     /**
+     * @Then all response collection items should have nested field :property with value :expectedValue
+     */
+    public function allResponseCollectionItemsShouldHaveNestedFieldWithValue($property, $expectedValue)
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        foreach($response as $document) {
+            $this->assertDocumentHasNestedPropertyWithValue($document, $property, $expectedValue);
+        }
+        return;
+    }
+
+    /**
      * @Then all response collection items should have :property field set to :expectedBoolean
      */
     public function allResponseCollectionItemsShouldHaveFieldSetTo($property, $expectedBoolean)
@@ -324,6 +336,24 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
         $this->assertDocumentHasProperty($document, $property);
         if($document->$property != $expectedValue) {
             throw new Exception\IncorrectPropertyValueException($property, $expectedValue, $document->$property);
+        }
+    }
+
+    protected function assertDocumentHasNestedPropertyWithValue($document, $property, $expectedValue)
+    {
+        $nestedNode = explode('->', $property);
+        $documentAsArray = (array) $document;
+        foreach($nestedNode as $node) {
+            if(!isset($documentAsArray[$node])) {
+                throw new Exception\NotFoundPropertyException($property);
+            }
+            $documentAsArray = (array) $documentAsArray[$node];
+        }
+        $documentAsArray = reset($documentAsArray);
+        $expectedValue = $this->extractFromParameterBag($expectedValue);
+
+        if($documentAsArray !== $expectedValue) {
+            throw new Exception\IncorrectPropertyValueException($property, $expectedValue, $documentAsArray);
         }
     }
 

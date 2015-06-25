@@ -10,11 +10,19 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Document\Appointment;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DuplicatedDocumentException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\AppointmentManager;
+use FOS\RestBundle\Request\ParamFetcher;
+use FOS\RestBundle\Controller\Annotations\QueryParam;
 
 class AppointmentController extends FOSRestController
 {
     /**
      * Returns collection of Appointment objects.
+     *
+     * @QueryParam(name="user", nullable=true, requirements="[a-z0-9]+")
+     * @QueryParam(name="event", nullable=true, requirements="[a-z0-9]+")
+     * @QueryParam(name="presentation", nullable=true, requirements="[a-z0-9]+")
+     *
+     * @param ParamFetcher $paramFetcher
      *
      * @ApiDoc(
      *  resource=true,
@@ -25,11 +33,18 @@ class AppointmentController extends FOSRestController
      *     }
      * )
      */
-    public function getAppointmentsAction()
+    public function getAppointmentsAction(ParamFetcher $paramFetcher)
     {
+        $queryParams = [];
+        foreach($paramFetcher->all() as $param => $value) {
+            if(!empty($value)) {
+                $queryParams[$param . '.id'] = $value;
+            }
+        }
+
         $appointments = $this->get('doctrine_mongodb')
             ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Appointment')
-            ->findAll();
+            ->findBy($queryParams);
 
         $view = $this->view($appointments, 200);
         return $this->handleView($view);
