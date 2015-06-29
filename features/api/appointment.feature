@@ -142,6 +142,27 @@ Feature: managing appointments using API
     And the response JSON should be a single object
     And the repsonse JSON should have "id" field
 
+  Scenario: get appointments list of particular user
+    When I make request "GET" "/api/v1/appointments?user={User_user9_api}"
+    Then the response status code should be 200
+    And the response should be JSON
+    And the response JSON should be a collection
+    And all response collection items should have nested field "_links->user->id" with value "{User_user9_api}"
+
+  Scenario: get appointments list of particular event
+    When I make request "GET" "/api/v1/appointments?event={Event_evt1}"
+    Then the response status code should be 200
+    And the response should be JSON
+    And the response JSON should be a collection
+    And all response collection items should have nested field "_links->event->id" with value "{Event_evt1}"
+
+  Scenario: get appointments list of particular presentation
+    When I make request "GET" "/api/v1/appointments?presentation={Presentation_pres2}"
+    Then the response status code should be 200
+    And the response should be JSON
+    And the response JSON should be a collection
+    And all response collection items should have nested field "_links->presentation->id" with value "{Presentation_pres2}"
+
   Scenario: create appointment
     Given I am authorized client with username "admin" and password "admin"
     When I make request "POST" "/api/v1/appointments" with parameter-bag params:
