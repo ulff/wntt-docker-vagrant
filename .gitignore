@@ -21,3 +21,4 @@
 !/bin/vagrant-up.sh
 !/bin/setup.sh
 !/bin/load-fixtures.sh
+credentials.yml

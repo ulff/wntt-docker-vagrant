@@ -1,0 +1,7 @@
+#!/bin/bash
+
+CURRENT_GIT_BRANCH=<CURRENT_GIT_BRANCH>
+
+if [ "$ENV_URL" ]; then
+    curl -X POST --data-urlencode 'payload={"channel": "#cirle_ci", "username": "webhookbot", "text": "Envirnoment updated: '$ENV_URL' witch branch: '$CURRENT_GIT_BRANCH'", "icon_emoji": ":ghost:"}' https://hooks.slack.com/services/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
+fi

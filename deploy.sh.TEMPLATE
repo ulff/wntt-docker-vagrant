@@ -1,0 +1,31 @@
+# deploy.sh
+#! /bin/bash
+
+APPLICATION_NAME=<APPLICATION_NAME>
+BUILD_ENV=<BUILD_ENVIRONMENT>
+
+SHA1=<IMAGE_SHA>
+TARGET_DOCKER=<TARGET_DOCKER>
+TARGET_DOCKER_DIST=<TARGET_DOCKER_DIST>
+
+EB_BUCKET=<BUILD_EB_BUCKET>
+AUTH_BUCKET=<AUTH_BUCKET>
+
+# push full image to registry
+docker push $TARGET_DOCKER/$TARGET_DOCKER_DIST:$SHA1
+
+# Create new Elastic Beanstalk version
+DOCKERRUN_FILE=$SHA1-Dockerrun.aws.json
+
+    sed "s/<BUCKET>/$EB_BUCKET/;s/<TARGET>/$TARGET_DOCKER/;s/<DIST>/$TARGET_DOCKER_DIST/;s/<TAG>/$SHA1/;s/<AUTHENTICATION_BUCKET>/$AUTH_BUCKET/" < .Dockerrun.aws.json.SINGLE>TEMPLATE > Dockerrun.aws.json
+
+APPLICATION_VERSION=$SHA1-wntt.zip
+zip $APPLICATION_VERSION -r Dockerrun.aws.json .ebextensions
+
+aws s3 cp $APPLICATION_VERSION s3://$EB_BUCKET/$APPLICATION_VERSION
+aws elasticbeanstalk create-application-version --application-name "$APPLICATION_NAME" \
+  --version-label $SHA1 --source-bundle S3Bucket=$EB_BUCKET,S3Key=$APPLICATION_VERSION
+
+# Update Elastic Beanstalk environment to new version
+aws elasticbeanstalk update-environment --environment-name $BUILD_ENV \
+    --version-label $SHA1
