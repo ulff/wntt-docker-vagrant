@@ -8,23 +8,24 @@ machine:
   services:
     - mongodb
     - docker
-  environment:
-    SYMFONY__MONGO__HOST: mongo
+
+general:
+  branches:
+    ignore:
+    - develop
 
 dependencies:
   pre:
     - yes '' | pecl install mongo
     - rm -rf /home/ubuntu/wntt-docker-vagrant/vendor
-  post:
-    #- pip install awscli
     - sed "s/<EMAIL>/$DOCKER_EMAIL/;s/<AUTH>/$DOCKER_AUTH/" < .dockercfg.TEMPLATE > ~/.dockercfg
-    #- sed "s/<IMAGE_SHA>/$CIRCLE_SHA1/;s/<BUILD_EB_BUCKET>/$BUILD_EB_BUCKET/;s/<BUILD_ENVIRONMENT>/$QA_BUILD_ENVIRONMENT/" < deploy.sh.TEMPLATE > ~/qa-deploy.sh
-    #- sed "s/<IMAGE_SHA>/$CIRCLE_SHA1/;s/<BUILD_EB_BUCKET>/$BUILD_EB_BUCKET/;s/<BUILD_ENVIRONMENT>/$PROD_BUILD_ENVIRONMENT/" < deploy.sh.TEMPLATE > ~/prod-deploy.sh
-    #- mkdir ~/.aws
-    #- cp .aws.config ~/.aws/config
+    - mkdir ~/.aws
+    - bash -x bin/aws/prepare_slack_notify.sh
+  post:
+    - pip install awscli
     - chmod -R 777 app/cache
     - chmod -R 777 app/logs
-    - docker build -t betavest/wntt-dist:$CIRCLE_SHA1 .
+    - docker build -t $PUBLIC_DOCKER/$PUBLIC_DOCKER_WWW_DIST:$CIRCLE_SHA1 .
 
 test:
   override:
@@ -33,12 +34,10 @@ test:
     - docker run -i -t --link mongo:mongo betavest/wntt-dist:$CIRCLE_SHA1 phing -find /var/www/build.xml test
     - docker kill mongo
 
-#deployment:
-#  qa:
-#    branch: develop
-#    commands:
-#      - bash -x ~/qa-deploy.sh
-#  prod:
-#    branch: master
-#    commands:
-#      - bash -x ~/prod-deploy.sh
+deployment:
+  QA:
+    branch: /release.*/
+    commands:
+      - sed "s/<AWS_REGION>/$QA_AWS_REGION/" < .aws.config.TEMPLATE > ~/.aws/config
+      - sed "s/<IMAGE_SHA>/$CIRCLE_SHA1/;s/<BUILD_ENVIRONMENT>/$QA_ENV/;s/<TARGET_DOCKER>/$PUBLIC_DOCKER/;s/<TARGET_DOCKER_DIST>/$PUBLIC_DOCKER_WWW_DIST/;s/<APPLICATION_NAME>/$PUBLIC_APP/;s/<BUILD_EB_BUCKET>/$BUILD_EB_BUCKET/;s/<AUTH_BUCKET>/$AUTH_BUCKET/" < deploy.sh.TEMPLATE > ~/qa-deploy.sh
+      - bash -x ~/qa-deploy.sh
