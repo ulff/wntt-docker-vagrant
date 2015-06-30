@@ -16,7 +16,7 @@ parameters:
 
     locale:            en
 
-    mongo_database_server: "mongodb://%mongo.host%:27017"
+    mongo_database_server: "mongodb://%mongo.host%:%mongo.port%"
     mongo_database_name: wntt
 
     # A secret key that's used to generate certain security-related tokens

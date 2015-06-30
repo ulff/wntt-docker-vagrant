@@ -17,7 +17,7 @@ docker push $TARGET_DOCKER/$TARGET_DOCKER_DIST:$SHA1
 # Create new Elastic Beanstalk version
 DOCKERRUN_FILE=$SHA1-Dockerrun.aws.json
 
-    sed "s/<BUCKET>/$EB_BUCKET/;s/<TARGET>/$TARGET_DOCKER/;s/<DIST>/$TARGET_DOCKER_DIST/;s/<TAG>/$SHA1/;s/<AUTHENTICATION_BUCKET>/$AUTH_BUCKET/" < .Dockerrun.aws.json.SINGLE>TEMPLATE > Dockerrun.aws.json
+    sed "s/<BUCKET>/$EB_BUCKET/;s/<TARGET>/$TARGET_DOCKER/;s/<DIST>/$TARGET_DOCKER_DIST/;s/<TAG>/$SHA1/;s/<AUTHENTICATION_BUCKET>/$AUTH_BUCKET/" < .Dockerrun.aws.json.SINGLE.TEMPLATE > Dockerrun.aws.json
 
 APPLICATION_VERSION=$SHA1-wntt.zip
 zip $APPLICATION_VERSION -r Dockerrun.aws.json .ebextensions
