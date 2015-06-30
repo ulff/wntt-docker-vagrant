@@ -8,9 +8,9 @@ machine:
   services:
     - mongodb
     - docker
-environment:
-  SYMFONY__MONGO__HOST: mongo
-  SYMFONY__MONGO__PORT: 27017
+  environment:
+    SYMFONY__MONGO__HOST: mongo
+    SYMFONY__MONGO__PORT: 27017
 
 general:
   branches:
