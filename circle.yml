@@ -38,6 +38,12 @@ test:
     - docker kill mongo
 
 deployment:
+  PRV:
+    branch: /US-WNTT-\d+/
+    commands:
+      - sed "s/<AWS_REGION>/$QA_AWS_REGION/" < .aws.config.TEMPLATE > ~/.aws/config
+      - sed "s/<IMAGE_SHA>/$CIRCLE_SHA1/;s/<BUILD_ENVIRONMENT>/betavest-all/;s/<TARGET_DOCKER>/$PUBLIC_DOCKER/;s/<TARGET_DOCKER_DIST>/$PUBLIC_DOCKER_WWW_DIST/;s/<APPLICATION_NAME>/$PRIVATE_APP/;s/<BUILD_EB_BUCKET>/$BUILD_EB_BUCKET/;s/<AUTH_BUCKET>/$AUTH_BUCKET/" < deploy.sh.TEMPLATE > ~/prv-deploy.sh
+      - bash -x ~/prv-deploy.sh
   QA:
     branch: /release.*/
     commands:
