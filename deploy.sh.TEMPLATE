@@ -4,6 +4,12 @@
 APPLICATION_NAME=<APPLICATION_NAME>
 BUILD_ENV=<BUILD_ENVIRONMENT>
 
+if [ "$APPLICATION_NAME" == "$PRIVATE_APP" ]; then
+    PR_AUTHOR=$(git log --pretty=%s --merges | grep "Merge pull request" | head -n 1 | sed 's/Merge.pull.request.\#[0-9]*.from.//' | sed 's/\/US-.*//')
+    echo $PR_AUTHOR
+    BUILD_ENV=$PRIVATE_DOMAIN-$PR_AUTHOR
+fi
+
 SHA1=<IMAGE_SHA>
 TARGET_DOCKER=<TARGET_DOCKER>
 TARGET_DOCKER_DIST=<TARGET_DOCKER_DIST>
@@ -17,7 +23,11 @@ docker push $TARGET_DOCKER/$TARGET_DOCKER_DIST:$SHA1
 # Create new Elastic Beanstalk version
 DOCKERRUN_FILE=$SHA1-Dockerrun.aws.json
 
+if [ "$APPLICATION_NAME" == "$PRIVATE_APP" ]; then
+    sed "s/<BUCKET>/$EB_BUCKET/;s/<TARGET>/$TARGET_DOCKER/;s/<DIST>/$TARGET_DOCKER_DIST/;s/<TAG>/$SHA1/" < .Dockerrun.aws.json.MULTI.TEMPLATE > Dockerrun.aws.json
+else
     sed "s/<BUCKET>/$EB_BUCKET/;s/<TARGET>/$TARGET_DOCKER/;s/<DIST>/$TARGET_DOCKER_DIST/;s/<TAG>/$SHA1/;s/<AUTHENTICATION_BUCKET>/$AUTH_BUCKET/" < .Dockerrun.aws.json.SINGLE.TEMPLATE > Dockerrun.aws.json
+fi
 
 APPLICATION_VERSION=$SHA1-wntt.zip
 zip $APPLICATION_VERSION -r Dockerrun.aws.json .ebextensions
