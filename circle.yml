@@ -50,3 +50,12 @@ deployment:
       - sed "s/<AWS_REGION>/$QA_AWS_REGION/" < .aws.config.TEMPLATE > ~/.aws/config
       - sed "s/<IMAGE_SHA>/$CIRCLE_SHA1/;s/<BUILD_ENVIRONMENT>/$QA_ENV/;s/<TARGET_DOCKER>/$PUBLIC_DOCKER/;s/<TARGET_DOCKER_DIST>/$PUBLIC_DOCKER_WWW_DIST/;s/<APPLICATION_NAME>/$PUBLIC_APP/;s/<BUILD_EB_BUCKET>/$BUILD_EB_BUCKET/;s/<AUTH_BUCKET>/$AUTH_BUCKET/" < deploy.sh.TEMPLATE > ~/qa-deploy.sh
       - bash -x ~/qa-deploy.sh
+  PROD:
+    branch: master
+    commands:
+      - rm Dockerfile
+      - cp docker/dockerfiles/Dockerfile .
+      - docker build -t $PUBLIC_DOCKER/$PUBLIC_DOCKER_WWW_DIST:$CIRCLE_SHA1 .
+      - sed "s/<AWS_REGION>/$PROD_AWS_REGION/" < .aws.config.TEMPLATE > ~/.aws/config
+      - sed "s/<IMAGE_SHA>/$CIRCLE_SHA1/;s/<BUILD_ENVIRONMENT>/$PROD_ENV_EU/;s/<TARGET_DOCKER>/$PUBLIC_DOCKER/;s/<TARGET_DOCKER_DIST>/$PUBLIC_DOCKER_WWW_DIST/;s/<APPLICATION_NAME>/$PUBLIC_APP/;s/<BUILD_EB_BUCKET>/$PROD_AUTH_BUILD_BUCKET/;s/<AUTH_BUCKET>/$PROD_AUTH_BUILD_BUCKET/" < deploy.sh.TEMPLATE > ~/prod-deploy.sh
+      - bash -x ~/prod-deploy.sh
