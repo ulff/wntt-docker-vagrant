@@ -22,3 +22,5 @@
 !/bin/setup.sh
 !/bin/load-fixtures.sh
 credentials.yml
+!logs/.gitignore
+logs/*

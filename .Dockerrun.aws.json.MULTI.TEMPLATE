@@ -1,0 +1,33 @@
+{
+  "AWSEBDockerrunVersion": 2,
+  "volumes": [],
+  "authentication": {
+     "bucket": "elasticbeanstalk-us-east-1-608064952666",
+     "key": "dockercfg"
+ },
+ "containerDefinitions": [
+   {
+     "name": "mongo",
+     "image": "mongo",
+     "essential": true,
+     "memory": 512,
+     "mountPoints": []
+   },
+   {
+     "name": "nginx",
+     "image": "<TARGET>/<DIST>:<TAG>",
+     "essential": true,
+     "memory": 1024,
+     "portMappings": [
+       {
+         "hostPort": 80,
+         "containerPort": 80
+       }
+     ],
+     "links": [
+       "mongo"
+     ],
+     "mountPoints": []
+   }
+ ]
+}
