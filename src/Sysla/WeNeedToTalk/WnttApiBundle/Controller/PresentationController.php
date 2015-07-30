@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
+use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DuplicatedDocumentException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\PresentationManager;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
@@ -104,6 +105,8 @@ class PresentationController extends FOSRestController
             /** @var $presentationManager PresentationManager */
             $presentationManager = $this->get('wnttapi.manager.presentation');
             $presentation = $presentationManager->createDocument($presentationData, ['videoUrl' => $presentationData['videoUrl']]);
+        } catch(DuplicatedDocumentException $e) {
+            throw new HttpException(409, $e->getMessage());
         } catch(DocumentValidationException $e) {
             throw new HttpException(400, $e->getMessage());
         } catch(\Exception $e) {

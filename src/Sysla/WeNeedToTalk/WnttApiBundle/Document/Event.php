@@ -52,6 +52,12 @@ class Event implements Document
     protected $stands;
 
     /**
+     * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Appointment", mappedBy="event", cascade={"remove"})
+     * @Serializer\Exclude
+     */
+    protected $appointments;
+
+    /**
      * @return string
      */
     public function getId()

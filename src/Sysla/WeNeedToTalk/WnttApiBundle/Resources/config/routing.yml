@@ -28,4 +28,9 @@ users:
     resource: Sysla\WeNeedToTalk\WnttApiBundle\Controller\UserController
     prefix:   /api/v1/
 
+appointments:
+    type:     rest
+    resource: Sysla\WeNeedToTalk\WnttApiBundle\Controller\AppointmentController
+    prefix:   /api/v1/
+
 

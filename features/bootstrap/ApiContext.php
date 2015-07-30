@@ -160,6 +160,9 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
             case 'User':
                 $this->ensureUserExists($table->getRowsHash());
                 break;
+            case 'Appointment':
+                $this->ensureAppointmentExists($table->getRowsHash());
+                break;
             default:
                 throw new \Exception("Class $documentName not found");
         }
@@ -215,8 +218,19 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
      */
     public function theRepsonseJsonShouldHaveFieldWithValue($property, $expectedValue)
     {
+        $expectedValue = $this->extractFromParameterBag($expectedValue);
         $response = json_decode($this->getClient()->getResponse()->getContent());
         $this->assertDocumentHasPropertyWithValue($response, $property, $expectedValue);
+        return;
+    }
+
+    /**
+     * @Then the repsonse JSON should have :property field set to :expectedValue
+     */
+    public function theRepsonseJsonShouldHaveFieldSetTo($property, $expectedValue)
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        $this->assertDocumentHasPropertyWithBooleanValue($response, $property, $expectedValue);
         return;
     }
 
@@ -228,6 +242,18 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
         $response = json_decode($this->getClient()->getResponse()->getContent());
         foreach($response as $document) {
             $this->assertDocumentHasPropertyWithValue($document, $property, $expectedValue);
+        }
+        return;
+    }
+
+    /**
+     * @Then all response collection items should have nested field :property with value :expectedValue
+     */
+    public function allResponseCollectionItemsShouldHaveNestedFieldWithValue($property, $expectedValue)
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        foreach($response as $document) {
+            $this->assertDocumentHasNestedPropertyWithValue($document, $property, $expectedValue);
         }
         return;
     }
@@ -253,10 +279,10 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
 
         if(ucfirst($documentName) == 'User') {
             $document = $dm->getRepository('SyslaWeeNeedToTalkWnttUserBundle:'.ucfirst($documentName))
-                ->findOneBy(array($property => $value));
+                ->findOneBy(array($property => $this->extractFromParameterBag($value)));
         } else {
             $document = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:'.ucfirst($documentName))
-                ->findOneBy(array($property => $value));
+                ->findOneBy(array($property => $this->extractFromParameterBag($value)));
         }
 
         if (empty($document)) {
@@ -291,11 +317,11 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
         return $driver->getClient();
     }
 
-    protected function extractFromParameterBag($uri)
+    protected function extractFromParameterBag($string)
     {
-        $uri = $this->getParameterBag()->replace($uri);
-        $uri = str_replace(['{', '}'], '', $uri);
-        return $uri;
+        $string = $this->getParameterBag()->replace($string);
+        $string = str_replace(['{', '}'], '', $string);
+        return $string;
     }
 
     protected function assertDocumentHasProperty($document, $property)
@@ -310,6 +336,24 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
         $this->assertDocumentHasProperty($document, $property);
         if($document->$property != $expectedValue) {
             throw new Exception\IncorrectPropertyValueException($property, $expectedValue, $document->$property);
+        }
+    }
+
+    protected function assertDocumentHasNestedPropertyWithValue($document, $property, $expectedValue)
+    {
+        $nestedNode = explode('->', $property);
+        $documentAsArray = (array) $document;
+        foreach($nestedNode as $node) {
+            if(!isset($documentAsArray[$node])) {
+                throw new Exception\NotFoundPropertyException($property);
+            }
+            $documentAsArray = (array) $documentAsArray[$node];
+        }
+        $documentAsArray = reset($documentAsArray);
+        $expectedValue = $this->extractFromParameterBag($expectedValue);
+
+        if($documentAsArray !== $expectedValue) {
+            throw new Exception\IncorrectPropertyValueException($property, $expectedValue, $documentAsArray);
         }
     }
 
@@ -484,6 +528,41 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
         }
 
         $this->getParameterBag()->set('User_'.$userData['identifiedBy'], $user->getId());
+    }
+
+    protected function ensureAppointmentExists($appointmentData)
+    {
+        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+
+        $appointment = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Appointment')
+            ->findOneBy([
+                'user.id' => $appointmentData['user'],
+                'presentation.id' => $appointmentData['presentation']
+            ]);
+
+        if(empty($appointment)) {
+            $appointment = new Document\Appointment();
+
+            $appointment->setIsVisited(@$appointmentData['isVisited'] == 'true' ? true : false);
+
+            $userId = $this->getParameterBag()->get('User_'.$appointmentData['user']);
+            $user = $dm->getRepository('SyslaWeeNeedToTalkWnttUserBundle:User')
+                ->findOneById($userId);
+            $appointment->setUser($user);
+
+            $presentationId = $this->getParameterBag()->get('Presentation_'.$appointmentData['presentation']);
+            $presentation = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
+                ->findOneById($presentationId);
+            $appointment->setPresentation($presentation);
+
+            $event = $presentation->getStand()->getEvent();
+            $appointment->setEvent($event);
+
+            $dm->persist($appointment);
+            $dm->flush();
+        }
+
+        $this->getParameterBag()->set('Appointment_'.$appointmentData['identifiedBy'], $appointment->getId());
     }
 
 }

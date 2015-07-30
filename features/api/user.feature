@@ -6,7 +6,7 @@ Feature: getting users through API
   Background:
     Given I am authorized client
     And following "Company" exists:
-      | identifiedBy  | Company Api                 |
+      | identifiedBy  | Company_Api                 |
       | name          | Company Api                 |
       | websiteUrl    | http://company.api          |
       | logoUrl       | http://company.api/logo.png |
@@ -16,7 +16,7 @@ Feature: getting users through API
       | username      | username_api    |
       | email         | user1@email.api |
       | roles         | ROLE_USER       |
-      | company       | Company Api     |
+      | company       | Company_Api     |
 
     And following "User" exists:
       | identifiedBy  | admin_api             |
@@ -42,35 +42,35 @@ Feature: getting users through API
   Scenario: create user
     Given I am authorized client with username "admin" and password "admin"
     When I make request "POST" "/api/v1/users" with parameter-bag params:
-      | username        | user_api_created      |
+      | username        | uacreated      |
       | password        | password              |
       | email           | user@api              |
-      | company         | Company_Company Api   |
+      | company         | Company_Company_Api   |
       | isAdmin         | true                  |
       | phoneNumber     | 668 678               |
-    Then "User" should be created with "username" set to "user_api_created"
+    Then "User" should be created with "username" set to "uacreated"
     And the response status code should be 201
     And the response should be JSON
     And the response JSON should be a single object
     And the repsonse JSON should have "id" field
-    And the repsonse JSON should have "username" field with value "user_api_created"
+    And the repsonse JSON should have "username" field with value "uacreated"
     And the repsonse JSON should have "email" field with value "user@api"
     And the repsonse JSON should have "phone_number" field with value "668 678"
 
   Scenario: update user
     Given I am authorized client with username "admin" and password "admin"
     When I make request "PUT" "/api/v1/users/{User_last_created}" with parameter-bag params:
-      | username        | user_api_updated      |
+      | username        | uaupdated      |
       | password        | password              |
       | email           | user2@api             |
-      | company         | Company_Company Api   |
+      | company         | Company_Company_Api   |
       | isAdmin         | true                  |
       | phoneNumber     | 668 678 2             |
     Then the response status code should be 200
     And the response should be JSON
     And the response JSON should be a single object
     And the repsonse JSON should have "id" field
-    And the repsonse JSON should have "username" field with value "user_api_updated"
+    And the repsonse JSON should have "username" field with value "uaupdated"
     And the repsonse JSON should have "email" field with value "user2@api"
     And the repsonse JSON should have "phone_number" field with value "668 678 2"
 
@@ -82,7 +82,7 @@ Feature: getting users through API
     And the response should be JSON
     And the response JSON should be a single object
     And the repsonse JSON should have "id" field
-    And the repsonse JSON should have "username" field with value "user_api_updated"
+    And the repsonse JSON should have "username" field with value "uaupdated"
     And the repsonse JSON should have "email" field with value "user2@api"
     And the repsonse JSON should have "phone_number" field with value "668 678 3"
 
@@ -108,10 +108,10 @@ Feature: getting users through API
 
   Examples:
     | username          | password            | email             | company             | isAdmin       | phoneNumber |
-    |                   | password            | user@api          | Company_Company Api | true          | 668 678     |
-    | user_api_created  |                     | user@api          | Company_Company Api | true          | 668 678     |
-    | user_api_created  | password            |                   | Company_Company Api | true          | 668 678     |
-    | user_api_created  | password            | user@api          | not-existing        | true          | 668 678     |
+    |                   | password            | user@api          | Company_Company_Api | true          | 668 678     |
+    | uaupdated         |                     | user@api          | Company_Company_Api | true          | 668 678     |
+    | uaupdated         | password            |                   | Company_Company_Api | true          | 668 678     |
+    | uaupdated         | password            | user@api          | not-existing        | true          | 668 678     |
 
   Scenario: cannot update user without user context
     When I make request "PUT" "/api/v1/users/{User_username_api}"
