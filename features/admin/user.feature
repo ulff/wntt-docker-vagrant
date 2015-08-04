@@ -44,7 +44,7 @@ Feature: adding users
     And I fill in "Username" with "test-scenario4"
     And I fill in "Password" with "password4"
     And I press "Login"
-    Then I should be on "app_dev.php/admin/dashboard"
+    Then I should be on "app_behat.php/admin/dashboard"
     And I should not see "Access Denied"
 
   Scenario: create user without admin privileges and log him in
@@ -60,7 +60,7 @@ Feature: adding users
     And I fill in "Username" with "test-scenario5"
     And I fill in "Password" with "password5"
     And I press "Login"
-    Then I should be on "app_dev.php/admin/dashboard"
+    Then I should be on "app_behat.php/admin/dashboard"
     And I should see "Access Denied"
 
   Scenario: delete user from edit form

@@ -1,0 +1,8 @@
+imports:
+    - { resource: config.yml }
+
+fos_rest:
+    routing_loader:
+        default_format: json
+    param_fetcher_listener: true
+
