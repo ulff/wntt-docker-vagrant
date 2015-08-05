@@ -31,7 +31,7 @@ class AdminContext extends MinkContext implements Context, SnippetAcceptingConte
      */
     public function iAmOnDashboard()
     {
-        $this->visit('/app_dev.php/admin/dashboard');
+        $this->visit('/app_behat.php/admin/dashboard');
     }
 
     /**
@@ -60,7 +60,7 @@ class AdminContext extends MinkContext implements Context, SnippetAcceptingConte
                 $bundle = 'wnttapi';
         }
 
-        $this->visit("/app_dev.php/admin/weneedtotalk/$bundle/$document/$action");
+        $this->visit("/app_behat.php/admin/weneedtotalk/$bundle/$document/$action");
     }
 
     /**
@@ -102,7 +102,7 @@ class AdminContext extends MinkContext implements Context, SnippetAcceptingConte
                 $bundle = 'wnttapi';
         }
 
-        $this->visit("/app_dev.php/admin/weneedtotalk/$bundle/$document/$mongoId/edit");
+        $this->visit("/app_behat.php/admin/weneedtotalk/$bundle/$document/$mongoId/edit");
     }
 
     /**
@@ -110,7 +110,7 @@ class AdminContext extends MinkContext implements Context, SnippetAcceptingConte
      */
     public function iHaveLoggedOut()
     {
-        $this->visit('/app_dev.php/logout');
+        $this->visit('/app_behat.php/logout');
     }
 
     /**
@@ -118,7 +118,7 @@ class AdminContext extends MinkContext implements Context, SnippetAcceptingConte
      */
     public function iGoToLoginPage()
     {
-        $this->visit('/app_dev.php/login');
+        $this->visit('/app_behat.php/login');
     }
 
     /**
@@ -134,7 +134,7 @@ class AdminContext extends MinkContext implements Context, SnippetAcceptingConte
                 $bundle = 'wnttapi';
         }
 
-        $this->visit("/app_dev.php/admin/weneedtotalk/$bundle/$document/list");
+        $this->visit("/app_behat.php/admin/weneedtotalk/$bundle/$document/list");
     }
 
     /**
@@ -176,7 +176,7 @@ class AdminContext extends MinkContext implements Context, SnippetAcceptingConte
                 $bundle = 'wnttapi';
         }
 
-        $this->assertPageAddress("/app_dev.php/admin/weneedtotalk/$bundle/$document/$action");
+        $this->assertPageAddress("/app_behat.php/admin/weneedtotalk/$bundle/$document/$action");
     }
 
 }

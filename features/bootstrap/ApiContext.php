@@ -28,7 +28,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
      */
     public function iMakeRequest($method, $uri)
     {
-        $uri = '/app_dev.php'.$uri;
+        $uri = '/app_behat.php'.$uri;
         $uri = $this->extractFromParameterBag($uri);
         $this->request($method, $uri);
     }
@@ -38,7 +38,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
      */
     public function iMakeRequestWithParams($method, $uri, TableNode $table)
     {
-        $uri = '/app_dev.php'.$uri;
+        $uri = '/app_behat.php'.$uri;
         $uri = $this->extractFromParameterBag($uri);
         $this->request($method, $uri, $table->getRowsHash());
     }
@@ -48,7 +48,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
      */
     public function iMakeRequestWithParameterBagParams($method, $uri, TableNode $table)
     {
-        $uri = '/app_dev.php'.$uri;
+        $uri = '/app_behat.php'.$uri;
         $uri = $this->extractFromParameterBag($uri);
         $params = [];
         foreach($table->getRowsHash() as $field => $value) {
@@ -82,7 +82,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     public function iAmAuthorizedClient()
     {
         $this->clientIsCreated();
-        $this->request('POST', '/app_dev.php/oauth/v2/token', [
+        $this->request('POST', '/app_behat.php/oauth/v2/token', [
             'client_id' => $this->getParameterBag()->get('CLIENT_PUBLIC_ID'),
             'client_secret' => $this->getParameterBag()->get('CLIENT_SECRET'),
             'response_type' => 'code',
@@ -107,7 +107,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     public function iAmAuthorizedClientWithUsernameAndPassword($login, $password)
     {
         $this->clientIsCreated();
-        $this->request('POST', '/app_dev.php/oauth/v2/token', [
+        $this->request('POST', '/app_behat.php/oauth/v2/token', [
             'client_id' => $this->getParameterBag()->get('CLIENT_PUBLIC_ID'),
             'client_secret' => $this->getParameterBag()->get('CLIENT_SECRET'),
             'response_type' => 'code',
