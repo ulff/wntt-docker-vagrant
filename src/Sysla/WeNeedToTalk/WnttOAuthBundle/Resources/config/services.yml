@@ -1,0 +1,5 @@
+services:
+    wntt_oauth.listener.acaoheader:
+        class: Sysla\WeNeedToTalk\WnttOAuthBundle\EventListener\ACAOHeaderListener
+        tags:
+            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
