@@ -100,12 +100,8 @@ fos_user:
 
 fos_rest:
     routing_loader:
-        default_format: jsonp
+        default_format: json
     param_fetcher_listener: true
-    view:
-        jsonp_handler:
-            callback_param:   callback
-            mime_type:        application/javascript
 
 nelmio_api_doc: ~
 
