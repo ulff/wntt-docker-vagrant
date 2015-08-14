@@ -59,7 +59,8 @@ class Appointment implements Document
 
     /**
      * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation", inversedBy="appointments")
-     * @Serializer\Exclude
+     * @Serializer\Expose
+     * @Serializer\Groups({"inclPresentation"})
      */
     protected $presentation;
 

@@ -235,6 +235,18 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     }
 
     /**
+     * @Then all response collection items should have :property field
+     */
+    public function allResponseCollectionItemsShouldHaveField($property)
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        foreach($response as $document) {
+            $this->assertDocumentHasProperty($document, $property);
+        }
+        return;
+    }
+
+    /**
      * @Then all response collection items should have :property field with value :expectedValue
      */
     public function allResponseCollectionItemsShouldHaveFieldWithValue($property, $expectedValue)

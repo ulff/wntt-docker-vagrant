@@ -52,14 +52,16 @@ class Presentation implements Document
     /**
      * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Company", cascade={"remove"})
      * @Assert\NotBlank()
-     * @Serializer\Exclude
+     * @Serializer\Expose
+     * @Serializer\Groups({"inclCompany"})
      */
     protected $company;
 
     /**
      * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand", cascade={"remove"})
      * @Assert\NotBlank()
-     * @Serializer\Exclude
+     * @Serializer\Expose
+     * @Serializer\Groups({"inclStand"})
      */
     protected $stand;
 

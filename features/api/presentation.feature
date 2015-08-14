@@ -91,6 +91,28 @@ Feature: managing presentations through API
     And the response should be JSON
     And the response JSON should be a collection
 
+  Scenario: get list of all presentations, including stands information
+    When I make request "GET" "/api/v1/presentations?include[]=stand"
+    Then the response status code should be 200
+    And the response should be JSON
+    And the response JSON should be a collection
+    And all response collection items should have "stand" field
+
+  Scenario: get list of all presentations, including companies information
+    When I make request "GET" "/api/v1/presentations?include[]=company"
+    Then the response status code should be 200
+    And the response should be JSON
+    And the response JSON should be a collection
+    And all response collection items should have "company" field
+
+  Scenario: get list of all presentations, including stands and companies information
+    When I make request "GET" "/api/v1/presentations?include[]=stand&include[]=company"
+    Then the response status code should be 200
+    And the response should be JSON
+    And the response JSON should be a collection
+    And all response collection items should have "company" field
+    And all response collection items should have "stand" field
+
   Scenario: get one presentation
     When I make request "GET" "/api/v1/presentations/{Presentation_company_api_prezi}"
     Then the response status code should be 200
@@ -119,6 +141,29 @@ Feature: managing presentations through API
     Then the response status code should be 200
     And the response should be JSON
     And the response JSON should be a collection
+
+  Scenario: get list of particular event presentations, including stands information
+    When I make request "GET" "/api/v1/events/{Event_Event_Api_1}/presentations?include[]=stand"
+    Then the response status code should be 200
+    And the response should be JSON
+    And the response JSON should be a collection
+    And all response collection items should have "stand" field
+
+
+  Scenario: get list of particular event presentations, including companies information
+    When I make request "GET" "/api/v1/events/{Event_Event_Api_1}/presentations?include[]=company"
+    Then the response status code should be 200
+    And the response should be JSON
+    And the response JSON should be a collection
+    And all response collection items should have "company" field
+
+  Scenario: get list of particular event presentations, including stands and companies information
+    When I make request "GET" "/api/v1/events/{Event_Event_Api_1}/presentations?include[]=stand&include[]=company"
+    Then the response status code should be 200
+    And the response should be JSON
+    And the response JSON should be a collection
+    And all response collection items should have "company" field
+    And all response collection items should have "stand" field
 
   Scenario: create presentation
     Given I am authorized client with username "admin" and password "admin"

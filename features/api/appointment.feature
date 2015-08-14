@@ -135,6 +135,13 @@ Feature: managing appointments using API
     And the response should be JSON
     And the response JSON should be a collection
 
+  Scenario: get list of all appointments, including presentations information
+    When I make request "GET" "/api/v1/appointments?include[]=presentation"
+    Then the response status code should be 200
+    And the response should be JSON
+    And the response JSON should be a collection
+    And all response collection items should have "presentation" field
+
   Scenario: get one appointment
     When I make request "GET" "/api/v1/appointments/{Appointment_app1}"
     Then the response status code should be 200
