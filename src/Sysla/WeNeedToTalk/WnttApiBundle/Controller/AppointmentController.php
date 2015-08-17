@@ -12,9 +12,8 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DuplicatedDocumentException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\AppointmentManager;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
-use JMS\Serializer\SerializationContext;
 
-class AppointmentController extends FOSRestController
+class AppointmentController extends AbstractWnttRestController
 {
     /**
      * Returns collection of Appointment objects.
@@ -268,20 +267,5 @@ class AppointmentController extends FOSRestController
         if(!$permissionVerifier->hasPermission('Appointment', $this->getUser(), $documentId)) {
             throw $this->createAccessDeniedException('Cannot affect not your appointment!');
         }
-    }
-
-    protected function createViewWithSerializationContext($includeProperties)
-    {
-        $view = $this->view();
-        $serializerGroups = ['Default'];
-
-        if(!empty($includeProperties)) {
-            foreach($includeProperties as $property) {
-                $serializerGroups[] = 'incl'.ucfirst($property);
-            }
-        }
-        $view->setSerializationContext(SerializationContext::create()->setGroups($serializerGroups));
-
-        return $view;
     }
 }
