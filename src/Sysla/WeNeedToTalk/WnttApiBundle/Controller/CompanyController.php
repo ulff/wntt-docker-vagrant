@@ -11,7 +11,7 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DuplicatedDocumentException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Company;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\CompanyManager;
 
-class CompanyController extends FOSRestController
+class CompanyController extends AbstractWnttRestController
 {
     /**
      * Returns collection of Company objects.

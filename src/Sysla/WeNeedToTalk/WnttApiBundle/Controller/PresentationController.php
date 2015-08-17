@@ -12,9 +12,8 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DuplicatedDocumentException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\PresentationManager;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
-use JMS\Serializer\SerializationContext;
 
-class PresentationController extends FOSRestController
+class PresentationController extends AbstractWnttRestController
 {
     /**
      * Returns collection of Presentation objects.
@@ -279,20 +278,5 @@ class PresentationController extends FOSRestController
         if(!$permissionVerifier->hasPermission('Presentation', $this->getUser(), $documentId)) {
             throw $this->createAccessDeniedException('Cannot affect presentation owned by not your company!');
         }
-    }
-
-    protected function createViewWithSerializationContext($includeProperties)
-    {
-        $view = $this->view();
-        $serializerGroups = ['Default'];
-
-        if(!empty($includeProperties)) {
-            foreach($includeProperties as $property) {
-                $serializerGroups[] = 'incl'.ucfirst($property);
-            }
-        }
-        $view->setSerializationContext(SerializationContext::create()->setGroups($serializerGroups));
-
-        return $view;
     }
 }

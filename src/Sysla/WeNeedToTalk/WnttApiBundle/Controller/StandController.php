@@ -11,7 +11,7 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DuplicatedDocumentException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\StandManager;
 
-class StandController extends FOSRestController
+class StandController extends AbstractWnttRestController
 {
     /**
      * Returns collection of Stand objects.

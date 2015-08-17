@@ -13,7 +13,7 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Manager\UserManager;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 
-class UserController extends FOSRestController
+class UserController extends AbstractWnttRestController
 {
     /**
      * Returns collection of User objects.
