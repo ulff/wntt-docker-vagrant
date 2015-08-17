@@ -12,9 +12,8 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Document\Event;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\EventManager;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
-use JMS\Serializer\SerializationContext;
 
-class EventController extends FOSRestController
+class EventController extends AbstractWnttRestController
 {
     /**
      * Returns collection of Event objects.
@@ -258,20 +257,5 @@ class EventController extends FOSRestController
         if (empty($eventData['dateEnd'])) {
             throw new HttpException(400, 'Missing required parameters: dateEnd');
         }
-    }
-
-    protected function createViewWithSerializationContext($includeProperties)
-    {
-        $view = $this->view();
-        $serializerGroups = ['Default'];
-
-        if(!empty($includeProperties)) {
-            foreach($includeProperties as $property) {
-                $serializerGroups[] = 'incl'.ucfirst($property);
-            }
-        }
-        $view->setSerializationContext(SerializationContext::create()->setGroups($serializerGroups));
-
-        return $view;
     }
 }

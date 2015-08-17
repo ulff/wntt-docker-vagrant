@@ -11,7 +11,7 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DuplicatedDocumentException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Category;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\CategoryManager;
 
-class CategoryController extends FOSRestController
+class CategoryController extends AbstractWnttRestController
 {
     /**
      * Returns collection of Category objects.
