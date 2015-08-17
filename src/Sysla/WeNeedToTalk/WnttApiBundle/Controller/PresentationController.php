@@ -12,6 +12,7 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DuplicatedDocumentException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\PresentationManager;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
+use JMS\Serializer\SerializationContext;
 
 class PresentationController extends FOSRestController
 {
@@ -19,6 +20,7 @@ class PresentationController extends FOSRestController
      * Returns collection of Presentation objects.
      *
      * @QueryParam(name="type", nullable=true, requirements="(free|premium)")
+     * @QueryParam(name="include", nullable=true, default=null, array=true)
      *
      * @param ParamFetcher $paramFetcher
      *
@@ -39,11 +41,14 @@ class PresentationController extends FOSRestController
             $queryParams['isPremium'] = $type == 'premium' ? true : false;
         }
 
+        $includeProperties = $paramFetcher->get('include');
+        $view = $this->createViewWithSerializationContext($includeProperties);
+
         $presentations = $this->get('doctrine_mongodb')
             ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
             ->findBy($queryParams);
 
-        $view = $this->view($presentations, 200);
+        $view->setData($presentations);
         return $this->handleView($view);
     }
 
@@ -274,5 +279,20 @@ class PresentationController extends FOSRestController
         if(!$permissionVerifier->hasPermission('Presentation', $this->getUser(), $documentId)) {
             throw $this->createAccessDeniedException('Cannot affect presentation owned by not your company!');
         }
+    }
+
+    protected function createViewWithSerializationContext($includeProperties)
+    {
+        $view = $this->view();
+        $serializerGroups = ['Default'];
+
+        if(!empty($includeProperties)) {
+            foreach($includeProperties as $property) {
+                $serializerGroups[] = 'incl'.ucfirst($property);
+            }
+        }
+        $view->setSerializationContext(SerializationContext::create()->setGroups($serializerGroups));
+
+        return $view;
     }
 }
