@@ -10,6 +10,9 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DuplicatedDocumentException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Event;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\EventManager;
+use FOS\RestBundle\Request\ParamFetcher;
+use FOS\RestBundle\Controller\Annotations\QueryParam;
+use JMS\Serializer\SerializationContext;
 
 class EventController extends FOSRestController
 {
@@ -199,6 +202,10 @@ class EventController extends FOSRestController
     /**
      * Returns collection of Presentation objects by given Event ID.
      *
+     * @QueryParam(name="include", nullable=true, default=null, array=true)
+     *
+     * @param ParamFetcher $paramFetcher
+     *
      * @ApiDoc(
      *  resource=true,
      *  description="Returns collection of Presentation objects by given Event ID.",
@@ -208,7 +215,7 @@ class EventController extends FOSRestController
      *     }
      * )
      */
-    public function getEventPresentationsAction(Request $request, $eventId)
+    public function getEventPresentationsAction(ParamFetcher $paramFetcher, Request $request, $eventId)
     {
         /** @var $event Event */
         $event = $this->get('doctrine_mongodb')
@@ -219,11 +226,14 @@ class EventController extends FOSRestController
             throw $this->createNotFoundException('No event found for id '.$eventId);
         }
 
+        $includeProperties = $paramFetcher->get('include');
+        $view = $this->createViewWithSerializationContext($includeProperties);
+
         $presentations = $this->get('doctrine_mongodb')
             ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
             ->findByEvent($eventId);
 
-        $view = $this->view($presentations, 200);
+        $view->setData($presentations);
         return $this->handleView($view);
     }
 
@@ -248,5 +258,20 @@ class EventController extends FOSRestController
         if (empty($eventData['dateEnd'])) {
             throw new HttpException(400, 'Missing required parameters: dateEnd');
         }
+    }
+
+    protected function createViewWithSerializationContext($includeProperties)
+    {
+        $view = $this->view();
+        $serializerGroups = ['Default'];
+
+        if(!empty($includeProperties)) {
+            foreach($includeProperties as $property) {
+                $serializerGroups[] = 'incl'.ucfirst($property);
+            }
+        }
+        $view->setSerializationContext(SerializationContext::create()->setGroups($serializerGroups));
+
+        return $view;
     }
 }
