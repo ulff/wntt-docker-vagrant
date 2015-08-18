@@ -20,6 +20,8 @@ class Client extends BaseClient
      */
     protected $name;
 
+    protected $clientId;
+
     /**
      * @return string
      */
@@ -34,5 +36,22 @@ class Client extends BaseClient
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getClientId()
+    {
+        return $this->id.'_'.$this->randomId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getClassName()
+    {
+        $classCanonicalName = explode('\\', get_class($this));
+        return end($classCanonicalName);
     }
 }
