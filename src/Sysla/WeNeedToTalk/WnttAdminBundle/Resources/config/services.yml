@@ -6,7 +6,7 @@ services:
     sonata.admin.event:
         class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\EventAdmin
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Content", label: "Events" }
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: api.content, label: "Events" }
         arguments:
             - ~
             - Sysla\WeNeedToTalk\WnttApiBundle\Document\Event
@@ -17,7 +17,7 @@ services:
     sonata.admin.stand:
         class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\StandAdmin
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Content", label: "Stands" }
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: api.content, label: "Stands" }
         arguments:
             - ~
             - Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand
@@ -28,7 +28,7 @@ services:
     sonata.admin.category:
         class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\CategoryAdmin
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Content", label: "Categories" }
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: api.content, label: "Categories" }
         arguments:
             - ~
             - Sysla\WeNeedToTalk\WnttApiBundle\Document\Category
@@ -39,7 +39,7 @@ services:
     sonata.admin.presentation:
         class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\PresentationAdmin
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Content", label: "Presentations" }
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: api.content, label: "Presentations" }
         arguments:
             - ~
             - Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation
@@ -50,7 +50,7 @@ services:
     sonata.admin.company:
         class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\CompanyAdmin
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Companies", label: "Companies" }
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: api.attendees, label: "Companies" }
         arguments:
             - ~
             - Sysla\WeNeedToTalk\WnttApiBundle\Document\Company
@@ -61,7 +61,7 @@ services:
     sonata.admin.user:
         class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\UserAdmin
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Users", label: "Users" }
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: api.attendees, label: "Users" }
         arguments:
             - ~
             - Sysla\WeNeedToTalk\WnttUserBundle\Document\User
@@ -72,10 +72,21 @@ services:
     sonata.admin.appointment:
         class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\AppointmentAdmin
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Users", label: "Appointments" }
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: api.attendees, label: "Appointments" }
         arguments:
             - ~
             - Sysla\WeNeedToTalk\WnttApiBundle\Document\Appointment
+            - ~
+        calls:
+            - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]
+
+    sonata.admin.client:
+        class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\ClientAdmin
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: api.settings, label: "Clients" }
+        arguments:
+            - ~
+            - Sysla\WeNeedToTalk\WnttOAuthBundle\Document\Client
             - ~
         calls:
             - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]

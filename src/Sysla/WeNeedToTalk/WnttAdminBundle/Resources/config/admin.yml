@@ -66,3 +66,14 @@ sonata_doctrine_mongo_db_admin:
 sonata_admin:
     templates:
         user_block:         SyslaWeeNeedToTalkWnttAdminBundle:Core:user_block.html.twig
+    dashboard:
+        groups:
+            api.content:
+                label: Content
+                roles: [ ROLE_ADMIN, ROLE_SUPER_ADMIN ]
+            api.attendees:
+                label: Attendees
+                roles: [ ROLE_ADMIN, ROLE_SUPER_ADMIN ]
+            api.settings:
+                label: API settings
+                roles: [ ROLE_SUPER_ADMIN ]
