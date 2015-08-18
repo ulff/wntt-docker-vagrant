@@ -34,6 +34,7 @@ security:
         - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/admin/weneedtotalk/wnttoauth/client/, role: ROLE_SUPER_ADMIN }
         - { path: ^/admin/, role: ROLE_ADMIN }
         - { path: ^/api/v1/events, roles: [ IS_AUTHENTICATED_FULLY ], methods: [GET] }
         - { path: ^/api/v1/events, roles: [ ROLE_ADMIN ], methods: [PUT, POST, DELETE] }
