@@ -17,6 +17,10 @@ class PresentationAdmin extends Admin
                 'label' => 'Video URL',
                 'required' => true
             ])
+            ->add('name', 'text', [
+                'label' => 'Name',
+                'required' => true
+            ])
             ->add('description', 'text', [
                 'label' => 'Description',
                 'required' => false
@@ -40,6 +44,7 @@ class PresentationAdmin extends Admin
     {
         $listMapper
             ->addIdentifier('id')
+            ->add('name')
             ->add('videoUrl')
             ->add('company')
             ->add('stand')

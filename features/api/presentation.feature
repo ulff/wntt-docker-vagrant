@@ -61,6 +61,7 @@ Feature: managing presentations through API
     And following "Presentation" exists:
       | identifiedBy | company_api_prezi            |
       | videoUrl     | http://company.api/prezi     |
+      | name         | name of 1st pres             |
       | description  | Presentation for API         |
       | company      | Company_Api                  |
       | stand        | EvtApi1_F_1332               |
@@ -69,18 +70,21 @@ Feature: managing presentations through API
     And following "Presentation" exists:
       | identifiedBy | company_api_2                |
       | videoUrl     | http://company.api/2         |
+      | name         | name of 2nd pres             |
       | company      | Company_Api                  |
       | stand        | EvtApi1_F_1333               |
       | isPremium    | true                         |
     And following "Presentation" exists:
       | identifiedBy | company_api_free             |
       | videoUrl     | http://company.api/free      |
+      | name         | name of free pres            |
       | company      | Company_Api                  |
       | stand        | EvtApi1_F_1334               |
       | isPremium    | false                        |
     And following "Presentation" exists:
       | identifiedBy | company_api_3                |
       | videoUrl     | http://company.api23/23      |
+      | name         | name of 4th pres             |
       | company      | Company_Api                  |
       | stand        | EvtApi2_A_1                  |
       | isPremium    | false                        |
@@ -121,6 +125,7 @@ Feature: managing presentations through API
     And the repsonse JSON should have "id" field
     And the repsonse JSON should have "description" field with value "Presentation for API"
     And the repsonse JSON should have "video_url" field with value "http://company.api/prezi"
+    And the repsonse JSON should have "name" field with value "name of 1st pres"
 
   Scenario: get list of premium presentations
     When I make request "GET" "/api/v1/presentations?type=premium"
@@ -169,6 +174,7 @@ Feature: managing presentations through API
     Given I am authorized client with username "admin" and password "admin"
     When I make request "POST" "/api/v1/presentations" with parameter-bag params:
       | videoUrl        | http://show/me        |
+      | name            | name of show/me       |
       | description     | Some description      |
       | company         | Company_Company_Api   |
       | stand           | Stand_EvtApi1_F_1335  |
@@ -179,12 +185,14 @@ Feature: managing presentations through API
     And the repsonse JSON should have "id" field
     And the repsonse JSON should have "video_url" field with value "http://show/me"
     And the repsonse JSON should have "description" field with value "Some description"
+    And the repsonse JSON should have "name" field with value "name of show/me"
 
   Scenario: update presentation
     Given I am authorized client with username "admin" and password "admin"
     When I make request "PUT" "/api/v1/presentations/{Presentation_last_created}" with parameter-bag params:
       | videoUrl        | http://show/me/2      |
       | description     | Some description 2    |
+      | name            | new name of show/me   |
       | company         | Company_Company_Api   |
       | stand           | Stand_EvtApi1_F_1335  |
     Then the response status code should be 200
@@ -193,6 +201,7 @@ Feature: managing presentations through API
     And the repsonse JSON should have "id" field
     And the repsonse JSON should have "video_url" field with value "http://show/me/2"
     And the repsonse JSON should have "description" field with value "Some description 2"
+    And the repsonse JSON should have "name" field with value "new name of show/me"
 
   Scenario: delete presentation
     Given I am authorized client with username "admin" and password "admin"
@@ -205,6 +214,7 @@ Feature: managing presentations through API
     Given I am authorized client with username "admin" and password "admin"
     When I make request "POST" "/api/v1/presentations" with parameter-bag params:
       | videoUrl        | <videoUrl>      |
+      | name            | <name>          |
       | description     | <description>   |
       | company         | <company>       |
       | stand           | <stand>         |
@@ -213,17 +223,19 @@ Feature: managing presentations through API
     And the repsonse JSON should have "error" field
 
     Examples:
-    | videoUrl         | description        | company             | stand                |
-    |                  | Some description 2 | Company_Company_Api | Stand_EvtApi1_F_1334 |
-    | http://show/me/2 | Some description 2 |                     | Stand_EvtApi1_F_1334 |
-    | http://show/me/2 | Some description 2 | Company_Company_Api |                      |
-    | http://show/me/2 | Some description 2 | not-existing        | Stand_EvtApi1_F_1334 |
-    | http://show/me/2 | Some description 2 | Company_Company_Api | not-existing         |
+    | videoUrl         | name  | description        | company             | stand                |
+    |                  | P     | Some description 2 | Company_Company_Api | Stand_EvtApi1_F_1334 |
+    | http://show/me/2 | P     | Some description 2 |                     | Stand_EvtApi1_F_1334 |
+    | http://show/me/2 | P     | Some description 2 | Company_Company_Api |                      |
+    | http://show/me/2 | P     | Some description 2 | not-existing        | Stand_EvtApi1_F_1334 |
+    | http://show/me/2 | P     | Some description 2 | Company_Company_Api | not-existing         |
+    | http://show/me/2 |       | Some description 2 | Company_Company_Api | Stand_EvtApi1_F_1334        |
 
   Scenario: cannot create presentation on occupied stand
     Given I am authorized client with username "admin" and password "admin"
     When I make request "POST" "/api/v1/presentations" with parameter-bag params:
       | videoUrl        | http://show/me/two    |
+      | name            | name of show/me/two   |
       | description     | Some description two  |
       | company         | Company_Company_Api   |
       | stand           | Stand_EvtApi1_F_1334  |
@@ -234,6 +246,7 @@ Feature: managing presentations through API
     Given I am authorized client with username "admin" and password "admin"
     When I make request "PUT" "/api/v1/presentations/{Presentation_company_api_prezi}" with parameter-bag params:
       | videoUrl        | http://show/me/2      |
+      | name            | name of show/me/2     |
       | description     | Some description 2    |
       | company         | Company_Company_Api   |
       | stand           | Stand_EvtApi1_F_1334  |
