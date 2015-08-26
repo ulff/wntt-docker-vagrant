@@ -88,6 +88,7 @@ class PresentationController extends AbstractWnttRestController
      *      {"name"="videoUrl", "dataType"="string", "description"="presentation name", "required"=true},
      *      {"name"="company", "dataType"="string", "description"="presentation's company ID", "required"=true},
      *      {"name"="stand", "dataType"="string", "description"="presentation's stand ID", "required"=true},
+     *      {"name"="name", "dataType"="string", "description"="presentation's name", "required"=true},
      *      {"name"="description", "dataType"="string", "description"="presentation's descrption", "required"=false},
      *      {"name"="isPremium", "dataType"="boolean", "description"="is presentation premium (true) or free (false)", "required"=false},
      *      {"name"="categories", "dataType"="string/array", "description"="one on many category IDs", "required"=false},
@@ -134,6 +135,7 @@ class PresentationController extends AbstractWnttRestController
      *      {"name"="videoUrl", "dataType"="string", "description"="presentation name", "required"=true},
      *      {"name"="company", "dataType"="string", "description"="presentation's company ID", "required"=true},
      *      {"name"="stand", "dataType"="string", "description"="presentation's stand ID", "required"=true},
+     *      {"name"="name", "dataType"="string", "description"="presentation's name", "required"=true},
      *      {"name"="description", "dataType"="string", "description"="presentation's descrption", "required"=false},
      *      {"name"="isPremium", "dataType"="boolean", "description"="is presentation premium (true) or free (false)", "required"=false},
      *      {"name"="categories", "dataType"="string/array", "description"="one on many category IDs", "required"=false},
@@ -220,6 +222,7 @@ class PresentationController extends AbstractWnttRestController
     {
         return [
             'videoUrl' => $request->get('videoUrl'),
+            'name' => $request->get('name'),
             'description' => $request->get('description'),
             'stand' => $request->get('stand'),
             'company' => $request->get('company'),
@@ -234,6 +237,9 @@ class PresentationController extends AbstractWnttRestController
 
         if (empty($presentationData['videoUrl'])) {
             throw new HttpException(400, 'Missing required parameters: videoUrl');
+        }
+        if (empty($presentationData['name'])) {
+            throw new HttpException(400, 'Missing required parameters: name');
         }
         if (empty($presentationData['stand'])) {
             throw new HttpException(400, 'Missing required parameters: stand');

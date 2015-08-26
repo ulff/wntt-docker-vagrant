@@ -26,6 +26,7 @@ class PresentationManager extends AbstractDocumentManager
     {
         /** @var $presentation Presentation */
         $presentation->setVideoUrl($presentationData['videoUrl']);
+        $presentation->setName($presentationData['name']);
         $presentation->setDescription($presentationData['description']);
         $presentation->setIsPremium($presentationData['isPremium'] == 'true' ? true : false);
 

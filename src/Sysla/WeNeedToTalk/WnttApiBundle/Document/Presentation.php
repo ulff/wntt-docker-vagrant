@@ -46,11 +46,17 @@ class Presentation implements Document
 
     /**
      * @MongoDB\String
+     * @Assert\NotBlank()
+     */
+    protected $name;
+
+    /**
+     * @MongoDB\String
      */
     protected $description;
 
     /**
-     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Company", cascade={"remove"})
+     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Company")
      * @Assert\NotBlank()
      * @Serializer\Expose
      * @Serializer\Groups({"inclCompany"})
@@ -111,6 +117,22 @@ class Presentation implements Document
     public function setVideoUrl($videoUrl)
     {
         $this->videoUrl = $videoUrl;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
     }
 
     /**

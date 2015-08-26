@@ -478,6 +478,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
         if(empty($presentation)) {
             $presentation = new Document\Presentation();
             $presentation->setVideoUrl($presentationData['videoUrl']);
+            $presentation->setName($presentationData['name']);
             $presentation->setDescription(@$presentationData['description']);
             $presentation->setIsPremium(@$presentationData['isPremium'] == 'true' ? true : false);
 

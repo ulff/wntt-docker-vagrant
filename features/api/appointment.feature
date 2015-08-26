@@ -79,6 +79,7 @@ Feature: managing appointments using API
     And following "Presentation" exists:
       | identifiedBy | pres1                    |
       | videoUrl     | http://company.api/12345 |
+      | name         | http://company.api/12345 |
       | description  | Presentation for API     |
       | company      | com1                     |
       | stand        | evt1_s1                  |
@@ -87,18 +88,21 @@ Feature: managing appointments using API
     And following "Presentation" exists:
       | identifiedBy | pres2                    |
       | videoUrl     | http://company.api/9     |
+      | name         | http://company.api/9     |
       | company      | com2                     |
       | stand        | evt1_s2                  |
       | isPremium    | true                     |
     And following "Presentation" exists:
       | identifiedBy | pres3                    |
       | videoUrl     | http://company.api/2314  |
+      | name         | http://company.api/2314  |
       | company      | com1                     |
       | stand        | evt2_s1                  |
       | isPremium    | false                    |
     And following "Presentation" exists:
       | identifiedBy | pres4                    |
       | videoUrl     | http://company.api23/76  |
+      | name         | http://company.api23/76  |
       | company      | com1                     |
       | stand        | evt2_s2                  |
       | isPremium    | false                    |

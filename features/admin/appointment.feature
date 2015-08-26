@@ -17,6 +17,7 @@ Feature: adding user appointments
       | Logo URL    | http://capp.com/logo |
     And "Presentation" exists with data
       | Video URL   | http://video/97   |
+      | Name        | http://video/97   |
       | Description | Some description  |
 
   Scenario: removing all events

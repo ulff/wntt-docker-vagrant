@@ -20,6 +20,7 @@ Feature: adding presentations
     And I am on "create presentation" form
     When I fill in the following:
       | Video URL   | http://video/1    |
+      | Name        | Pres name |
       | Description | Some description  |
     And I select "Company 4th" from "Company"
     And I check "Is premium"
@@ -28,6 +29,18 @@ Feature: adding presentations
 
   Scenario: do not create presentation with empty video url
     Given I am on "create presentation" form
+    When I fill in the following:
+      | Name        | Pres name |
+      | Description | Some description  |
+    And I press "Create"
+    Then I should be on "create presentation" form
+    And I should not see "successfully created"
+
+  Scenario: do not create presentation with empty name
+    Given I am on "create presentation" form
+    When I fill in the following:
+      | Video URL   | http://video/x    |
+      | Description | Some description  |
     And I press "Create"
     Then I should be on "create presentation" form
     And I should not see "successfully created"
@@ -35,6 +48,7 @@ Feature: adding presentations
   Scenario: browse presentations
     Given "presentation" exists with data
       | Video URL   | http://video/2    |
+      | Name        | Name of video 2   |
     When I go to "presentation" list
     Then I should see "http://video/2"
 

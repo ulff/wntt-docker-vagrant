@@ -15,6 +15,7 @@ class PresentationFixtures extends AbstractFixture implements OrderedFixtureInte
         $presentation->setVideoUrl('http://thumbs.dreamstime.com/z/businessman-doing-presentation-clipart-picture-male-cartoon-character-35916626.jpg');
         $presentation->setStand($manager->merge($this->getReference('stand_ot_2015_5')));
         $presentation->setCompany($manager->merge($this->getReference('company_1st')));
+        $presentation->setName('Company 1st, Oil Trade 2015');
         $presentation->setDescription('Presenation of Company 1st on Oil Trade 2015');
         $presentation->setCategories([
             $manager->merge($this->getReference('category_oil')),
@@ -28,6 +29,7 @@ class PresentationFixtures extends AbstractFixture implements OrderedFixtureInte
         $presentation->setVideoUrl('http://company2/performance.pdf');
         $presentation->setStand($manager->merge($this->getReference('stand_ipe_2014_A_A2')));
         $presentation->setCompany($manager->merge($this->getReference('company_2nd')));
+        $presentation->setName('Company 2nd, International Petrol Exhibition 2014');
         $presentation->setDescription('Presenation of Company 2nd on International Petrol Exhibition 2014');
         $presentation->setCategories([
             $manager->merge($this->getReference('category_petrol'))
@@ -39,6 +41,7 @@ class PresentationFixtures extends AbstractFixture implements OrderedFixtureInte
         $presentation->setVideoUrl('http://garrreynolds.com/wordpress/wp-content/uploads/2013/06/3-deliver.jpg');
         $presentation->setStand($manager->merge($this->getReference('stand_ot_2015_3')));
         $presentation->setCompany($manager->merge($this->getReference('company_2nd')));
+        $presentation->setName('Company 2nd, Oil Trade 2015');
         $presentation->setDescription('Presenation of Company 2nd on Oil Trade 2015');
         $presentation->setCategories([
             $manager->merge($this->getReference('category_petrol')),
