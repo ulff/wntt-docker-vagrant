@@ -32,7 +32,7 @@ class PresentationController extends AbstractWnttRestController
      *     }
      * )
      */
-    public function getPresentationsAction(ParamFetcher $paramFetcher)
+    public function getPresentationsAction(ParamFetcher $paramFetcher, Request $request)
     {
         $queryParams = [];
         $type = $paramFetcher->get('type');
@@ -47,7 +47,14 @@ class PresentationController extends AbstractWnttRestController
             ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
             ->findBy($queryParams);
 
-        $view->setData($presentations);
+        $paginator  = $this->get('knp_paginator');
+        $paginatedPresentations = $paginator->paginate(
+            $presentations,
+            $request->query->getInt('page', 1),
+            $this->container->getParameter('api_list_items_per_page')
+        );
+
+        $view->setData($paginatedPresentations);
         return $this->handleView($view);
     }
 

@@ -15,6 +15,7 @@ class StandFixtures extends AbstractFixture implements OrderedFixtureInterface
         $this->load_ipe_2015($manager);
         $this->load_ot_2014($manager);
         $this->load_ot_2015($manager);
+        $this->load_moirana_2015($manager);
 
         $manager->flush();
     }
@@ -168,5 +169,18 @@ class StandFixtures extends AbstractFixture implements OrderedFixtureInterface
         $manager->persist($stand);
         $this->addReference('stand_ot_2015_5', $stand);
     }
-}
 
+    private function load_moirana_2015(ObjectManager $manager)
+    {
+        for($i=1; $i<=20; $i++) {
+            $stand = new Stand();
+            $stand->setEvent($manager->merge($this->getReference('event_mo_i_rana')));
+            $stand->setNumber($i);
+            $stand->setHall('A');
+            $stand->setCompany($manager->merge($this->getReference('company_2nd')));
+            $manager->persist($stand);
+            $this->addReference('stand_moirana_'.$i, $stand);
+        }
+
+    }
+}

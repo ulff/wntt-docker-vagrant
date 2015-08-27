@@ -232,7 +232,14 @@ class EventController extends AbstractWnttRestController
             ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
             ->findByEvent($eventId);
 
-        $view->setData($presentations);
+        $paginator  = $this->get('knp_paginator');
+        $paginatedPresentations = $paginator->paginate(
+            $presentations,
+            $request->query->getInt('page', 1),
+            $this->container->getParameter('api_list_items_per_page')
+        );
+
+        $view->setData($paginatedPresentations);
         return $this->handleView($view);
     }
 
