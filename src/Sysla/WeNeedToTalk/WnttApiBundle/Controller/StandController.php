@@ -25,13 +25,20 @@ class StandController extends AbstractWnttRestController
      *     }
      * )
      */
-    public function getStandsAction()
+    public function getStandsAction(Request $request)
     {
         $stands = $this->get('doctrine_mongodb')
             ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
             ->findAll();
 
-        $view = $this->view($stands, 200);
+        $paginator  = $this->get('knp_paginator');
+        $paginatedStands = $paginator->paginate(
+            $stands,
+            $request->query->getInt('page', 1),
+            $this->container->getParameter('api_list_items_per_page')
+        );
+
+        $view = $this->view($paginatedStands, 200);
         return $this->handleView($view);
     }
 

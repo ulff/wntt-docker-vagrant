@@ -25,13 +25,20 @@ class CategoryController extends AbstractWnttRestController
      *     }
      * )
      */
-    public function getCategoriesAction()
+    public function getCategoriesAction(Request $request)
     {
         $categories = $this->get('doctrine_mongodb')
             ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
             ->findAll();
 
-        $view = $this->view($categories, 200);
+        $paginator  = $this->get('knp_paginator');
+        $paginatedCategories = $paginator->paginate(
+            $categories,
+            $request->query->getInt('page', 1),
+            $this->container->getParameter('api_list_items_per_page')
+        );
+
+        $view = $this->view($paginatedCategories, 200);
         return $this->handleView($view);
     }
 

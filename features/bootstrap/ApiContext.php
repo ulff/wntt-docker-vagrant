@@ -320,6 +320,18 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     }
 
     /**
+     * @Then all nested :collectionFieldName collection items should have nested :nestedFieldName field with value :expectedValue
+     */
+    public function allNestedCollectionItemsShouldHaveNestedFieldWithValue($collectionFieldName, $nestedFieldName, $expectedValue)
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        foreach($response->$collectionFieldName as $document) {
+            $this->assertDocumentHasNestedPropertyWithValue($document, $nestedFieldName, $expectedValue);
+        }
+        return;
+    }
+
+    /**
      * @Then :documentName should be created with :property set to :value
      */
     public function documentShouldBeCreatedWithPropertySetToValue($documentName, $property, $value)

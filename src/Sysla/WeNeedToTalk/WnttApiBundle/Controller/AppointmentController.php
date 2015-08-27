@@ -33,16 +33,19 @@ class AppointmentController extends AbstractWnttRestController
      *     }
      * )
      */
-    public function getAppointmentsAction(ParamFetcher $paramFetcher)
+    public function getAppointmentsAction(ParamFetcher $paramFetcher, Request $request)
     {
+
+        $allParams = $paramFetcher->all();
         $queryParams = [];
-        foreach($paramFetcher->all() as $param => $value) {
-            if($param == 'include') {
-                continue;
-            }
-            if(!empty($value)) {
-                $queryParams[$param . '.id'] = $value;
-            }
+        if(!empty($allParams['user'])) {
+            $queryParams['user.id'] = $allParams['user'];
+        }
+        if(!empty($allParams['event'])) {
+            $queryParams['event.id'] = $allParams['event'];
+        }
+        if(!empty($allParams['presentation'])) {
+            $queryParams['presentation.id'] = $allParams['presentation'];
         }
 
         $includeProperties = $paramFetcher->get('include');
@@ -52,7 +55,14 @@ class AppointmentController extends AbstractWnttRestController
             ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Appointment')
             ->findBy($queryParams);
 
-        $view->setData($appointments);
+        $paginator  = $this->get('knp_paginator');
+        $paginatedAppointments = $paginator->paginate(
+            $appointments,
+            $request->query->getInt('page', 1),
+            $this->container->getParameter('api_list_items_per_page')
+        );
+
+        $view->setData($paginatedAppointments);
         return $this->handleView($view);
     }
 

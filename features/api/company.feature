@@ -17,8 +17,11 @@ Feature: getting companies through API
   Scenario: get list of all companies
     When I make request "GET" "/api/v1/companies"
     Then the response status code should be 200
-    And the response should be JSON
-    And the response JSON should be a collection
+    And the response JSON should be a single object
+    And the repsonse JSON should have "items" field
+    And the repsonse JSON should have "total_count" field
+    And the repsonse JSON should have "current_page_number" field
+    And the response JSON "items" field should be a collection
 
   Scenario: get one company
     When I make request "GET" "/api/v1/companies/{Company_Company_Api}"
