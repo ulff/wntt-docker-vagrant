@@ -50,6 +50,16 @@ class PresentationFixtures extends AbstractFixture implements OrderedFixtureInte
         $manager->persist($presentation);
         $this->addReference('presentation_company_2nd_ot_2015', $presentation);
 
+        for($i=1; $i<=20; $i++) {
+            $presentation = new Presentation();
+            $presentation->setVideoUrl('http://multipresentations/'.$i);
+            $presentation->setStand($manager->merge($this->getReference('stand_moirana_'.$i)));
+            $presentation->setCompany($manager->merge($this->getReference('company_2nd')));
+            $presentation->setName('Presentation '.$i);
+            $manager->persist($presentation);
+            $this->addReference('presentation_'.$i, $presentation);
+        }
+
         $manager->flush();
     }
 

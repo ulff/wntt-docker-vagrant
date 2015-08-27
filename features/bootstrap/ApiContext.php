@@ -283,6 +283,43 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     }
 
     /**
+     * @Then the response JSON :fieldName field should be a collection
+     */
+    public function theResponseJsonFieldShouldBeACollection($fieldName)
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        if(!is_array($response->$fieldName)) {
+            throw new Exception\CollectionExpectedException();
+        }
+        return;
+    }
+
+    /**
+     * @Then all nested :collectionFieldName collection items should have :nestedFieldName field
+     */
+    public function allNestedCollectionItemsShouldHaveField($collectionFieldName, $nestedFieldName)
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        foreach($response->$collectionFieldName as $document) {
+            $this->assertDocumentHasProperty($document, $nestedFieldName);
+        }
+        return;
+    }
+
+    /**
+     * @Then all nested :collectionFieldName collection items should have :nestedFieldName field set to :expectedValue
+     */
+    public function allNestedCollectionItemsShouldHaveFieldSetTo($collectionFieldName, $nestedFieldName, $expectedValue)
+    {
+        $expectedBoolean = ($expectedValue == 'true' ? true : false);
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        foreach($response->$collectionFieldName as $document) {
+            $this->assertDocumentHasPropertyWithBooleanValue($document, $nestedFieldName, $expectedBoolean);
+        }
+        return;
+    }
+
+    /**
      * @Then :documentName should be created with :property set to :value
      */
     public function documentShouldBeCreatedWithPropertySetToValue($documentName, $property, $value)

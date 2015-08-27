@@ -93,29 +93,39 @@ Feature: managing presentations through API
     When I make request "GET" "/api/v1/presentations"
     Then the response status code should be 200
     And the response should be JSON
-    And the response JSON should be a collection
+    And the response JSON should be a single object
+    And the repsonse JSON should have "items" field
+    And the repsonse JSON should have "total_count" field
+    And the repsonse JSON should have "current_page_number" field
+    And the response JSON "items" field should be a collection
 
   Scenario: get list of all presentations, including stands information
     When I make request "GET" "/api/v1/presentations?include[]=stand"
     Then the response status code should be 200
     And the response should be JSON
-    And the response JSON should be a collection
-    And all response collection items should have "stand" field
+    And the response JSON should be a single object
+    And the repsonse JSON should have "items" field
+    And the response JSON "items" field should be a collection
+    And all nested "items" collection items should have "stand" field
 
   Scenario: get list of all presentations, including companies information
     When I make request "GET" "/api/v1/presentations?include[]=company"
     Then the response status code should be 200
     And the response should be JSON
-    And the response JSON should be a collection
-    And all response collection items should have "company" field
+    And the response JSON should be a single object
+    And the repsonse JSON should have "items" field
+    And the response JSON "items" field should be a collection
+    And all nested "items" collection items should have "company" field
 
   Scenario: get list of all presentations, including stands and companies information
     When I make request "GET" "/api/v1/presentations?include[]=stand&include[]=company"
     Then the response status code should be 200
     And the response should be JSON
-    And the response JSON should be a collection
-    And all response collection items should have "company" field
-    And all response collection items should have "stand" field
+    And the response JSON should be a single object
+    And the repsonse JSON should have "items" field
+    And the response JSON "items" field should be a collection
+    And all nested "items" collection items should have "stand" field
+    And all nested "items" collection items should have "company" field
 
   Scenario: get one presentation
     When I make request "GET" "/api/v1/presentations/{Presentation_company_api_prezi}"
@@ -131,44 +141,55 @@ Feature: managing presentations through API
     When I make request "GET" "/api/v1/presentations?type=premium"
     Then the response status code should be 200
     And the response should be JSON
-    And the response JSON should be a collection
-    And all response collection items should have "is_premium" field set to "true"
+    And the response JSON should be a single object
+    And the repsonse JSON should have "items" field
+    And the response JSON "items" field should be a collection
+    And all nested "items" collection items should have "is_premium" field set to "true"
 
   Scenario: get list of free presentations
     When I make request "GET" "/api/v1/presentations?type=free"
     Then the response status code should be 200
     And the response should be JSON
-    And the response JSON should be a collection
-    And all response collection items should have "is_premium" field set to "false"
+    And the response JSON should be a single object
+    And the repsonse JSON should have "items" field
+    And the response JSON "items" field should be a collection
+    And all nested "items" collection items should have "is_premium" field set to "false"
 
   Scenario: get list of particular event presentations
     When I make request "GET" "/api/v1/events/{Event_Event_Api_1}/presentations"
     Then the response status code should be 200
     And the response should be JSON
-    And the response JSON should be a collection
+    And the response JSON should be a single object
+    And the repsonse JSON should have "items" field
 
   Scenario: get list of particular event presentations, including stands information
     When I make request "GET" "/api/v1/events/{Event_Event_Api_1}/presentations?include[]=stand"
     Then the response status code should be 200
     And the response should be JSON
-    And the response JSON should be a collection
-    And all response collection items should have "stand" field
+    And the response JSON should be a single object
+    And the repsonse JSON should have "items" field
+    And the response JSON "items" field should be a collection
+    And all nested "items" collection items should have "stand" field
 
 
   Scenario: get list of particular event presentations, including companies information
     When I make request "GET" "/api/v1/events/{Event_Event_Api_1}/presentations?include[]=company"
     Then the response status code should be 200
     And the response should be JSON
-    And the response JSON should be a collection
-    And all response collection items should have "company" field
+    And the response JSON should be a single object
+    And the repsonse JSON should have "items" field
+    And the response JSON "items" field should be a collection
+    And all nested "items" collection items should have "company" field
 
   Scenario: get list of particular event presentations, including stands and companies information
     When I make request "GET" "/api/v1/events/{Event_Event_Api_1}/presentations?include[]=stand&include[]=company"
     Then the response status code should be 200
     And the response should be JSON
-    And the response JSON should be a collection
-    And all response collection items should have "company" field
-    And all response collection items should have "stand" field
+    And the response JSON should be a single object
+    And the repsonse JSON should have "items" field
+    And the response JSON "items" field should be a collection
+    And all nested "items" collection items should have "stand" field
+    And all nested "items" collection items should have "company" field
 
   Scenario: create presentation
     Given I am authorized client with username "admin" and password "admin"
