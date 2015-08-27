@@ -31,7 +31,7 @@ class UserController extends AbstractWnttRestController
      *     }
      * )
      */
-    public function getUsersAction(ParamFetcher $paramFetcher)
+    public function getUsersAction(ParamFetcher $paramFetcher, Request $request)
     {
         $queryParams = [];
         $username = $paramFetcher->get('username');
@@ -43,7 +43,14 @@ class UserController extends AbstractWnttRestController
             ->getRepository('SyslaWeeNeedToTalkWnttUserBundle:User')
             ->findBy($queryParams);
 
-        $view = $this->view($users, 200);
+        $paginator  = $this->get('knp_paginator');
+        $paginatedUsers = $paginator->paginate(
+            $users,
+            $request->query->getInt('page', 1),
+            $this->container->getParameter('api_list_items_per_page')
+        );
+
+        $view = $this->view($paginatedUsers, 200);
         return $this->handleView($view);
     }
 

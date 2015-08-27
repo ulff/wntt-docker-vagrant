@@ -27,13 +27,20 @@ class EventController extends AbstractWnttRestController
      *     }
      * )
      */
-    public function getEventsAction()
+    public function getEventsAction(Request $request)
     {
         $events = $this->get('doctrine_mongodb')
             ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
             ->findAll();
 
-        $view = $this->view($events, 200);
+        $paginator  = $this->get('knp_paginator');
+        $paginatedEvents = $paginator->paginate(
+            $events,
+            $request->query->getInt('page', 1),
+            $this->container->getParameter('api_list_items_per_page')
+        );
+
+        $view = $this->view($paginatedEvents, 200);
         return $this->handleView($view);
     }
 

@@ -25,13 +25,20 @@ class CompanyController extends AbstractWnttRestController
      *     }
      * )
      */
-    public function getCompaniesAction()
+    public function getCompaniesAction(Request $request)
     {
         $companies = $this->get('doctrine_mongodb')
             ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
             ->findAll();
 
-        $view = $this->view($companies, 200);
+        $paginator  = $this->get('knp_paginator');
+        $paginatedCompanies = $paginator->paginate(
+            $companies,
+            $request->query->getInt('page', 1),
+            $this->container->getParameter('api_list_items_per_page')
+        );
+
+        $view = $this->view($paginatedCompanies, 200);
         return $this->handleView($view);
     }
 
