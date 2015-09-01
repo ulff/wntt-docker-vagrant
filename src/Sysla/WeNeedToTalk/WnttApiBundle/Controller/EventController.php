@@ -18,6 +18,10 @@ class EventController extends AbstractWnttRestController
     /**
      * Returns collection of Event objects.
      *
+     * @QueryParam(name="noPaging", nullable=true, default=false, description="set to true if you want to retrieve all records without paging")
+     *
+     * @param ParamFetcher $paramFetcher
+     *
      * @ApiDoc(
      *  resource=true,
      *  description="Returns collection of Event objects",
@@ -27,7 +31,7 @@ class EventController extends AbstractWnttRestController
      *     }
      * )
      */
-    public function getEventsAction(Request $request)
+    public function getEventsAction(ParamFetcher $paramFetcher, Request $request)
     {
         $events = $this->get('doctrine_mongodb')
             ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
@@ -37,7 +41,7 @@ class EventController extends AbstractWnttRestController
         $paginatedEvents = $paginator->paginate(
             $events,
             $request->query->getInt('page', 1),
-            $this->container->getParameter('api_list_items_per_page')
+            $paramFetcher->get('noPaging') === 'true' ? PHP_INT_MAX : $this->container->getParameter('api_list_items_per_page')
         );
 
         $view = $this->view($paginatedEvents, 200);
@@ -210,6 +214,7 @@ class EventController extends AbstractWnttRestController
      *
      * @QueryParam(name="include", nullable=true, default=null, array=true)
      * @QueryParam(name="search", nullable=true, default=null, array=true)
+     * @QueryParam(name="noPaging", nullable=true, default=false, description="set to true if you want to retrieve all records without paging")
      *
      * @param ParamFetcher $paramFetcher
      *
@@ -246,7 +251,7 @@ class EventController extends AbstractWnttRestController
         $paginatedPresentations = $paginator->paginate(
             $presentations,
             $request->query->getInt('page', 1),
-            $this->container->getParameter('api_list_items_per_page')
+            $paramFetcher->get('noPaging') === 'true' ? PHP_INT_MAX : $this->container->getParameter('api_list_items_per_page')
         );
 
         $view->setData($paginatedPresentations);

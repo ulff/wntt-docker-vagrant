@@ -19,6 +19,7 @@ class UserController extends AbstractWnttRestController
      * Returns collection of User objects.
      *
      * @QueryParam(name="username", nullable=true, requirements="\w+")
+     * @QueryParam(name="noPaging", nullable=true, default=false, description="set to true if you want to retrieve all records without paging")
      *
      * @param ParamFetcher $paramFetcher
      *
@@ -47,7 +48,7 @@ class UserController extends AbstractWnttRestController
         $paginatedUsers = $paginator->paginate(
             $users,
             $request->query->getInt('page', 1),
-            $this->container->getParameter('api_list_items_per_page')
+            $paramFetcher->get('noPaging') === 'true' ? PHP_INT_MAX : $this->container->getParameter('api_list_items_per_page')
         );
 
         $view = $this->view($paginatedUsers, 200);

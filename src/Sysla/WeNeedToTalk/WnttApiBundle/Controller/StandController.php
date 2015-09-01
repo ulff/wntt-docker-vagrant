@@ -10,11 +10,17 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DuplicatedDocumentException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\StandManager;
+use FOS\RestBundle\Request\ParamFetcher;
+use FOS\RestBundle\Controller\Annotations\QueryParam;
 
 class StandController extends AbstractWnttRestController
 {
     /**
      * Returns collection of Stand objects.
+     *
+     * @QueryParam(name="noPaging", nullable=true, default=false, description="set to true if you want to retrieve all records without paging")
+     *
+     * @param ParamFetcher $paramFetcher
      *
      * @ApiDoc(
      *  resource=true,
@@ -25,7 +31,7 @@ class StandController extends AbstractWnttRestController
      *     }
      * )
      */
-    public function getStandsAction(Request $request)
+    public function getStandsAction(ParamFetcher $paramFetcher, Request $request)
     {
         $stands = $this->get('doctrine_mongodb')
             ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
@@ -35,7 +41,7 @@ class StandController extends AbstractWnttRestController
         $paginatedStands = $paginator->paginate(
             $stands,
             $request->query->getInt('page', 1),
-            $this->container->getParameter('api_list_items_per_page')
+            $paramFetcher->get('noPaging') === 'true' ? PHP_INT_MAX : $this->container->getParameter('api_list_items_per_page')
         );
 
         $view = $this->view($paginatedStands, 200);
