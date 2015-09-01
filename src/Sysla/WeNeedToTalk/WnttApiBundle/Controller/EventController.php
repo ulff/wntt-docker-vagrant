@@ -209,6 +209,7 @@ class EventController extends AbstractWnttRestController
      * Returns collection of Presentation objects by given Event ID.
      *
      * @QueryParam(name="include", nullable=true, default=null, array=true)
+     * @QueryParam(name="search", nullable=true, default=null, array=true)
      *
      * @param ParamFetcher $paramFetcher
      *
@@ -235,9 +236,11 @@ class EventController extends AbstractWnttRestController
         $includeProperties = $paramFetcher->get('include');
         $view = $this->createViewWithSerializationContext($includeProperties);
 
+        $searchParams = $paramFetcher->get('search');
+
         $presentations = $this->get('doctrine_mongodb')
             ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
-            ->findByEvent($eventId);
+            ->findBySearchParams($searchParams, $eventId);
 
         $paginator  = $this->get('knp_paginator');
         $paginatedPresentations = $paginator->paginate(
