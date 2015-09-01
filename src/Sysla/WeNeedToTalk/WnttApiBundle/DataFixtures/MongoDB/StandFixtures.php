@@ -176,7 +176,7 @@ class StandFixtures extends AbstractFixture implements OrderedFixtureInterface
             $stand = new Stand();
             $stand->setEvent($manager->merge($this->getReference('event_mo_i_rana')));
             $stand->setNumber($i);
-            $stand->setHall('A');
+            $stand->setHall('B');
             $stand->setCompany($manager->merge($this->getReference('company_2nd')));
             $manager->persist($stand);
             $this->addReference('stand_moirana_'.$i, $stand);

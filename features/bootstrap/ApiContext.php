@@ -276,6 +276,9 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     public function allResponseCollectionItemsShouldHaveFieldSetTo($property, $expectedBoolean)
     {
         $response = json_decode($this->getClient()->getResponse()->getContent());
+        if(empty($response)) {
+            throw new Exception\EmptyCollectionException();
+        }
         foreach($response as $document) {
             $this->assertDocumentHasPropertyWithBooleanValue($document, $property, $expectedBoolean);
         }
@@ -300,6 +303,9 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     public function allNestedCollectionItemsShouldHaveField($collectionFieldName, $nestedFieldName)
     {
         $response = json_decode($this->getClient()->getResponse()->getContent());
+        if(empty($response->$collectionFieldName)) {
+            throw new Exception\EmptyCollectionException($collectionFieldName);
+        }
         foreach($response->$collectionFieldName as $document) {
             $this->assertDocumentHasProperty($document, $nestedFieldName);
         }
@@ -313,8 +319,26 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     {
         $expectedBoolean = ($expectedValue == 'true' ? true : false);
         $response = json_decode($this->getClient()->getResponse()->getContent());
+        if(empty($response->$collectionFieldName)) {
+            throw new Exception\EmptyCollectionException($collectionFieldName);
+        }
         foreach($response->$collectionFieldName as $document) {
             $this->assertDocumentHasPropertyWithBooleanValue($document, $nestedFieldName, $expectedBoolean);
+        }
+        return;
+    }
+
+    /**
+     * @Then all nested :collectionFieldName collection items should have :nestedFieldName field with value :expectedValue
+     */
+    public function allNestedCollectionItemsShouldHaveFieldWithValue($collectionFieldName, $nestedFieldName, $expectedValue)
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        if(empty($response->$collectionFieldName)) {
+            throw new Exception\EmptyCollectionException($collectionFieldName);
+        }
+        foreach($response->$collectionFieldName as $document) {
+            $this->assertDocumentHasPropertyWithValue($document, $nestedFieldName, $expectedValue);
         }
         return;
     }
@@ -325,6 +349,9 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     public function allNestedCollectionItemsShouldHaveNestedFieldWithValue($collectionFieldName, $nestedFieldName, $expectedValue)
     {
         $response = json_decode($this->getClient()->getResponse()->getContent());
+        if(empty($response->$collectionFieldName)) {
+            throw new Exception\EmptyCollectionException($collectionFieldName);
+        }
         foreach($response->$collectionFieldName as $document) {
             $this->assertDocumentHasNestedPropertyWithValue($document, $nestedFieldName, $expectedValue);
         }
