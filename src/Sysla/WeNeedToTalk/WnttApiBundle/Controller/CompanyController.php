@@ -10,11 +10,17 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DuplicatedDocumentException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Company;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\CompanyManager;
+use FOS\RestBundle\Request\ParamFetcher;
+use FOS\RestBundle\Controller\Annotations\QueryParam;
 
 class CompanyController extends AbstractWnttRestController
 {
     /**
      * Returns collection of Company objects.
+     *
+     * @QueryParam(name="noPaging", nullable=true, default=false, description="set to true if you want to retrieve all records without paging")
+     *
+     * @param ParamFetcher $paramFetcher
      *
      * @ApiDoc(
      *  resource=true,
@@ -25,7 +31,7 @@ class CompanyController extends AbstractWnttRestController
      *     }
      * )
      */
-    public function getCompaniesAction(Request $request)
+    public function getCompaniesAction(ParamFetcher $paramFetcher, Request $request)
     {
         $companies = $this->get('doctrine_mongodb')
             ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
@@ -35,7 +41,7 @@ class CompanyController extends AbstractWnttRestController
         $paginatedCompanies = $paginator->paginate(
             $companies,
             $request->query->getInt('page', 1),
-            $this->container->getParameter('api_list_items_per_page')
+            $paramFetcher->get('noPaging') === 'true' ? PHP_INT_MAX : $this->container->getParameter('api_list_items_per_page')
         );
 
         $view = $this->view($paginatedCompanies, 200);

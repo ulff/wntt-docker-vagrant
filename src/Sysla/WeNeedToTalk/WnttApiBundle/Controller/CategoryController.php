@@ -10,11 +10,17 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DuplicatedDocumentException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Category;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\CategoryManager;
+use FOS\RestBundle\Request\ParamFetcher;
+use FOS\RestBundle\Controller\Annotations\QueryParam;
 
 class CategoryController extends AbstractWnttRestController
 {
     /**
      * Returns collection of Category objects.
+     *
+     * @QueryParam(name="noPaging", nullable=true, default=false, description="set to true if you want to retrieve all records without paging")
+     *
+     * @param ParamFetcher $paramFetcher
      *
      * @ApiDoc(
      *  resource=true,
@@ -25,7 +31,7 @@ class CategoryController extends AbstractWnttRestController
      *     }
      * )
      */
-    public function getCategoriesAction(Request $request)
+    public function getCategoriesAction(ParamFetcher $paramFetcher, Request $request)
     {
         $categories = $this->get('doctrine_mongodb')
             ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
@@ -35,7 +41,7 @@ class CategoryController extends AbstractWnttRestController
         $paginatedCategories = $paginator->paginate(
             $categories,
             $request->query->getInt('page', 1),
-            $this->container->getParameter('api_list_items_per_page')
+            $paramFetcher->get('noPaging') === 'true' ? PHP_INT_MAX : $this->container->getParameter('api_list_items_per_page')
         );
 
         $view = $this->view($paginatedCategories, 200);

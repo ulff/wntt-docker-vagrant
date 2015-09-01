@@ -22,6 +22,8 @@ class AppointmentController extends AbstractWnttRestController
      * @QueryParam(name="event", nullable=true, requirements="[a-z0-9]+")
      * @QueryParam(name="presentation", nullable=true, requirements="[a-z0-9]+")
      * @QueryParam(name="include", nullable=true, default=null, array=true)
+     * @QueryParam(name="noPaging", nullable=true, default=false, description="set to true if you want to retrieve all records without paging")
+     *
      * @param ParamFetcher $paramFetcher
      *
      * @ApiDoc(
@@ -59,7 +61,7 @@ class AppointmentController extends AbstractWnttRestController
         $paginatedAppointments = $paginator->paginate(
             $appointments,
             $request->query->getInt('page', 1),
-            $this->container->getParameter('api_list_items_per_page')
+            $paramFetcher->get('noPaging') === 'true' ? PHP_INT_MAX : $this->container->getParameter('api_list_items_per_page')
         );
 
         $view->setData($paginatedAppointments);
