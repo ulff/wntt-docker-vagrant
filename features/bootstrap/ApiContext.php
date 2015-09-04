@@ -94,7 +94,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
 
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
-        $accessToken = $dm->getRepository('SyslaWeeNeedToTalkWnttOAuthBundle:AccessToken')
+        $accessToken = $dm->getRepository('SyslaWeNeedToTalkWnttOAuthBundle:AccessToken')
             ->findOneBy(array('client.id' => $client->getId()));
 
         $this->getParameterBag()->set('ACCESS_TOKEN', $accessToken->getToken());
@@ -121,7 +121,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
 
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
-        $accessToken = $dm->getRepository('SyslaWeeNeedToTalkWnttOAuthBundle:AccessToken')
+        $accessToken = $dm->getRepository('SyslaWeNeedToTalkWnttOAuthBundle:AccessToken')
             ->findOneBy(array('client.id' => $client->getId()));
 
         $this->getParameterBag()->set('ACCESS_TOKEN', $accessToken->getToken());
@@ -366,10 +366,10 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
         if(ucfirst($documentName) == 'User') {
-            $document = $dm->getRepository('SyslaWeeNeedToTalkWnttUserBundle:'.ucfirst($documentName))
+            $document = $dm->getRepository('SyslaWeNeedToTalkWnttUserBundle:'.ucfirst($documentName))
                 ->findOneBy(array($property => $this->extractFromParameterBag($value)));
         } else {
-            $document = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:'.ucfirst($documentName))
+            $document = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:'.ucfirst($documentName))
                 ->findOneBy(array($property => $this->extractFromParameterBag($value)));
         }
 
@@ -458,7 +458,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     {
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
-        $category = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+        $category = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Category')
             ->findOneByName($categoryData['name']);
 
         if(empty($category)) {
@@ -476,7 +476,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     {
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
-        $company = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+        $company = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
             ->findOneByName($companyData['name']);
 
         if(empty($company)) {
@@ -496,7 +496,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     {
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
-        $event = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
+        $event = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Event')
             ->findOneByName($eventData['name']);
 
         if(empty($event)) {
@@ -517,7 +517,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     {
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
-        $stand = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
+        $stand = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Stand')
             ->findOneByNumber($standData['number']);
 
         if(empty($stand)) {
@@ -526,13 +526,13 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
             $stand->setHall(@$standData['hall']);
 
             $eventId = $this->getParameterBag()->get('Event_'.$standData['event']);
-            $event = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
+            $event = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Event')
                 ->findOneById($eventId);
             $stand->setEvent($event);
 
             if(isset($standData['company'])) {
                 $companyId = $this->getParameterBag()->get('Company_'.$standData['company']);
-                $company = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+                $company = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
                     ->findOneById($companyId);
                 $stand->setCompany($company);
             }
@@ -548,7 +548,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     {
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
-        $presentation = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
+        $presentation = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Presentation')
             ->findOneByVideoUrl($presentationData['videoUrl']);
 
         if(empty($presentation)) {
@@ -559,13 +559,13 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
             $presentation->setIsPremium(@$presentationData['isPremium'] == 'true' ? true : false);
 
             $standId = $this->getParameterBag()->get('Stand_'.$presentationData['stand']);
-            $stand = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
+            $stand = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Stand')
                 ->findOneById($standId);
             $presentation->setStand($stand);
 
             if(isset($presentationData['company'])) {
                 $companyId = $this->getParameterBag()->get('Company_'.$presentationData['company']);
-                $company = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+                $company = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
                     ->findOneById($companyId);
                 $presentation->setCompany($company);
             }
@@ -574,7 +574,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
                 $categories = [];
                 foreach(explode(';', $presentationData['categories']) as $categoryName) {
                     $categoryId = $this->getParameterBag()->get('Category_'.$categoryName);
-                    $category = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+                    $category = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Category')
                         ->findOneById($categoryId);
                     if(!empty($category)) {
                         $categories[] = $category;
@@ -594,7 +594,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     {
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
-        $user = $dm->getRepository('SyslaWeeNeedToTalkWnttUserBundle:User')
+        $user = $dm->getRepository('SyslaWeNeedToTalkWnttUserBundle:User')
             ->findOneByUsername($userData['username']);
 
         if(empty($user)) {
@@ -607,7 +607,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
 
             if(isset($userData['company'])) {
                 $companyId = $this->getParameterBag()->get('Company_'.$userData['company']);
-                $company = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+                $company = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
                     ->findOneById($companyId);
                 $user->setCompany($company);
             }
@@ -623,7 +623,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     {
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
-        $appointment = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Appointment')
+        $appointment = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Appointment')
             ->findOneBy([
                 'user.id' => $appointmentData['user'],
                 'presentation.id' => $appointmentData['presentation']
@@ -635,12 +635,12 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
             $appointment->setIsVisited(@$appointmentData['isVisited'] == 'true' ? true : false);
 
             $userId = $this->getParameterBag()->get('User_'.$appointmentData['user']);
-            $user = $dm->getRepository('SyslaWeeNeedToTalkWnttUserBundle:User')
+            $user = $dm->getRepository('SyslaWeNeedToTalkWnttUserBundle:User')
                 ->findOneById($userId);
             $appointment->setUser($user);
 
             $presentationId = $this->getParameterBag()->get('Presentation_'.$appointmentData['presentation']);
-            $presentation = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
+            $presentation = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Presentation')
                 ->findOneById($presentationId);
             $appointment->setPresentation($presentation);
 

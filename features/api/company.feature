@@ -78,10 +78,6 @@ Feature: getting companies through API
     And the response should be JSON
     And the repsonse JSON should have "error" field
 
-  Scenario: cannot create company without user context
-    When I make request "POST" "/api/v1/companies"
-    Then the response status code should be 403
-
   Scenario: cannot update company without user context
     When I make request "PUT" "/api/v1/companies/{Company_Company_Api}"
     Then the response status code should be 403

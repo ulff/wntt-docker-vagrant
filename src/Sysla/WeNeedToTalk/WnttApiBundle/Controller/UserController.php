@@ -12,6 +12,7 @@ use Sysla\WeNeedToTalk\WnttUserBundle\Document\User;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\UserManager;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
+use Sysla\WeNeedToTalk\WnttApiBundle\Service\EmailDispatcher;
 
 class UserController extends AbstractWnttRestController
 {
@@ -41,7 +42,7 @@ class UserController extends AbstractWnttRestController
         }
 
         $users = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttUserBundle:User')
+            ->getRepository('SyslaWeNeedToTalkWnttUserBundle:User')
             ->findBy($queryParams);
 
         $paginator  = $this->get('knp_paginator');
@@ -71,7 +72,7 @@ class UserController extends AbstractWnttRestController
     public function getUserAction($id)
     {
         $user = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttUserBundle:User')
+            ->getRepository('SyslaWeNeedToTalkWnttUserBundle:User')
             ->find($id);
 
         if (!$user) {
@@ -113,13 +114,20 @@ class UserController extends AbstractWnttRestController
             $userManager = $this->get('wnttapi.manager.user');
             $baseUserManager = $this->container->get('fos_user.user_manager');
             $userManager->setBaseUserManager($baseUserManager);
+            $userManager->setTokenGenerator($this->get('fos_user.util.token_generator'));
             $user = $userManager->createDocument($userData, [
                 'username' => $userData['username']
             ]);
+
+            /** @var $emailDispatcher EmailDispatcher */
+            $emailDispatcher = $this->get('wnttapi.service.email_dispatcher');
+            $emailDispatcher->sendUserConfirmationEmail($user);
         } catch(UserExistsException $e) {
             throw new HttpException(409, $e->getMessage());
         } catch(DocumentValidationException $e) {
             throw new HttpException(400, $e->getMessage());
+        } catch(\Swift_TransportException $e) {
+            throw new HttpException(500, 'User was created, but some problems with sending confirmation email occured');
         } catch(\Exception $e) {
             throw new HttpException(500, 'Unknown error occured during processing request');
         }
@@ -157,7 +165,7 @@ class UserController extends AbstractWnttRestController
     {
         /** @var $user User */
         $user = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttUserBundle:User')
+            ->getRepository('SyslaWeNeedToTalkWnttUserBundle:User')
             ->find($id);
 
         if (empty($user)) {
@@ -213,7 +221,7 @@ class UserController extends AbstractWnttRestController
     {
         /** @var $user User */
         $user = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttUserBundle:User')
+            ->getRepository('SyslaWeNeedToTalkWnttUserBundle:User')
             ->find($id);
 
         if (empty($user)) {
@@ -259,7 +267,7 @@ class UserController extends AbstractWnttRestController
     {
         /** @var $user User */
         $user = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttUserBundle:User')
+            ->getRepository('SyslaWeNeedToTalkWnttUserBundle:User')
             ->find($id);
 
         if (empty($user)) {
@@ -307,7 +315,7 @@ class UserController extends AbstractWnttRestController
         }
 
         if(!empty($userData['company'])) {
-            $company = $documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+            $company = $documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
                 ->findOneById($userData['company']);
             if (empty($company)) {
                 throw new HttpException(400, "Invalid parameter: company with ID: '{$userData['company']}' not found!");
@@ -356,7 +364,7 @@ class UserController extends AbstractWnttRestController
         }
 
         if(!empty($userData['company'])) {
-            $company = $documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+            $company = $documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
                 ->findOneById($userData['company']);
             if (empty($company)) {
                 throw new HttpException(400, "Invalid parameter: company with ID: '{$userData['company']}' not found!");

@@ -34,7 +34,7 @@ class CategoryController extends AbstractWnttRestController
     public function getCategoriesAction(ParamFetcher $paramFetcher, Request $request)
     {
         $categories = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Category')
             ->findAll();
 
         $paginator  = $this->get('knp_paginator');
@@ -64,7 +64,7 @@ class CategoryController extends AbstractWnttRestController
     public function getCategoryAction($id)
     {
         $category = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Category')
             ->find($id);
 
         if (!$category) {
@@ -136,7 +136,7 @@ class CategoryController extends AbstractWnttRestController
     {
         /** @var $category Category */
         $category = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Category')
             ->find($id);
 
         if (empty($category)) {
@@ -180,7 +180,7 @@ class CategoryController extends AbstractWnttRestController
     {
         /** @var $category Category */
         $category = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Category')
             ->find($id);
 
         if (empty($category)) {

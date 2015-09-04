@@ -34,7 +34,7 @@ class StandController extends AbstractWnttRestController
     public function getStandsAction(ParamFetcher $paramFetcher, Request $request)
     {
         $stands = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Stand')
             ->findAll();
 
         $paginator  = $this->get('knp_paginator');
@@ -64,7 +64,7 @@ class StandController extends AbstractWnttRestController
     public function getStandAction($id)
     {
         $stand = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Stand')
             ->find($id);
 
         if (!$stand) {
@@ -145,7 +145,7 @@ class StandController extends AbstractWnttRestController
     {
         /** @var $stand Stand */
         $stand = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Stand')
             ->find($id);
 
         if (empty($stand)) {
@@ -189,7 +189,7 @@ class StandController extends AbstractWnttRestController
     {
         /** @var $stand Stand */
         $stand = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Stand')
             ->find($id);
 
         if (empty($stand)) {
@@ -229,13 +229,13 @@ class StandController extends AbstractWnttRestController
             throw new HttpException(400, 'Missing required parameters: event');
         }
 
-        $company = $documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+        $company = $documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
             ->findOneById($standData['company']);
         if(empty($company)) {
             throw new HttpException(400, "Invalid parameter: company with ID: '{$standData['company']}' not found!");
         }
 
-        $event = $documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
+        $event = $documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Event')
             ->findOneById($standData['event']);
         if(empty($event)) {
             throw new HttpException(400, "Invalid parameter: event with ID: '{$standData['event']}' not found!");

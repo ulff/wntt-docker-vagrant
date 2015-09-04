@@ -27,11 +27,11 @@ class StandManager extends AbstractDocumentManager
         $stand->setNumber($standData['number']);
         $stand->setHall($standData['hall']);
 
-        $company = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+        $company = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
             ->findOneById($standData['company']);
         $stand->setCompany($company);
 
-        $event = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
+        $event = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Event')
             ->findOneById($standData['event']);
         $stand->setEvent($event);
     }

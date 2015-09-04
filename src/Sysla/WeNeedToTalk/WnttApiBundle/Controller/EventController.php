@@ -34,7 +34,7 @@ class EventController extends AbstractWnttRestController
     public function getEventsAction(ParamFetcher $paramFetcher, Request $request)
     {
         $events = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Event')
             ->findAll();
 
         $paginator  = $this->get('knp_paginator');
@@ -64,7 +64,7 @@ class EventController extends AbstractWnttRestController
     public function getEventAction($id)
     {
         $event = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Event')
             ->find($id);
 
         if (!$event) {
@@ -146,7 +146,7 @@ class EventController extends AbstractWnttRestController
     {
         /** @var $event Event */
         $event = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Event')
             ->find($id);
 
         if (empty($event)) {
@@ -190,7 +190,7 @@ class EventController extends AbstractWnttRestController
     {
         /** @var $event Event */
         $event = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Event')
             ->find($id);
 
         if (empty($event)) {
@@ -231,7 +231,7 @@ class EventController extends AbstractWnttRestController
     {
         /** @var $event Event */
         $event = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Event')
             ->find($eventId);
 
         if (empty($event)) {
@@ -244,7 +244,7 @@ class EventController extends AbstractWnttRestController
         $searchParams = $paramFetcher->get('search');
 
         $presentations = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Presentation')
             ->findBySearchParams($searchParams, $eventId);
 
         $paginator  = $this->get('knp_paginator');

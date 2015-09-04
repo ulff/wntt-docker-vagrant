@@ -27,17 +27,17 @@ class AppointmentManager extends AbstractDocumentManager
         /** @var $appointment Appointment */
         $appointment->setIsVisited($appointmentData['isVisited'] == 'true' ? true : false);
 
-        $user = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttUserBundle:User')
+        $user = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttUserBundle:User')
             ->findOneById($appointmentData['user']);
         $appointment->setUser($user);
 
         /** @var $presentation \Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation */
-        $presentation = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
+        $presentation = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Presentation')
             ->findOneById($appointmentData['presentation']);
         $appointment->setPresentation($presentation);
 
         if(!empty($appointmentData['event'])) {
-            $event = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
+            $event = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Event')
                 ->findOneById($appointmentData['event']);
             $appointment->setEvent($event);
         } else {
@@ -52,11 +52,11 @@ class AppointmentManager extends AbstractDocumentManager
         }
 
         /** @var $event \Sysla\WeNeedToTalk\WnttApiBundle\Document\Event */
-        $event = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
+        $event = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Event')
             ->findOneById($appointmentData['event']);
 
         /** @var $presentation \Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation */
-        $presentation = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
+        $presentation = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Presentation')
             ->findOneById($appointmentData['presentation']);
 
         if($event->getId() != $presentation->getStand()->getEvent()->getId()) {

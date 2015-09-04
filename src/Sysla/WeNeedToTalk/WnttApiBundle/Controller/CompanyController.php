@@ -12,6 +12,7 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Document\Company;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\CompanyManager;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
+use Sysla\WeNeedToTalk\WnttApiBundle\Service\EmailDispatcher;
 
 class CompanyController extends AbstractWnttRestController
 {
@@ -34,7 +35,7 @@ class CompanyController extends AbstractWnttRestController
     public function getCompaniesAction(ParamFetcher $paramFetcher, Request $request)
     {
         $companies = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
             ->findAll();
 
         $paginator  = $this->get('knp_paginator');
@@ -64,7 +65,7 @@ class CompanyController extends AbstractWnttRestController
     public function getCompanyAction($id)
     {
         $company = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
             ->find($id);
 
         if (!$company) {
@@ -76,7 +77,7 @@ class CompanyController extends AbstractWnttRestController
     }
 
     /**
-     * Creates new Company object. ROLE_USER is minimum required role to perform this action.
+     * Creates new Company object.
      *
      * @ApiDoc(
      *   resource=true,
@@ -102,6 +103,10 @@ class CompanyController extends AbstractWnttRestController
             /** @var $companyManager CompanyManager */
             $companyManager = $this->get('wnttapi.manager.company');
             $company = $companyManager->createDocument($companyData, ['name' => $companyData['name']]);
+
+            /** @var $emailDispatcher EmailDispatcher */
+            $emailDispatcher = $this->get('wnttapi.service.email_dispatcher');
+            $emailDispatcher->sendNewCompanyRegsiteredNotification($company);
         } catch(DuplicatedDocumentException $e) {
             throw new HttpException(409, $e->getMessage());
         } catch(DocumentValidationException $e) {
@@ -140,7 +145,7 @@ class CompanyController extends AbstractWnttRestController
     {
         /** @var $company Company */
         $company = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
             ->find($id);
 
         if (empty($company)) {
@@ -186,7 +191,7 @@ class CompanyController extends AbstractWnttRestController
     {
         /** @var $company Company */
         $company = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
             ->find($id);
 
         if (empty($company)) {

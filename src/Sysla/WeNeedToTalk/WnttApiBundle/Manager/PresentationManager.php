@@ -34,22 +34,22 @@ class PresentationManager extends AbstractDocumentManager
         $categoryIds = $presentationData['categories'];
         if(is_array($categoryIds)) {
             foreach($categoryIds as $categoryId) {
-                $category = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+                $category = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Category')
                     ->findOneById($categoryId);
                 $categories[] = $category;
             }
         } elseif (!empty($categoryIds)) {
-            $category = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+            $category = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Category')
                 ->findOneById($presentationData['categories']);
             $categories[] = $category;
         }
         $presentation->setCategories($categories);
 
-        $company = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+        $company = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
             ->findOneById($presentationData['company']);
         $presentation->setCompany($company);
 
-        $stand = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
+        $stand = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Stand')
             ->findOneById($presentationData['stand']);
         $presentation->setStand($stand);
     }
@@ -57,7 +57,7 @@ class PresentationManager extends AbstractDocumentManager
     protected function validateDocumentData(array $presentationData, Document $presentation = null)
     {
         /** @var $stand \Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand */
-        $stand = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
+        $stand = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Stand')
             ->findOneById($presentationData['stand']);
 
         $existingPresentation = $stand->getPresentation();
