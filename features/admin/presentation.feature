@@ -10,9 +10,6 @@ Feature: adding presentations
     Given "Event" exists with data
       | Name        | Event Two |
       | Location    | Bergen    |
-    And "Stand" exists with data
-      | Hall        | F         |
-      | Number      | 19        |
     And "Company" exists with data
       | Name        | Company 4th        |
       | Website URL | http://c4.com      |
@@ -20,7 +17,9 @@ Feature: adding presentations
     And I am on "create presentation" form
     When I fill in the following:
       | Video URL   | http://video/1    |
-      | Name        | Pres name |
+      | Name        | Pres name         |
+      | Hall        | F                 |
+      | Number      | 19                |
       | Description | Some description  |
     And I select "Company 4th" from "Company"
     And I check "Is premium"
@@ -49,8 +48,10 @@ Feature: adding presentations
     Given "presentation" exists with data
       | Video URL   | http://video/2    |
       | Name        | Name of video 2   |
+      | Hall        | X                 |
+      | Number      | 12                |
     When I go to "presentation" list
-    Then I should see "http://video/2"
+    Then I should see "Name of video 2"
 
   Scenario: removing all presentations
     Given I am on "presentation" list

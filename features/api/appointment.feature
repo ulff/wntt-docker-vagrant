@@ -23,42 +23,6 @@ Feature: managing appointments using API
     And following "Company" exists:
       | identifiedBy  | com2        |
       | name          | Company 2   |
-    And following "Stand" exists:
-      | identifiedBy  | evt1_s1       |
-      | number        | 133           |
-      | hall          | A             |
-      | event         | evt1          |
-      | company       | com1          |
-    And following "Stand" exists:
-      | identifiedBy  | evt1_s2       |
-      | number        | 134           |
-      | hall          | A             |
-      | event         | evt1          |
-      | company       | com1          |
-    And following "Stand" exists:
-      | identifiedBy  | evt1_s3       |
-      | number        | 135           |
-      | hall          | A             |
-      | event         | evt1          |
-      | company       | com2          |
-    And following "Stand" exists:
-      | identifiedBy  | evt2_s1       |
-      | number        | 1             |
-      | hall          | D             |
-      | event         | evt2          |
-      | company       | com1          |
-    And following "Stand" exists:
-      | identifiedBy  | evt2_s2       |
-      | number        | 34            |
-      | hall          | A             |
-      | event         | evt2          |
-      | company       | com1          |
-    And following "Stand" exists:
-      | identifiedBy  | evt2_s3       |
-      | number        | 5             |
-      | hall          | B             |
-      | event         | evt2          |
-      | company       | com2          |
     And following "User" exists:
       | identifiedBy  | user9_api       |
       | username      | user9_api       |
@@ -82,7 +46,7 @@ Feature: managing appointments using API
       | name         | http://company.api/12345 |
       | description  | Presentation for API     |
       | company      | com1                     |
-      | stand        | evt1_s1                  |
+      | event        | evt1                     |
       | categories   | Gas;Oil                  |
       | isPremium    | true                     |
     And following "Presentation" exists:
@@ -90,21 +54,21 @@ Feature: managing appointments using API
       | videoUrl     | http://company.api/9     |
       | name         | http://company.api/9     |
       | company      | com2                     |
-      | stand        | evt1_s2                  |
+      | event        | evt1                     |
       | isPremium    | true                     |
     And following "Presentation" exists:
       | identifiedBy | pres3                    |
       | videoUrl     | http://company.api/2314  |
       | name         | http://company.api/2314  |
       | company      | com1                     |
-      | stand        | evt2_s1                  |
+      | event        | evt2                     |
       | isPremium    | false                    |
     And following "Presentation" exists:
       | identifiedBy | pres4                    |
       | videoUrl     | http://company.api23/76  |
       | name         | http://company.api23/76  |
       | company      | com1                     |
-      | stand        | evt2_s2                  |
+      | event        | evt2                     |
       | isPremium    | false                    |
     And following "Appointment" exists:
       | identifiedBy  | app1                |

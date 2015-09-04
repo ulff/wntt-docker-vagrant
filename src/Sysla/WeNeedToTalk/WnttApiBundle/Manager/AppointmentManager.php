@@ -41,7 +41,7 @@ class AppointmentManager extends AbstractDocumentManager
                 ->findOneById($appointmentData['event']);
             $appointment->setEvent($event);
         } else {
-            $appointment->setEvent($presentation->getStand()->getEvent());
+            $appointment->setEvent($presentation->getEvent());
         }
     }
 
@@ -59,7 +59,7 @@ class AppointmentManager extends AbstractDocumentManager
         $presentation = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Presentation')
             ->findOneById($appointmentData['presentation']);
 
-        if($event->getId() != $presentation->getStand()->getEvent()->getId()) {
+        if($event->getId() != $presentation->getEvent()->getId()) {
             throw new DocumentValidationException("Presentation '{$presentation->getId()}' does not belong to defined event '{$event->getId()}'");
         }
     }

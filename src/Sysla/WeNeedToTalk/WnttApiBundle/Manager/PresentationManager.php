@@ -27,6 +27,8 @@ class PresentationManager extends AbstractDocumentManager
         /** @var $presentation Presentation */
         $presentation->setVideoUrl($presentationData['videoUrl']);
         $presentation->setName($presentationData['name']);
+        $presentation->setHall($presentationData['hall']);
+        $presentation->setNumber($presentationData['number']);
         $presentation->setDescription($presentationData['description']);
         $presentation->setIsPremium($presentationData['isPremium'] == 'true' ? true : false);
 
@@ -49,23 +51,12 @@ class PresentationManager extends AbstractDocumentManager
             ->findOneById($presentationData['company']);
         $presentation->setCompany($company);
 
-        $stand = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Stand')
-            ->findOneById($presentationData['stand']);
-        $presentation->setStand($stand);
+        $event = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Event')
+            ->findOneById($presentationData['event']);
+        $presentation->setEvent($event);
     }
 
     protected function validateDocumentData(array $presentationData, Document $presentation = null)
     {
-        /** @var $stand \Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand */
-        $stand = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Stand')
-            ->findOneById($presentationData['stand']);
-
-        $existingPresentation = $stand->getPresentation();
-        if (empty($presentation) && !empty($existingPresentation)) {
-            throw new DocumentValidationException("Stand '{$stand->getId()}' already has presentation '{$existingPresentation->getId()}' assigned");
-        }
-        if (!empty($presentation) && $presentation->getId() != $existingPresentation->getId()) {
-            throw new DocumentValidationException("Stand '{$stand->getId()}' already has presentation '{$existingPresentation->getId()}' assigned");
-        }
     }
 }

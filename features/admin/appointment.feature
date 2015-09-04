@@ -8,9 +8,6 @@ Feature: adding user appointments
     And "Event" exists with data
       | Name        | Event App 97  |
       | Location    | Mo i Rana     |
-    And "Stand" exists with data
-      | Hall        | S         |
-      | Number      | 32        |
     And "Company" exists with data
       | Name        | Company App          |
       | Website URL | http://capp.com      |

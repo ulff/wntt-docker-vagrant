@@ -20,10 +20,10 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *     },
  * )
  * @Hateoas\Relation(
- *     name = "stand",
- *     href = "expr('/api/v1/stands/' ~ object.getStand().getId())",
+ *     name = "event",
+ *     href = "expr('/api/v1/events/' ~ object.getEvent().getId())",
  *     attributes = {
- *         "id" = "expr(object.getStand().getId())",
+ *         "id" = "expr(object.getEvent().getId())",
  *     },
  * )
  * @Hateoas\Relation(
@@ -56,6 +56,16 @@ class Presentation implements Document
     protected $description;
 
     /**
+     * @MongoDB\String
+     */
+    protected $number;
+
+    /**
+     * @MongoDB\String
+     */
+    protected $hall;
+
+    /**
      * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Company")
      * @Assert\NotBlank()
      * @Serializer\Expose
@@ -64,12 +74,12 @@ class Presentation implements Document
     protected $company;
 
     /**
-     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand", cascade={"remove"})
+     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Event", cascade={"remove"})
      * @Assert\NotBlank()
      * @Serializer\Expose
-     * @Serializer\Groups({"inclStand"})
+     * @Serializer\Groups({"inclEvent"})
      */
-    protected $stand;
+    protected $event;
 
     /**
      * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Category")
@@ -152,6 +162,38 @@ class Presentation implements Document
     }
 
     /**
+     * @return string
+     */
+    public function getNumber()
+    {
+        return $this->number;
+    }
+
+    /**
+     * @param string $number
+     */
+    public function setNumber($number)
+    {
+        $this->number = $number;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHall()
+    {
+        return $this->hall;
+    }
+
+    /**
+     * @param string $hall
+     */
+    public function setHall($hall)
+    {
+        $this->hall = $hall;
+    }
+
+    /**
      * @return \Sysla\WeNeedToTalk\WnttApiBundle\Document\Company
      */
     public function getCompany()
@@ -168,19 +210,19 @@ class Presentation implements Document
     }
 
     /**
-     * @return \Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand
+     * @return \Sysla\WeNeedToTalk\WnttApiBundle\Document\Event
      */
-    public function getStand()
+    public function getEvent()
     {
-        return $this->stand;
+        return $this->event;
     }
 
     /**
-     * @param \Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand $stand
+     * @param \Sysla\WeNeedToTalk\WnttApiBundle\Document\Event $event
      */
-    public function setStand($stand)
+    public function setEvent($event)
     {
-        $this->stand = $stand;
+        $this->event = $event;
     }
 
     /**
@@ -229,6 +271,6 @@ class Presentation implements Document
      */
     public function __toString()
     {
-        return $this->getVideoUrl();
+        return $this->getName();
     }
 }
