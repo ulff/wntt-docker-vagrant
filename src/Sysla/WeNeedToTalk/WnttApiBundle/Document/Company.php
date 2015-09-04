@@ -38,12 +38,6 @@ class Company implements Document
     protected $logoUrl;
 
     /**
-     * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand", mappedBy="company", cascade={"remove"})
-     * @Serializer\Exclude
-     */
-    protected $stands;
-
-    /**
      * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation", mappedBy="company", cascade={"remove"})
      * @Serializer\Exclude
      */

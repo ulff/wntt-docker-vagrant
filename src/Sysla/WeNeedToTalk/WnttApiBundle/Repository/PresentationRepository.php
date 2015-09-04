@@ -12,21 +12,17 @@ class PresentationRepository extends DocumentRepository
         $qb = $this->createQueryBuilder();
 
         if(!empty($eventId)) {
-            $eventStands = $this
-                ->getDocumentManager()
-                ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Stand')
-                ->findBy(['event.id' => $eventId]);
-
-            $standIds = [];
-            foreach($eventStands as $es) {
-                $standIds[] = $es->getId();
-            }
-
-            $qb->field('stand.id')->in($standIds);
+            $qb->field('event.id')->equals($eventId);
         }
 
         if(!empty($searchParams['name'])) {
             $qb->field('name')->equals(new \MongoRegex('/.*'.$searchParams['name'].'.*/i'));
+        }
+        if(!empty($searchParams['hall'])) {
+            $qb->field('hall')->equals($searchParams['hall']);
+        }
+        if(!empty($searchParams['number'])) {
+            $qb->field('number')->equals($searchParams['number']);
         }
         if(!empty($searchParams['description'])) {
             $qb->field('description')->equals(new \MongoRegex('/.*'.$searchParams['description'].'.*/i'));
@@ -56,27 +52,6 @@ class PresentationRepository extends DocumentRepository
             }
 
             $qb->field('categories.id')->in($categoryIds);
-        }
-
-        if(!empty($searchParams['stand.hall']) || !empty($searchParams['stand.number'])) {
-            $standParams = [];
-            if(!empty($searchParams['stand.hall'])) {
-                $standParams['hall'] = $searchParams['stand.hall'];
-            }
-            if(!empty($searchParams['stand.number'])) {
-                $standParams['number'] = $searchParams['stand.number'];
-            }
-
-            $matchingStands = $this
-                ->getDocumentManager()
-                ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Stand')
-                ->findBy($standParams);
-            $standIds = [];
-            foreach($matchingStands as $item) {
-                $standIds[] = $item->getId();
-            }
-
-            $qb->field('stand.id')->in($standIds);
         }
 
         $resultArray = [];

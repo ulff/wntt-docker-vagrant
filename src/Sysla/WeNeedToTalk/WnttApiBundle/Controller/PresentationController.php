@@ -91,8 +91,10 @@ class PresentationController extends AbstractWnttRestController
      *   parameters={
      *      {"name"="videoUrl", "dataType"="string", "description"="presentation name", "required"=true},
      *      {"name"="company", "dataType"="string", "description"="presentation's company ID", "required"=true},
-     *      {"name"="stand", "dataType"="string", "description"="presentation's stand ID", "required"=true},
+     *      {"name"="event", "dataType"="string", "description"="presentation's event ID", "required"=true},
      *      {"name"="name", "dataType"="string", "description"="presentation's name", "required"=true},
+     *      {"name"="hall", "dataType"="string", "description"="presentation's hall", "required"=false},
+     *      {"name"="number", "dataType"="string", "description"="presentation's stand number", "required"=false},
      *      {"name"="description", "dataType"="string", "description"="presentation's descrption", "required"=false},
      *      {"name"="isPremium", "dataType"="boolean", "description"="is presentation premium (true) or free (false)", "required"=false},
      *      {"name"="categories", "dataType"="string/array", "description"="one on many category IDs", "required"=false},
@@ -138,8 +140,10 @@ class PresentationController extends AbstractWnttRestController
      *   parameters={
      *      {"name"="videoUrl", "dataType"="string", "description"="presentation name", "required"=true},
      *      {"name"="company", "dataType"="string", "description"="presentation's company ID", "required"=true},
-     *      {"name"="stand", "dataType"="string", "description"="presentation's stand ID", "required"=true},
+     *      {"name"="event", "dataType"="string", "description"="presentation's event ID", "required"=true},
      *      {"name"="name", "dataType"="string", "description"="presentation's name", "required"=true},
+     *      {"name"="hall", "dataType"="string", "description"="presentation's hall", "required"=false},
+     *      {"name"="number", "dataType"="string", "description"="presentation's stand number", "required"=false},
      *      {"name"="description", "dataType"="string", "description"="presentation's descrption", "required"=false},
      *      {"name"="isPremium", "dataType"="boolean", "description"="is presentation premium (true) or free (false)", "required"=false},
      *      {"name"="categories", "dataType"="string/array", "description"="one on many category IDs", "required"=false},
@@ -227,8 +231,10 @@ class PresentationController extends AbstractWnttRestController
         return [
             'videoUrl' => $request->get('videoUrl'),
             'name' => $request->get('name'),
+            'hall' => $request->get('hall'),
+            'number' => $request->get('number'),
             'description' => $request->get('description'),
-            'stand' => $request->get('stand'),
+            'event' => $request->get('event'),
             'company' => $request->get('company'),
             'isPremium' => $request->get('isPremium'),
             'categories' => $request->get('categories')
@@ -245,8 +251,8 @@ class PresentationController extends AbstractWnttRestController
         if (empty($presentationData['name'])) {
             throw new HttpException(400, 'Missing required parameters: name');
         }
-        if (empty($presentationData['stand'])) {
-            throw new HttpException(400, 'Missing required parameters: stand');
+        if (empty($presentationData['event'])) {
+            throw new HttpException(400, 'Missing required parameters: event');
         }
         if (empty($presentationData['company'])) {
             throw new HttpException(400, 'Missing required parameters: company');
@@ -275,10 +281,10 @@ class PresentationController extends AbstractWnttRestController
             throw new HttpException(400, "Invalid parameter: company with ID: '{$presentationData['company']}' not found!");
         }
 
-        $stand = $documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Stand')
-            ->findOneById($presentationData['stand']);
-        if(empty($stand)) {
-            throw new HttpException(400, "Invalid parameter: stand with ID: '{$presentationData['stand']}' not found!");
+        $event = $documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Event')
+            ->findOneById($presentationData['event']);
+        if(empty($event)) {
+            throw new HttpException(400, "Invalid parameter: event with ID: '{$presentationData['event']}' not found!");
         }
     }
 

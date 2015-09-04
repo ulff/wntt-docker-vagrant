@@ -46,10 +46,10 @@ class Event implements Document
     protected $dateEnd;
 
     /**
-     * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand", mappedBy="event", cascade={"remove"})
+     * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation", mappedBy="event", cascade={"remove"})
      * @Serializer\Exclude
      */
-    protected $stands;
+    protected $presentations;
 
     /**
      * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Appointment", mappedBy="event", cascade={"remove"})
@@ -163,7 +163,7 @@ class Event implements Document
 
     public function __toString()
     {
-        return $this->getName().' ('.$this->getDateStartAsString().' - '.$this->getDateEndAsString().')';
+        return $this->getName();
     }
 
 }

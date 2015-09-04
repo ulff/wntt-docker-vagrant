@@ -151,9 +151,6 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
             case 'Event':
                 $this->ensureEventExists($table->getRowsHash());
                 break;
-            case 'Stand':
-                $this->ensureStandExists($table->getRowsHash());
-                break;
             case 'Presentation':
                 $this->ensurePresentationExists($table->getRowsHash());
                 break;
@@ -513,37 +510,6 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
         $this->getParameterBag()->set('Event_'.$eventData['identifiedBy'], $event->getId());
     }
 
-    protected function ensureStandExists($standData)
-    {
-        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
-
-        $stand = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Stand')
-            ->findOneByNumber($standData['number']);
-
-        if(empty($stand)) {
-            $stand = new Document\Stand();
-            $stand->setNumber($standData['number']);
-            $stand->setHall(@$standData['hall']);
-
-            $eventId = $this->getParameterBag()->get('Event_'.$standData['event']);
-            $event = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Event')
-                ->findOneById($eventId);
-            $stand->setEvent($event);
-
-            if(isset($standData['company'])) {
-                $companyId = $this->getParameterBag()->get('Company_'.$standData['company']);
-                $company = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
-                    ->findOneById($companyId);
-                $stand->setCompany($company);
-            }
-
-            $dm->persist($stand);
-            $dm->flush();
-        }
-
-        $this->getParameterBag()->set('Stand_'.$standData['identifiedBy'], $stand->getId());
-    }
-
     protected function ensurePresentationExists($presentationData)
     {
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
@@ -556,12 +522,14 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
             $presentation->setVideoUrl($presentationData['videoUrl']);
             $presentation->setName($presentationData['name']);
             $presentation->setDescription(@$presentationData['description']);
+            $presentation->setHall(@$presentationData['hall']);
+            $presentation->setNumber(@$presentationData['number']);
             $presentation->setIsPremium(@$presentationData['isPremium'] == 'true' ? true : false);
 
-            $standId = $this->getParameterBag()->get('Stand_'.$presentationData['stand']);
-            $stand = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Stand')
-                ->findOneById($standId);
-            $presentation->setStand($stand);
+            $eventId = $this->getParameterBag()->get('Event_'.$presentationData['event']);
+            $event = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Event')
+                ->findOneById($eventId);
+            $presentation->setEvent($event);
 
             if(isset($presentationData['company'])) {
                 $companyId = $this->getParameterBag()->get('Company_'.$presentationData['company']);
@@ -644,7 +612,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
                 ->findOneById($presentationId);
             $appointment->setPresentation($presentation);
 
-            $event = $presentation->getStand()->getEvent();
+            $event = $presentation->getEvent();
             $appointment->setEvent($event);
 
             $dm->persist($appointment);

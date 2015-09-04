@@ -15,10 +15,6 @@ services:
         class: Sysla\WeNeedToTalk\WnttApiBundle\Manager\PresentationManager
         arguments: [@doctrine_mongodb]
 
-    wnttapi.manager.stand:
-        class: Sysla\WeNeedToTalk\WnttApiBundle\Manager\StandManager
-        arguments: [@doctrine_mongodb]
-
     wnttapi.manager.user:
         class: Sysla\WeNeedToTalk\WnttApiBundle\Manager\UserManager
         arguments: [@doctrine_mongodb]
