@@ -45,36 +45,36 @@ Feature: getting users through API
   Scenario: create user
     Given I am authorized client with username "admin" and password "admin"
     When I make request "POST" "/api/v1/users" with parameter-bag params:
-      | username        | uacreated      |
-      | password        | password              |
-      | email           | user@api              |
-      | company         | Company_Company_Api   |
-      | isAdmin         | true                  |
-      | phoneNumber     | 668 678               |
+      | username        | uacreated                 |
+      | password        | password                  |
+      | email           | olaf.galazka@schibsted.pl |
+      | company         | Company_Company_Api       |
+      | isAdmin         | true                      |
+      | phoneNumber     | 668 678                   |
     Then "User" should be created with "username" set to "uacreated"
     And the response status code should be 201
     And the response should be JSON
     And the response JSON should be a single object
     And the repsonse JSON should have "id" field
     And the repsonse JSON should have "username" field with value "uacreated"
-    And the repsonse JSON should have "email" field with value "user@api"
+    And the repsonse JSON should have "email" field with value "olaf.galazka@schibsted.pl"
     And the repsonse JSON should have "phone_number" field with value "668 678"
 
   Scenario: update user
     Given I am authorized client with username "admin" and password "admin"
     When I make request "PUT" "/api/v1/users/{User_last_created}" with parameter-bag params:
-      | username        | uaupdated      |
-      | password        | password              |
-      | email           | user2@api             |
-      | company         | Company_Company_Api   |
-      | isAdmin         | true                  |
-      | phoneNumber     | 668 678 2             |
+      | username        | uaupdated                 |
+      | password        | password                  |
+      | email           | olaf.galazka@schibsted.pl |
+      | company         | Company_Company_Api       |
+      | isAdmin         | true                      |
+      | phoneNumber     | 668 678 2                 |
     Then the response status code should be 200
     And the response should be JSON
     And the response JSON should be a single object
     And the repsonse JSON should have "id" field
     And the repsonse JSON should have "username" field with value "uaupdated"
-    And the repsonse JSON should have "email" field with value "user2@api"
+    And the repsonse JSON should have "email" field with value "olaf.galazka@schibsted.pl"
     And the repsonse JSON should have "phone_number" field with value "668 678 2"
 
   Scenario: patch update user
@@ -86,7 +86,7 @@ Feature: getting users through API
     And the response JSON should be a single object
     And the repsonse JSON should have "id" field
     And the repsonse JSON should have "username" field with value "uaupdated"
-    And the repsonse JSON should have "email" field with value "user2@api"
+    And the repsonse JSON should have "email" field with value "olaf.galazka@schibsted.pl"
     And the repsonse JSON should have "phone_number" field with value "668 678 3"
 
   Scenario: delete user

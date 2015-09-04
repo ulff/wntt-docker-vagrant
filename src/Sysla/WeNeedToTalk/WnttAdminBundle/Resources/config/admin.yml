@@ -65,7 +65,7 @@ sonata_doctrine_mongo_db_admin:
 
 sonata_admin:
     templates:
-        user_block:         SyslaWeeNeedToTalkWnttAdminBundle:Core:user_block.html.twig
+        user_block:         SyslaWeNeedToTalkWnttAdminBundle:Core:user_block.html.twig
     dashboard:
         groups:
             api.content:

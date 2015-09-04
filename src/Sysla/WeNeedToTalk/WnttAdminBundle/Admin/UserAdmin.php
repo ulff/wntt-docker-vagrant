@@ -70,7 +70,7 @@ class UserAdmin extends Admin
                 'actions' => [
                     'edit' => [],
                     'delete' => [
-                        'template' => 'SyslaWeeNeedToTalkWnttAdminBundle:CRUD:list__action_delete.html.twig'
+                        'template' => 'SyslaWeNeedToTalkWnttAdminBundle:CRUD:list__action_delete.html.twig'
                     ],
                 ]
             ])

@@ -4,7 +4,7 @@ namespace Sysla\WeNeedToTalk\WnttUserBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class SyslaWeeNeedToTalkWnttUserBundle extends Bundle
+class SyslaWeNeedToTalkWnttUserBundle extends Bundle
 {
 
 }

@@ -30,3 +30,7 @@ services:
     wnttapi.service.permission_verifier:
         class: Sysla\WeNeedToTalk\WnttApiBundle\Service\PermissionVerifier
         arguments: [@doctrine_mongodb]
+
+    wnttapi.service.email_dispatcher:
+        class: Sysla\WeNeedToTalk\WnttApiBundle\Service\EmailDispatcher
+        arguments: [@service_container]

@@ -14,7 +14,7 @@ class PresentationRepository extends DocumentRepository
         if(!empty($eventId)) {
             $eventStands = $this
                 ->getDocumentManager()
-                ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
+                ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Stand')
                 ->findBy(['event.id' => $eventId]);
 
             $standIds = [];
@@ -35,7 +35,7 @@ class PresentationRepository extends DocumentRepository
         if(!empty($searchParams['company.name'])) {
             $matchingCompanies = $this
                 ->getDocumentManager()
-                ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+                ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
                 ->findBy(['name' => new \MongoRegex('/.*'.$searchParams['company.name'].'.*/i')]);
             $companyIds = [];
             foreach($matchingCompanies as $item) {
@@ -48,7 +48,7 @@ class PresentationRepository extends DocumentRepository
         if(!empty($searchParams['category.name'])) {
             $matchingCateories = $this
                 ->getDocumentManager()
-                ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+                ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Category')
                 ->findBy(['name' => new \MongoRegex('/.*'.$searchParams['category.name'].'.*/i')]);
             $categoryIds = [];
             foreach($matchingCateories as $item) {
@@ -69,7 +69,7 @@ class PresentationRepository extends DocumentRepository
 
             $matchingStands = $this
                 ->getDocumentManager()
-                ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
+                ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Stand')
                 ->findBy($standParams);
             $standIds = [];
             foreach($matchingStands as $item) {

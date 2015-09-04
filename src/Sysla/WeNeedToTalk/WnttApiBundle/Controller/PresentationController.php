@@ -41,7 +41,7 @@ class PresentationController extends AbstractWnttRestController
         $searchParams = $paramFetcher->get('search');
 
         $presentations = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Presentation')
             ->findBySearchParams($searchParams);
 
         $paginator  = $this->get('knp_paginator');
@@ -71,7 +71,7 @@ class PresentationController extends AbstractWnttRestController
     public function getPresentationAction($id)
     {
         $presentation = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Presentation')
             ->find($id);
 
         if (!$presentation) {
@@ -156,7 +156,7 @@ class PresentationController extends AbstractWnttRestController
     {
         /** @var $presentation Presentation */
         $presentation = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Presentation')
             ->find($id);
 
         if (empty($presentation)) {
@@ -201,7 +201,7 @@ class PresentationController extends AbstractWnttRestController
     {
         /** @var $presentation Presentation */
         $presentation = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Presentation')
             ->find($id);
 
         if (empty($presentation)) {
@@ -255,27 +255,27 @@ class PresentationController extends AbstractWnttRestController
         $categoryIds = $presentationData['categories'];
         if(is_array($categoryIds)) {
             foreach($categoryIds as $categoryId) {
-                $category = $documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+                $category = $documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Category')
                     ->findOneById($categoryId);
                 if(empty($category)) {
                     throw new HttpException(400, "Invalid parameter: category with ID: '$categoryId' not found!");
                 }
             }
         } elseif (!empty($categoryIds)) {
-            $category = $documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+            $category = $documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Category')
                 ->findOneById($presentationData['categories']);
             if(empty($category)) {
                 throw new HttpException(400, "Invalid parameter: category with ID: '{$categoryIds}' not found!");
             }
         }
 
-        $company = $documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+        $company = $documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
             ->findOneById($presentationData['company']);
         if(empty($company)) {
             throw new HttpException(400, "Invalid parameter: company with ID: '{$presentationData['company']}' not found!");
         }
 
-        $stand = $documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
+        $stand = $documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Stand')
             ->findOneById($presentationData['stand']);
         if(empty($stand)) {
             throw new HttpException(400, "Invalid parameter: stand with ID: '{$presentationData['stand']}' not found!");

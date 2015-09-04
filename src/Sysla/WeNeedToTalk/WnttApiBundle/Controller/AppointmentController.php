@@ -54,7 +54,7 @@ class AppointmentController extends AbstractWnttRestController
         $view = $this->createViewWithSerializationContext($includeProperties);
 
         $appointments = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Appointment')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Appointment')
             ->findBy($queryParams);
 
         $paginator  = $this->get('knp_paginator');
@@ -84,7 +84,7 @@ class AppointmentController extends AbstractWnttRestController
     public function getAppointmentAction($id)
     {
         $appointment = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Appointment')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Appointment')
             ->find($id);
 
         if (!$appointment) {
@@ -165,7 +165,7 @@ class AppointmentController extends AbstractWnttRestController
     {
         /** @var $appointment Appointment */
         $appointment = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Appointment')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Appointment')
             ->find($id);
 
         if (empty($appointment)) {
@@ -210,7 +210,7 @@ class AppointmentController extends AbstractWnttRestController
     {
         /** @var $appointment Appointment */
         $appointment = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Appointment')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Appointment')
             ->find($id);
 
         if (empty($appointment)) {
@@ -252,21 +252,21 @@ class AppointmentController extends AbstractWnttRestController
             throw new HttpException(400, 'Missing required parameters: presentation');
         }
 
-        $user = $documentManager->getRepository('SyslaWeeNeedToTalkWnttUserBundle:User')
+        $user = $documentManager->getRepository('SyslaWeNeedToTalkWnttUserBundle:User')
             ->findOneById($appointmentData['user']);
         if(empty($user)) {
             throw new HttpException(400, "Invalid parameter: user with ID: '{$appointmentData['user']}' not found!");
         }
 
         if (!empty($appointmentData['event'])) {
-            $event = $documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
+            $event = $documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Event')
                 ->findOneById($appointmentData['event']);
             if (empty($event)) {
                 throw new HttpException(400, "Invalid parameter: event with ID: '{$appointmentData['event']}' not found!");
             }
         }
 
-        $presentation = $documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
+        $presentation = $documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Presentation')
             ->findOneById($appointmentData['presentation']);
         if(empty($presentation)) {
             throw new HttpException(400, "Invalid parameter: presentation with ID: '{$appointmentData['presentation']}' not found!");
