@@ -45,13 +45,7 @@ class UserController extends AbstractWnttRestController
 
         $companyId = $paramFetcher->get('company');
         if(!empty($companyId)) {
-            /** @var $company Company */
-            $company = $this->get('doctrine_mongodb')
-                ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
-                ->find($companyId);
-            if (empty($company)) {
-                throw $this->createNotFoundException('No company found for id '.$companyId);
-            }
+            $this->verifyDocumentExists($companyId, 'Company');
             $queryParams['company.id'] = $companyId;
         }
 
@@ -85,13 +79,8 @@ class UserController extends AbstractWnttRestController
      */
     public function getUserAction($id)
     {
-        $user = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeNeedToTalkWnttUserBundle:User')
-            ->find($id);
-
-        if (!$user) {
-            throw $this->createNotFoundException('No product found for id '.$id);
-        }
+        /** @var $user User */
+        $user = $this->verifyDocumentExists($id, 'User', 'SyslaWeNeedToTalkWnttUserBundle');
 
         $view = $this->view($user, 200);
         return $this->handleView($view);
@@ -178,13 +167,7 @@ class UserController extends AbstractWnttRestController
     public function putUserAction(Request $request, $id)
     {
         /** @var $user User */
-        $user = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeNeedToTalkWnttUserBundle:User')
-            ->find($id);
-
-        if (empty($user)) {
-            throw $this->createNotFoundException('No user found for id '.$id);
-        }
+        $user = $this->verifyDocumentExists($id, 'User', 'SyslaWeNeedToTalkWnttUserBundle');
 
         $this->checkPermission($id);
 
@@ -234,13 +217,7 @@ class UserController extends AbstractWnttRestController
     public function patchUserAction(Request $request, $id)
     {
         /** @var $user User */
-        $user = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeNeedToTalkWnttUserBundle:User')
-            ->find($id);
-
-        if (empty($user)) {
-            throw $this->createNotFoundException('No user found for id '.$id);
-        }
+        $user = $this->verifyDocumentExists($id, 'User', 'SyslaWeNeedToTalkWnttUserBundle');
 
         $this->checkPermission($id);
 
@@ -280,13 +257,7 @@ class UserController extends AbstractWnttRestController
     public function deleteUserAction($id)
     {
         /** @var $user User */
-        $user = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeNeedToTalkWnttUserBundle:User')
-            ->find($id);
-
-        if (empty($user)) {
-            throw $this->createNotFoundException('No user found for id '.$id);
-        }
+        $user = $this->verifyDocumentExists($id, 'User', 'SyslaWeNeedToTalkWnttUserBundle');
 
         $this->checkPermission($id);
 

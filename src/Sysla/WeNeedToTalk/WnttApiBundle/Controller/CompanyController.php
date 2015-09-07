@@ -64,13 +64,8 @@ class CompanyController extends AbstractWnttRestController
      */
     public function getCompanyAction($id)
     {
-        $company = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
-            ->find($id);
-
-        if (!$company) {
-            throw $this->createNotFoundException('No company found for id '.$id);
-        }
+        /** @var $company Company */
+        $company = $this->verifyDocumentExists($id, 'Company');
 
         $view = $this->view($company, 200);
         return $this->handleView($view);
@@ -144,13 +139,7 @@ class CompanyController extends AbstractWnttRestController
     public function putCompanyAction(Request $request, $id)
     {
         /** @var $company Company */
-        $company = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
-            ->find($id);
-
-        if (empty($company)) {
-            throw $this->createNotFoundException('No company found for id '.$id);
-        }
+        $company = $this->verifyDocumentExists($id, 'Company');
 
         $this->checkPermission($id);
 
@@ -190,13 +179,7 @@ class CompanyController extends AbstractWnttRestController
     public function deleteCompanyAction($id)
     {
         /** @var $company Company */
-        $company = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
-            ->find($id);
-
-        if (empty($company)) {
-            throw $this->createNotFoundException('No company found for id '.$id);
-        }
+        $company = $this->verifyDocumentExists($id, 'Company');
 
         $this->checkPermission($id);
 

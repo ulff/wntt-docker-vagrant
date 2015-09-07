@@ -21,4 +21,17 @@ abstract class AbstractWnttRestController extends FOSRestController
 
         return $view;
     }
+
+    protected function verifyDocumentExists($documentId, $documentName, $bundleName = 'SyslaWeNeedToTalkWnttApiBundle')
+    {
+        $document = $this->get('doctrine_mongodb')
+            ->getRepository($bundleName.':'.$documentName)
+            ->find($documentId);
+
+        if (empty($document)) {
+            throw $this->createNotFoundException('No '.$documentName.' found for id '.$documentId);
+        }
+
+        return $document;
+    }
 }

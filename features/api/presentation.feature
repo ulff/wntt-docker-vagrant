@@ -111,6 +111,42 @@ Feature: managing presentations through API
     And all nested "items" collection items should have "event" field
     And all nested "items" collection items should have "company" field
 
+  Scenario: get list of presentations filtered by event id
+    When I make request "GET" "/api/v1/presentations?event={Event_Event_Api_2}"
+    Then the response status code should be 200
+    And the response should be JSON
+    And the response JSON should be a single object
+    And the repsonse JSON should have "items" field
+    And the response JSON "items" field should be a collection
+    And all nested "items" collection items should have nested "_links->event->id" field with value "{Event_Event_Api_2}"
+
+  Scenario: get list of presentations filtered by company id
+    When I make request "GET" "/api/v1/presentations?company={Company_Company_Api}"
+    Then the response status code should be 200
+    And the response should be JSON
+    And the response JSON should be a single object
+    And the repsonse JSON should have "items" field
+    And the response JSON "items" field should be a collection
+    And all nested "items" collection items should have nested "_links->company->id" field with value "{Company_Company_Api}"
+
+  Scenario: get list of presentations filtered by event id and company id
+    When I make request "GET" "/api/v1/presentations?event={Event_Event_Api_1}&company={Company_Company_Api}"
+    Then the response status code should be 200
+    And the response should be JSON
+    And the response JSON should be a single object
+    And the repsonse JSON should have "items" field
+    And the response JSON "items" field should be a collection
+    And all nested "items" collection items should have nested "_links->event->id" field with value "{Event_Event_Api_1}"
+    And all nested "items" collection items should have nested "_links->company->id" field with value "{Company_Company_Api}"
+
+  Scenario: should return 404 on non-existing event id
+    When I make request "GET" "/api/v1/presentations?event=not-existing"
+    Then the response status code should be 404
+
+  Scenario: should return 404 on non-existing company id
+    When I make request "GET" "/api/v1/presentations?company=not-existing"
+    Then the response status code should be 404
+
   Scenario: get list of presentations matching search params: presentation name equals "name of 2nd pres"
     When I make request "GET" "/api/v1/presentations?search[name]=name of 2nd pres"
     Then the response status code should be 200
@@ -299,6 +335,7 @@ Feature: managing presentations through API
     And the response should be JSON
     And the response JSON should be a single object
     And the repsonse JSON should have "items" field
+    And all nested "items" collection items should have nested "_links->event->id" field with value "{Event_Event_Api_1}"
 
   Scenario: get list of particular event presentations, including events information
     When I make request "GET" "/api/v1/events/{Event_Event_Api_1}/presentations?include[]=event"
@@ -327,6 +364,20 @@ Feature: managing presentations through API
     And the response JSON "items" field should be a collection
     And all nested "items" collection items should have "event" field
     And all nested "items" collection items should have "company" field
+
+  Scenario: get list of particular event presentations filtered by company id
+    When I make request "GET" "/api/v1/events/{Event_Event_Api_1}/presentations?company={Company_Company_Api}"
+    Then the response status code should be 200
+    And the response should be JSON
+    And the response JSON should be a single object
+    And the repsonse JSON should have "items" field
+    And the response JSON "items" field should be a collection
+    And all nested "items" collection items should have nested "_links->company->id" field with value "{Company_Company_Api}"
+    And all nested "items" collection items should have nested "_links->event->id" field with value "{Event_Event_Api_1}"
+
+  Scenario: should return 404 on non-existing company id
+    When I make request "GET" "/api/v1/events/{Event_Event_Api_1}/presentations?company=not-existing"
+    Then the response status code should be 404
 
   Scenario: get list of particular event presentations matching search params: presentation name equals "name of 2nd pres"
     When I make request "GET" "/api/v1/events/{Event_Event_Api_1}/presentations?search[name]=name of 2nd pres"
@@ -524,7 +575,8 @@ Feature: managing presentations through API
       | description     | Some description 2    |
       | name            | new name of show/me   |
       | company         | Company_Company_Api   |
-      | event           | Event_Event_Api_1  |
+      | event           | Event_Event_Api_1     |
+    And print last response
     Then the response status code should be 200
     And the response should be JSON
     And the response JSON should be a single object

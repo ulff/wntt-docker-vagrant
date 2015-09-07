@@ -63,13 +63,8 @@ class CategoryController extends AbstractWnttRestController
      */
     public function getCategoryAction($id)
     {
-        $category = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Category')
-            ->find($id);
-
-        if (!$category) {
-            throw $this->createNotFoundException('No product found for id '.$id);
-        }
+        /** @var $category Category */
+        $category = $this->verifyDocumentExists($id, 'Category');
 
         $view = $this->view($category, 200);
         return $this->handleView($view);
@@ -135,13 +130,7 @@ class CategoryController extends AbstractWnttRestController
     public function putCategoryAction(Request $request, $id)
     {
         /** @var $category Category */
-        $category = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Category')
-            ->find($id);
-
-        if (empty($category)) {
-            throw $this->createNotFoundException('No category found for id '.$id);
-        }
+        $category = $this->verifyDocumentExists($id, 'Category');
 
         $categoryData = $this->retrieveCategoryData($request);
         $this->validateCategoryData($categoryData);
@@ -179,13 +168,7 @@ class CategoryController extends AbstractWnttRestController
     public function deleteCategoryAction($id)
     {
         /** @var $category Category */
-        $category = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Category')
-            ->find($id);
-
-        if (empty($category)) {
-            throw $this->createNotFoundException('No category found for id '.$id);
-        }
+        $category = $this->verifyDocumentExists($id, 'Category');
 
         try {
             /** @var $categoryManager CategoryManager */

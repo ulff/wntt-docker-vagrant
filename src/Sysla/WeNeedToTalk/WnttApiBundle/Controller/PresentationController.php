@@ -7,6 +7,8 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation;
+use Sysla\WeNeedToTalk\WnttApiBundle\Document\Event;
+use Sysla\WeNeedToTalk\WnttApiBundle\Document\Company;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DuplicatedDocumentException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\PresentationManager;
@@ -18,6 +20,8 @@ class PresentationController extends AbstractWnttRestController
     /**
      * Returns collection of Presentation objects.
      *
+     * @QueryParam(name="company", nullable=true, description="set company's ID to filter presentations of one company")
+     * @QueryParam(name="event", nullable=true, description="set event's ID to filter presentations of one event")
      * @QueryParam(name="include", nullable=true, default=null, array=true)
      * @QueryParam(name="search", nullable=true, default=null, array=true)
      * @QueryParam(name="noPaging", nullable=true, default=false, description="set to true if you want to retrieve all records without paging")
@@ -40,9 +44,19 @@ class PresentationController extends AbstractWnttRestController
 
         $searchParams = $paramFetcher->get('search');
 
+        $eventId = $paramFetcher->get('event', null);
+        if(!empty($eventId)) {
+            $this->verifyDocumentExists($eventId, 'Event');
+        }
+
+        $companyId = $paramFetcher->get('company', null);
+        if(!empty($companyId)) {
+            $this->verifyDocumentExists($companyId, 'Company');
+        }
+
         $presentations = $this->get('doctrine_mongodb')
             ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Presentation')
-            ->findBySearchParams($searchParams);
+            ->findBySearchParams($searchParams, $eventId, $companyId);
 
         $paginator  = $this->get('knp_paginator');
         $paginatedPresentations = $paginator->paginate(
@@ -70,13 +84,8 @@ class PresentationController extends AbstractWnttRestController
      */
     public function getPresentationAction($id)
     {
-        $presentation = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Presentation')
-            ->find($id);
-
-        if (!$presentation) {
-            throw $this->createNotFoundException('No product found for id '.$id);
-        }
+        /** @var $presentation Presentation */
+        $presentation = $this->verifyDocumentExists($id, 'Presentation');
 
         $view = $this->view($presentation, 200);
         return $this->handleView($view);
@@ -159,13 +168,7 @@ class PresentationController extends AbstractWnttRestController
     public function putPresentationAction(Request $request, $id)
     {
         /** @var $presentation Presentation */
-        $presentation = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Presentation')
-            ->find($id);
-
-        if (empty($presentation)) {
-            throw $this->createNotFoundException('No presentation found for id '.$id);
-        }
+        $presentation = $this->verifyDocumentExists($id, 'Presentation');
 
         $presentationData = $this->retrievePresentationData($request);
         $this->checkPermission($presentationData['company']);
@@ -204,13 +207,7 @@ class PresentationController extends AbstractWnttRestController
     public function deletePresentationAction($id)
     {
         /** @var $presentation Presentation */
-        $presentation = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Presentation')
-            ->find($id);
-
-        if (empty($presentation)) {
-            throw $this->createNotFoundException('No presentation found for id '.$id);
-        }
+        $presentation = $this->verifyDocumentExists($id, 'Presentation');
 
         $this->checkPermission($presentation->getCompany()->getId());
 
