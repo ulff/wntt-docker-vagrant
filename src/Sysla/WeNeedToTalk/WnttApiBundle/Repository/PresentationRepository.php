@@ -7,7 +7,7 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation;
 
 class PresentationRepository extends DocumentRepository
 {
-    public function findBySearchParams($searchParams, $eventId = null, $companyId = null)
+    public function findBySearchParams($searchParams, $eventId = null, $companyId = null, $sorting = [])
     {
         $qb = $this->createQueryBuilder();
 
@@ -55,6 +55,11 @@ class PresentationRepository extends DocumentRepository
             }
 
             $qb->field('categories.id')->in($categoryIds);
+        }
+
+        if(!empty($sorting['sortby'])) {
+            $sortdir = empty($sorting['sortdir']) ? 'asc' : $sorting['sortdir'];
+            $qb->sort($sorting['sortby'], $sortdir);
         }
 
         $resultArray = [];
