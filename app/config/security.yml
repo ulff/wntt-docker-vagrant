@@ -41,15 +41,15 @@ security:
         - { path: ^/api/v1/events, roles: [ ROLE_ADMIN ], methods: [PUT, POST, DELETE] }
         - { path: ^/api/v1/stands, roles: [ IS_AUTHENTICATED_FULLY ], methods: [GET] }
         - { path: ^/api/v1/stands, roles: [ ROLE_ADMIN ], methods: [PUT, POST, DELETE] }
-        - { path: ^/api/v1/companies, roles: [ IS_AUTHENTICATED_FULLY ], methods: [GET, POST] }
+        - { path: ^/api/v1/companies, roles: [ IS_AUTHENTICATED_FULLY ], methods: [GET, POST, OPTIONS] }
         - { path: ^/api/v1/companies, roles: [ ROLE_USER ], methods: [PUT, DELETE] }
         - { path: ^/api/v1/categories, roles: [ IS_AUTHENTICATED_FULLY ], methods: [GET] }
         - { path: ^/api/v1/categories, roles: [ ROLE_USER ], methods: [POST] }
         - { path: ^/api/v1/categories, roles: [ ROLE_ADMIN ], methods: [PUT, DELETE] }
-        - { path: ^/api/v1/presentations, roles: [ IS_AUTHENTICATED_FULLY ], methods: [GET] }
+        - { path: ^/api/v1/presentations, roles: [ IS_AUTHENTICATED_FULLY ], methods: [GET, OPTIONS] }
         - { path: ^/api/v1/presentations, roles: [ ROLE_USER ], methods: [PUT, POST, DELETE] }
-        - { path: ^/api/v1/appointments, roles: [ IS_AUTHENTICATED_FULLY ], methods: [GET] }
+        - { path: ^/api/v1/appointments, roles: [ IS_AUTHENTICATED_FULLY ], methods: [GET, OPTIONS] }
         - { path: ^/api/v1/appointments, roles: [ ROLE_USER ], methods: [PUT, POST, DELETE] }
-        - { path: ^/api/v1/users, roles: [ IS_AUTHENTICATED_FULLY ], methods: [GET, POST] }
+        - { path: ^/api/v1/users, roles: [ IS_AUTHENTICATED_FULLY ], methods: [GET, POST, OPTIONS] }
         - { path: ^/api/v1/users, roles: [ ROLE_USER ], methods: [PUT, DELETE, PATCH] }
         - { path: ^/api, roles: [ IS_AUTHENTICATED_FULLY ] }

@@ -23,6 +23,10 @@ Feature: getting companies through API
     And the repsonse JSON should have "current_page_number" field
     And the response JSON "items" field should be a collection
 
+  Scenario: should allow OPTIONS method
+    When I make request "OPTIONS" "/api/v1/companies"
+    Then the response status code should be 200
+
   Scenario: get one company
     When I make request "GET" "/api/v1/companies/{Company_Company_Api}"
     Then the response status code should be 200

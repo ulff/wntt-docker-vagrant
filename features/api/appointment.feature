@@ -106,6 +106,10 @@ Feature: managing appointments using API
     And the repsonse JSON should have "current_page_number" field
     And the response JSON "items" field should be a collection
 
+  Scenario: should allow OPTIONS method
+    When I make request "OPTIONS" "/api/v1/appointments"
+    Then the response status code should be 200
+
   Scenario: get list of all appointments, including presentations information
     When I make request "GET" "/api/v1/appointments?include[]=presentation"
     Then the response status code should be 200
