@@ -19,16 +19,24 @@ class PresentationRepository extends DocumentRepository
         }
 
         if(!empty($searchParams['name'])) {
-            $qb->field('name')->equals(new \MongoRegex('/.*'.$searchParams['name'].'.*/i'));
+            $qb->addOr(
+                $qb->expr()->field('name')->equals(new \MongoRegex('/.*'.$searchParams['name'].'.*/i'))
+            );
         }
         if(!empty($searchParams['hall'])) {
-            $qb->field('hall')->equals($searchParams['hall']);
+            $qb->addOr(
+                $qb->expr()->field('hall')->equals($searchParams['hall'])
+            );
         }
         if(!empty($searchParams['number'])) {
-            $qb->field('number')->equals($searchParams['number']);
+            $qb->addOr(
+                $qb->expr()->field('number')->equals($searchParams['number'])
+            );
         }
         if(!empty($searchParams['description'])) {
-            $qb->field('description')->equals(new \MongoRegex('/.*'.$searchParams['description'].'.*/i'));
+            $qb->addOr(
+                $qb->expr()->field('description')->equals(new \MongoRegex('/.*'.$searchParams['description'].'.*/i'))
+            );
         }
 
         if(!empty($searchParams['company.name'])) {
@@ -41,7 +49,9 @@ class PresentationRepository extends DocumentRepository
                 $companyIds[] = $item->getId();
             }
 
-            $qb->field('company.id')->in($companyIds);
+            $qb->addOr(
+                $qb->expr()->field('company.id')->in($companyIds)
+            );
         }
 
         if(!empty($searchParams['category.name'])) {
@@ -54,7 +64,9 @@ class PresentationRepository extends DocumentRepository
                 $categoryIds[] = $item->getId();
             }
 
-            $qb->field('categories.id')->in($categoryIds);
+            $qb->addOr(
+                $qb->expr()->field('categories.id')->in($categoryIds)
+            );
         }
 
         if(!empty($sorting['sortby'])) {
