@@ -5,6 +5,7 @@ namespace Sysla\WeNeedToTalk\WnttApiBundle\Controller;
 use FOS\RestBundle\Controller\FOSRestController;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\UserExistsException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
@@ -62,6 +63,25 @@ class UserController extends AbstractWnttRestController
 
         $view = $this->view($paginatedUsers, 200);
         return $this->handleView($view);
+    }
+
+    /**
+     * Returns allowed HTTP methods in headers
+     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Returns allowed HTTP methods in headers",
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         401="Returned when client is requesting without or with invalid access_token",
+     *     }
+     * )
+     */
+    public function optionsUsersAction()
+    {
+        $response = new Response();
+        $response->headers->set('Allow', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
+        return $response;
     }
 
     /**

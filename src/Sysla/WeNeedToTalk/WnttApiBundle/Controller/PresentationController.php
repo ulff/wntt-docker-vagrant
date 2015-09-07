@@ -5,6 +5,7 @@ namespace Sysla\WeNeedToTalk\WnttApiBundle\Controller;
 use FOS\RestBundle\Controller\FOSRestController;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Event;
@@ -72,6 +73,25 @@ class PresentationController extends AbstractWnttRestController
 
         $view->setData($paginatedPresentations);
         return $this->handleView($view);
+    }
+
+    /**
+     * Returns allowed HTTP methods in headers
+     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Returns allowed HTTP methods in headers",
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         401="Returned when client is requesting without or with invalid access_token",
+     *     }
+     * )
+     */
+    public function optionsPresentationsAction()
+    {
+        $response = new Response();
+        $response->headers->set('Allow', 'OPTIONS, GET, POST, PUT, DELETE');
+        return $response;
     }
 
     /**
