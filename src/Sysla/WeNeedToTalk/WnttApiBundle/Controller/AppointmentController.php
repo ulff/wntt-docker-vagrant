@@ -83,13 +83,8 @@ class AppointmentController extends AbstractWnttRestController
      */
     public function getAppointmentAction($id)
     {
-        $appointment = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Appointment')
-            ->find($id);
-
-        if (!$appointment) {
-            throw $this->createNotFoundException('No product found for id '.$id);
-        }
+        /** @var $appointment Appointment */
+        $appointment = $this->verifyDocumentExists($id, 'Appointment');
 
         $view = $this->view($appointment, 200);
         return $this->handleView($view);
@@ -164,13 +159,7 @@ class AppointmentController extends AbstractWnttRestController
     public function putAppointmentAction(Request $request, $id)
     {
         /** @var $appointment Appointment */
-        $appointment = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Appointment')
-            ->find($id);
-
-        if (empty($appointment)) {
-            throw $this->createNotFoundException('No appointment found for id '.$id);
-        }
+        $appointment = $this->verifyDocumentExists($id, 'Appointment');
 
         $appointmentData = $this->retrieveAppointmentData($request);
         $this->checkPermission($id);
@@ -209,13 +198,7 @@ class AppointmentController extends AbstractWnttRestController
     public function deleteAppointmentAction($id)
     {
         /** @var $appointment Appointment */
-        $appointment = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Appointment')
-            ->find($id);
-
-        if (empty($appointment)) {
-            throw $this->createNotFoundException('No appointment found for id '.$id);
-        }
+        $appointment = $this->verifyDocumentExists($id, 'Appointment');
 
         $this->checkPermission($id);
 

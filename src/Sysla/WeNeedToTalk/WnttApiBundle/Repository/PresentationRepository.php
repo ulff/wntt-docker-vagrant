@@ -7,12 +7,15 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation;
 
 class PresentationRepository extends DocumentRepository
 {
-    public function findBySearchParams($searchParams, $eventId = null)
+    public function findBySearchParams($searchParams, $eventId = null, $companyId = null)
     {
         $qb = $this->createQueryBuilder();
 
         if(!empty($eventId)) {
             $qb->field('event.id')->equals($eventId);
+        }
+        if(!empty($companyId)) {
+            $qb->field('company.id')->equals($companyId);
         }
 
         if(!empty($searchParams['name'])) {
