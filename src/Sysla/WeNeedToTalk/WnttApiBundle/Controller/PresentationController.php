@@ -25,6 +25,8 @@ class PresentationController extends AbstractWnttRestController
      * @QueryParam(name="include", nullable=true, default=null, array=true)
      * @QueryParam(name="search", nullable=true, default=null, array=true)
      * @QueryParam(name="noPaging", nullable=true, default=false, description="set to true if you want to retrieve all records without paging")
+     * @QueryParam(name="sortby", nullable=true, default=null)
+     * @QueryParam(name="sortdir", nullable=true, default=null)
      *
      * @param ParamFetcher $paramFetcher
      *
@@ -56,7 +58,10 @@ class PresentationController extends AbstractWnttRestController
 
         $presentations = $this->get('doctrine_mongodb')
             ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Presentation')
-            ->findBySearchParams($searchParams, $eventId, $companyId);
+            ->findBySearchParams($searchParams, $eventId, $companyId, [
+                'sortby' => $paramFetcher->get('sortby'),
+                'sortdir' => $paramFetcher->get('sortdir')
+            ]);
 
         $paginator  = $this->get('knp_paginator');
         $paginatedPresentations = $paginator->paginate(
