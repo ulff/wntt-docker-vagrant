@@ -9,6 +9,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\UserExistsException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
 use Sysla\WeNeedToTalk\WnttUserBundle\Document\User;
+use Sysla\WeNeedToTalk\WnttApiBundle\Document\Company;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\UserManager;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
@@ -19,7 +20,8 @@ class UserController extends AbstractWnttRestController
     /**
      * Returns collection of User objects.
      *
-     * @QueryParam(name="username", nullable=true, requirements="\w+")
+     * @QueryParam(name="username", nullable=true, requirements="\w+", description="set username to find")
+     * @QueryParam(name="company", nullable=true, description="set company's ID to filter only members of company")
      * @QueryParam(name="noPaging", nullable=true, default=false, description="set to true if you want to retrieve all records without paging")
      *
      * @param ParamFetcher $paramFetcher
@@ -39,6 +41,18 @@ class UserController extends AbstractWnttRestController
         $username = $paramFetcher->get('username');
         if(!empty($username)) {
             $queryParams['username'] = $username;
+        }
+
+        $companyId = $paramFetcher->get('company');
+        if(!empty($companyId)) {
+            /** @var $company Company */
+            $company = $this->get('doctrine_mongodb')
+                ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
+                ->find($companyId);
+            if (empty($company)) {
+                throw $this->createNotFoundException('No company found for id '.$companyId);
+            }
+            $queryParams['company.id'] = $companyId;
         }
 
         $users = $this->get('doctrine_mongodb')

@@ -10,14 +10,28 @@ Feature: getting users through API
       | name          | Company Api                 |
       | websiteUrl    | http://company.api          |
       | logoUrl       | http://company.api/logo.png |
-
+    And following "Company" exists:
+      | identifiedBy  | Company_A2                    |
+      | name          | Company A2                    |
+      | websiteUrl    | http://company2.api           |
+      | logoUrl       | http://company2.api/logo.png  |
     And following "User" exists:
       | identifiedBy  | username_api    |
       | username      | username_api    |
       | email         | user1@email.api |
       | roles         | ROLE_USER       |
       | company       | Company_Api     |
-
+    And following "User" exists:
+      | identifiedBy  | username_second |
+      | username      | username_second |
+      | email         | user2@email.api |
+      | roles         | ROLE_USER       |
+      | company       | Company_A2      |
+    And following "User" exists:
+      | identifiedBy  | username_third  |
+      | username      | username_third  |
+      | email         | user3@email.api |
+      | roles         | ROLE_USER       |
     And following "User" exists:
       | identifiedBy  | admin_api             |
       | username      | admin_api             |
@@ -32,6 +46,20 @@ Feature: getting users through API
     And the repsonse JSON should have "total_count" field
     And the repsonse JSON should have "current_page_number" field
     And the response JSON "items" field should be a collection
+
+  Scenario: get list of users from particular company
+    When I make request "GET" "/api/v1/users?company={Company_Company_A2}"
+    Then the response status code should be 200
+    And the response JSON should be a single object
+    And the repsonse JSON should have "items" field
+    And the repsonse JSON should have "total_count" field
+    And the repsonse JSON should have "current_page_number" field
+    And the response JSON "items" field should be a collection
+    And all nested "items" collection items should have nested "_links->company->id" field with value "{Company_Company_A2}"
+
+  Scenario: should return 404 on filtering by not existing company
+    When I make request "GET" "/api/v1/users?company=not-existing"
+    Then the response status code should be 404
 
   Scenario: get one user
     When I make request "GET" "/api/v1/users/{User_username_api}"
