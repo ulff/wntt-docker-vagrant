@@ -241,16 +241,6 @@ Feature: managing presentations through API
     And the response JSON "items" field should be a collection
     And all nested "items" collection items should have "number" field with value "1333"
 
-  Scenario: get list of presentations matching search params: presentation number equals "1333" and hall equals "F"
-    When I make request "GET" "/api/v1/presentations?search[number]=1333&search[hall]=F"
-    Then the response status code should be 200
-    And the response should be JSON
-    And the response JSON should be a single object
-    And the repsonse JSON should have "items" field
-    And the response JSON "items" field should be a collection
-    And all nested "items" collection items should have "number" field with value "1333"
-    And all nested "items" collection items should have "hall" field with value "F"
-
   Scenario: get list of presentations with non-existent search params should return empty collection: presentation name equals "not-existing"
     When I make request "GET" "/api/v1/presentations?search[name]=not-existing"
     Then the response status code should be 200
@@ -298,24 +288,6 @@ Feature: managing presentations through API
 
   Scenario: get list of presentations with non-existent search params should return empty collection: presentation number equals "not-existing"
     When I make request "GET" "/api/v1/presentations?search[number]=not-existing"
-    Then the response status code should be 200
-    And the response should be JSON
-    And the response JSON should be a single object
-    And the repsonse JSON should have "items" field
-    And the response JSON "items" field should be a collection
-    And the repsonse JSON should have "total_count" field with value "0"
-
-  Scenario: get list of presentations with non-existent search params should return empty collection: presentation hall equals "F" and number equals "not-existing"
-    When I make request "GET" "/api/v1/presentations?search[number]=not-existing&search[hall]=F"
-    Then the response status code should be 200
-    And the response should be JSON
-    And the response JSON should be a single object
-    And the repsonse JSON should have "items" field
-    And the response JSON "items" field should be a collection
-    And the repsonse JSON should have "total_count" field with value "0"
-
-  Scenario: get list of presentations with non-existent search params should return empty collection: presentation hall equals "not-existing" and number equals "1333"
-    When I make request "GET" "/api/v1/presentations?search[hall]=not-existing&search[number]=1333"
     Then the response status code should be 200
     And the response should be JSON
     And the response JSON should be a single object
@@ -473,16 +445,6 @@ Feature: managing presentations through API
     And the response JSON "items" field should be a collection
     And all nested "items" collection items should have "number" field with value "1333"
 
-  Scenario: get list of particular event presentations matching search params: presentation number equals "1333" and hall equals "F"
-    When I make request "GET" "/api/v1/events/{Event_Event_Api_1}/presentations?search[number]=1333&search[hall]=F"
-    Then the response status code should be 200
-    And the response should be JSON
-    And the response JSON should be a single object
-    And the repsonse JSON should have "items" field
-    And the response JSON "items" field should be a collection
-    And all nested "items" collection items should have "number" field with value "1333"
-    And all nested "items" collection items should have "hall" field with value "F"
-
   Scenario: get list of particular event presentations with non-existent search params should return empty collection: presentation name equals "not-existing"
     When I make request "GET" "/api/v1/events/{Event_Event_Api_1}/presentations?search[name]=not-existing"
     Then the response status code should be 200
@@ -530,24 +492,6 @@ Feature: managing presentations through API
 
   Scenario: get list of particular event presentations with non-existent search params should return empty collection: presentation number equals "not-existing"
     When I make request "GET" "/api/v1/events/{Event_Event_Api_1}/presentations?search[number]=not-existing"
-    Then the response status code should be 200
-    And the response should be JSON
-    And the response JSON should be a single object
-    And the repsonse JSON should have "items" field
-    And the response JSON "items" field should be a collection
-    And the repsonse JSON should have "total_count" field with value "0"
-
-  Scenario: get list of particular event presentations with non-existent search params should return empty collection: presentation hall equals "F" and number equals "not-existing"
-    When I make request "GET" "/api/v1/events/{Event_Event_Api_1}/presentations?search[number]=not-existing&search[hall]=F"
-    Then the response status code should be 200
-    And the response should be JSON
-    And the response JSON should be a single object
-    And the repsonse JSON should have "items" field
-    And the response JSON "items" field should be a collection
-    And the repsonse JSON should have "total_count" field with value "0"
-
-  Scenario: get list of particular event presentations with non-existent search params should return empty collection: presentation hall equals "not-existing" and number equals "1333"
-    When I make request "GET" "/api/v1/events/{Event_Event_Api_1}/presentations?search[hall]=not-existing&search[number]=1333"
     Then the response status code should be 200
     And the response should be JSON
     And the response JSON should be a single object
