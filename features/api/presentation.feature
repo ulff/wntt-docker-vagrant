@@ -576,7 +576,6 @@ Feature: managing presentations through API
       | name            | new name of show/me   |
       | company         | Company_Company_Api   |
       | event           | Event_Event_Api_1     |
-    And print last response
     Then the response status code should be 200
     And the response should be JSON
     And the response JSON should be a single object
