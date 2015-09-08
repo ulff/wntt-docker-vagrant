@@ -20,6 +20,11 @@ class CompanyAdmin extends Admin
                 'label' => 'Logo URL',
                 'required' => false
             ])
+            ->add('enabled', 'checkbox', [
+                'label' => 'Is enabled',
+                'required' => false,
+                'by_reference' => false
+            ])
         ;
     }
 
@@ -30,6 +35,7 @@ class CompanyAdmin extends Admin
             ->add('name')
             ->add('websiteUrl')
             ->add('logoUrl')
+            ->add('enabled')
 
             ->add('_action', 'actions', array(
                 'actions' => array(

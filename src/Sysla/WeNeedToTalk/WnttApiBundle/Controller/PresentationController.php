@@ -84,11 +84,15 @@ class PresentationController extends AbstractWnttRestController
      *  statusCodes={
      *         200="Returned when successful",
      *         401="Returned when client is requesting without or with invalid access_token",
+     *         404="Returned when the object with given ID is not found"
      *     }
      * )
      */
-    public function optionsPresentationsAction()
+    public function optionsPresentationAction($id)
     {
+        /** @var $presentation Presentation */
+        $presentation = $this->verifyDocumentExists($id, 'Presentation');
+
         $response = new Response();
         $response->headers->set('Allow', 'OPTIONS, GET, POST, PUT, DELETE');
         return $response;

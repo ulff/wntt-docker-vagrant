@@ -21,6 +21,7 @@ class CompanyController extends AbstractWnttRestController
      * Returns collection of Company objects.
      *
      * @QueryParam(name="noPaging", nullable=true, default=false, description="set to true if you want to retrieve all records without paging")
+     * @QueryParam(name="inclDisabled", nullable=true, default=false, description="set to true if you want to retrieve all companies, including disabled")
      *
      * @param ParamFetcher $paramFetcher
      *
@@ -35,9 +36,14 @@ class CompanyController extends AbstractWnttRestController
      */
     public function getCompaniesAction(ParamFetcher $paramFetcher, Request $request)
     {
+        $queryParams = [];
+        if($paramFetcher->get('inclDisabled') !== 'true') {
+            $queryParams['enabled'] = true;
+        }
+
         $companies = $this->get('doctrine_mongodb')
             ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
-            ->findAll();
+            ->findBy($queryParams);
 
         $paginator  = $this->get('knp_paginator');
         $paginatedCompanies = $paginator->paginate(
@@ -59,11 +65,15 @@ class CompanyController extends AbstractWnttRestController
      *  statusCodes={
      *         200="Returned when successful",
      *         401="Returned when client is requesting without or with invalid access_token",
+     *         404="Returned when the object with given ID is not found"
      *     }
      * )
      */
-    public function optionsCompaniesAction()
+    public function optionsCompanyAction($id)
     {
+        /** @var $company Company */
+        $company = $this->verifyDocumentExists($id, 'Company');
+
         $response = new Response();
         $response->headers->set('Allow', 'OPTIONS, GET, POST, PUT, DELETE');
         return $response;
@@ -71,6 +81,10 @@ class CompanyController extends AbstractWnttRestController
 
     /**
      * Returns Company object by given ID.
+     *
+     * @QueryParam(name="inclDisabled", nullable=true, default=false, description="set to true if you want to retrieve all companies, including disabled")
+     *
+     * @param ParamFetcher $paramFetcher
      *
      * @ApiDoc(
      *  resource=true,
@@ -82,10 +96,14 @@ class CompanyController extends AbstractWnttRestController
      *     }
      * )
      */
-    public function getCompanyAction($id)
+    public function getCompanyAction(ParamFetcher $paramFetcher, Request $request, $id)
     {
         /** @var $company Company */
         $company = $this->verifyDocumentExists($id, 'Company');
+
+        if($paramFetcher->get('inclDisabled') !== 'true' && $company->getEnabled() === false) {
+            throw $this->createNotFoundException('No Company found for id '.$id);
+        }
 
         $view = $this->view($company, 200);
         return $this->handleView($view);

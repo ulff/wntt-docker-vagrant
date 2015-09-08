@@ -74,11 +74,15 @@ class UserController extends AbstractWnttRestController
      *  statusCodes={
      *         200="Returned when successful",
      *         401="Returned when client is requesting without or with invalid access_token",
+     *         404="Returned when the object with given ID is not found"
      *     }
      * )
      */
-    public function optionsUsersAction()
+    public function optionsUserAction($id)
     {
+        /** @var $user User */
+        $user = $this->verifyDocumentExists($id, 'User', 'SyslaWeNeedToTalkWnttUserBundle');
+
         $response = new Response();
         $response->headers->set('Allow', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
         return $response;
