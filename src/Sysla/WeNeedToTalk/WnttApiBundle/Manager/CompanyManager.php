@@ -17,6 +17,7 @@ class CompanyManager extends AbstractDocumentManager
     {
         $company = new Company();
         $this->updateDocumentFromRequest($company, $companyData);
+        $company->setEnabled(false);
 
         return $company;
     }

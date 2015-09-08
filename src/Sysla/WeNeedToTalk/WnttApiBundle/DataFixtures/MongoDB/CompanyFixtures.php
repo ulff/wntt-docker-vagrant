@@ -25,6 +25,14 @@ class CompanyFixtures extends AbstractFixture implements OrderedFixtureInterface
         $manager->persist($company);
         $this->addReference('company_2nd', $company);
 
+        $company = new Company();
+        $company->setName('Company Disabled');
+        $company->setWebsiteUrl('http://disabled.io');
+        $company->setLogoUrl('https://cdn2.iconfinder.com/data/icons/interface-part-1/32/circle-diagonal-line-512.png');
+        $company->setEnabled(false);
+        $manager->persist($company);
+        $this->addReference('company_disabled', $company);
+
         $manager->flush();
     }
 

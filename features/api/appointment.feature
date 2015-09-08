@@ -107,8 +107,12 @@ Feature: managing appointments using API
     And the response JSON "items" field should be a collection
 
   Scenario: should allow OPTIONS method
-    When I make request "OPTIONS" "/api/v1/appointments"
+    When I make request "OPTIONS" "/api/v1/appointments/{Appointment_app1}"
     Then the response status code should be 200
+
+  Scenario: should return 404 when called OPTIONS method on not existing ID
+    When I make request "OPTIONS" "/api/v1/appointments/notexisting"
+    Then the response status code should be 404
 
   Scenario: get list of all appointments, including presentations information
     When I make request "GET" "/api/v1/appointments?include[]=presentation"

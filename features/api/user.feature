@@ -48,8 +48,12 @@ Feature: getting users through API
     And the response JSON "items" field should be a collection
 
   Scenario: should allow OPTIONS method
-    When I make request "OPTIONS" "/api/v1/users"
+    When I make request "OPTIONS" "/api/v1/users/{User_username_api}"
     Then the response status code should be 200
+
+  Scenario: should return 404 when called OPTIONS method on not existing ID
+    When I make request "OPTIONS" "/api/v1/users/notexisting"
+    Then the response status code should be 404
 
   Scenario: get list of users from particular company
     When I make request "GET" "/api/v1/users?company={Company_Company_A2}"

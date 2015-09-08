@@ -481,6 +481,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
             $company->setName($companyData['name']);
             $company->setLogoUrl(@$companyData['logoUrl']);
             $company->setWebsiteUrl(@$companyData['websiteUrl']);
+            $company->setEnabled(@$companyData['enabled'] == 'false' ? false : true);
 
             $dm->persist($company);
             $dm->flush();

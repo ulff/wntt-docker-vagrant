@@ -38,6 +38,11 @@ class Company implements Document
     protected $logoUrl;
 
     /**
+     * @MongoDB\Boolean
+     */
+    protected $enabled;
+
+    /**
      * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation", mappedBy="company", cascade={"remove"})
      * @Serializer\Exclude
      */
@@ -48,6 +53,11 @@ class Company implements Document
      * @Serializer\Exclude
      */
     protected $users;
+
+    public function __construct()
+    {
+        $this->setEnabled(true);
+    }
 
     /**
      * @return string
@@ -111,6 +121,22 @@ class Company implements Document
     public function setLogoUrl($logoUrl)
     {
         $this->logoUrl = $logoUrl;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getEnabled()
+    {
+        return $this->enabled;
+    }
+
+    /**
+     * @param boolean $enabled
+     */
+    public function setEnabled($enabled)
+    {
+        $this->enabled = $enabled;
     }
 
     public function getClassName()

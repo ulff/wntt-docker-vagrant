@@ -53,6 +53,7 @@ class UserAdmin extends Admin
             ->add('username')
             ->add('email')
             ->add('phoneNumber')
+            ->add('isDefaultPassword')
             ->add('roles', 'choice', [
                     'multiple' => true,
                     'delimiter' => ' | ',
