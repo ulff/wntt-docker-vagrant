@@ -21,7 +21,7 @@ class UserController extends AbstractWnttRestController
     /**
      * Returns collection of User objects.
      *
-     * @QueryParam(name="username", nullable=true, requirements="\w+", description="set username to find")
+     * @QueryParam(name="username", nullable=true, description="set username to find")
      * @QueryParam(name="company", nullable=true, description="set company's ID to filter only members of company")
      * @QueryParam(name="noPaging", nullable=true, default=false, description="set to true if you want to retrieve all records without paging")
      *

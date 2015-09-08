@@ -3,5 +3,9 @@ Welcome {{ username }},
 You\'ve just registered to We Need To Talk. Copy and paste in browser following link to confirm you registration:
 {{ activationLink }}
 
+{% if defaultPassword is not empty %}
+    The default generated password to your account is: {{ defaultPassword }}
+{% endif %}
+
 Regards,
 We Need To Talk staff

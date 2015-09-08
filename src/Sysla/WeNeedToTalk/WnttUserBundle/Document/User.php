@@ -56,10 +56,21 @@ class User extends BaseUser implements Document
      */
     protected $isContactPerson;
 
+    /**
+     * @MongoDB\String
+     */
+    protected $defaultPassword;
+
+    /**
+     * @MongoDB\Boolean
+     */
+    protected $isDefaultPassword;
+
     public function __construct()
     {
         parent::__construct();
         $this->setEnabled(true);
+        $this->setIsDefaultPassword(false);
     }
 
     /**
@@ -124,6 +135,38 @@ class User extends BaseUser implements Document
     public function setIsContactPerson($isContactPerson)
     {
         $this->isContactPerson = $isContactPerson;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultPassword()
+    {
+        return $this->defaultPassword;
+    }
+
+    /**
+     * @param string $defaultPassword
+     */
+    public function setDefaultPassword($defaultPassword)
+    {
+        $this->defaultPassword = $defaultPassword;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getIsDefaultPassword()
+    {
+        return $this->isDefaultPassword;
+    }
+
+    /**
+     * @param boolean $isDefaultPassword
+     */
+    public function setIsDefaultPassword($isDefaultPassword)
+    {
+        $this->isDefaultPassword = $isDefaultPassword;
     }
 
     public function getClassName()
