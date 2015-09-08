@@ -89,13 +89,20 @@ class UserManager extends AbstractDocumentManager
         /** @var $user User */
         $user->setUsername($userData['username']);
         $user->setEmail($userData['email']);
-        $user->setPlainPassword($userData['password']);
         $user->setPhoneNumber($userData['phoneNumber']);
 
+        $plainPassword = $userData['password'];
         if(empty($userId)) {
             $user->setEnabled(false);
             $user->setConfirmationToken($this->tokenGenerator->generateToken());
+            if(empty($plainPassword)) {
+                $plainPassword = substr($this->tokenGenerator->generateToken(), 0,8);
+                $user->setDefaultPassword($plainPassword);
+                $user->setIsDefaultPassword(true);
+            }
         }
+
+        $user->setPlainPassword($plainPassword);
 
         $companyId = $userData['company'];
         if(!empty($companyId)) {

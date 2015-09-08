@@ -34,6 +34,7 @@ class EmailDispatcher
                 $this->container->get('templating')->render('Email/registration.html.twig', [
                     'username' => $user->getUsername(),
                     'activationLink' => $activationLink,
+                    'defaultPassword' => $user->getIsDefaultPassword() ? $user->getDefaultPassword() : null
                 ]),
                 'text/html'
             )
@@ -41,6 +42,7 @@ class EmailDispatcher
                 $this->container->get('templating')->render('Email/registration.txt.twig', [
                     'username' => $user->getUsername(),
                     'activationLink' => $activationLink,
+                    'defaultPassword' => $user->getIsDefaultPassword() ? $user->getDefaultPassword() : null
                 ]),
                 'text/plain'
             )

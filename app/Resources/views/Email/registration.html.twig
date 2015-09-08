@@ -5,6 +5,12 @@
     <a href="{{ activationLink }}">{{ activationLink }}</a>
 </p>
 
+{% if defaultPassword is not empty %}
+    <p>
+        The default generated password to your account is: {{ defaultPassword }}
+    </p>
+{% endif %}
+
 <p>
     Regards,
     We Need To Talk staff
