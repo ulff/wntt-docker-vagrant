@@ -90,11 +90,12 @@ class PresentationController extends AbstractWnttRestController
      */
     public function optionsPresentationAction($id)
     {
-        /** @var $presentation Presentation */
-        $presentation = $this->verifyDocumentExists($id, 'Presentation');
+        $this->verifyDocumentExists($id, 'Presentation');
 
         $response = new Response();
         $response->headers->set('Allow', 'OPTIONS, GET, POST, PUT, DELETE');
+        $response->headers->set('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, DELETE');
+
         return $response;
     }
 

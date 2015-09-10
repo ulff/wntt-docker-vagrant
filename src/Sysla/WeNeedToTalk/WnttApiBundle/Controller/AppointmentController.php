@@ -84,11 +84,12 @@ class AppointmentController extends AbstractWnttRestController
      */
     public function optionsAppointmentAction($id)
     {
-        /** @var $appointment Appointment */
-        $appointment = $this->verifyDocumentExists($id, 'Appointment');
+        $this->verifyDocumentExists($id, 'Appointment');
 
         $response = new Response();
         $response->headers->set('Allow', 'OPTIONS, GET, POST, PUT, DELETE');
+        $response->headers->set('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, DELETE');
+
         return $response;
     }
 

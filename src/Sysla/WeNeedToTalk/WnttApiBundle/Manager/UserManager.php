@@ -90,6 +90,8 @@ class UserManager extends AbstractDocumentManager
         $user->setUsername($userData['username']);
         $user->setEmail($userData['email']);
         $user->setPhoneNumber($userData['phoneNumber']);
+        $user->setFullName($userData['fullName']);
+        $user->setIsContactPerson(!empty($userData['isContactPerson']));
 
         $plainPassword = $userData['password'];
         if(empty($userId)) {

@@ -37,6 +37,7 @@ security:
         - { path: ^/confirm, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/admin/weneedtotalk/wnttoauth/client/, role: ROLE_SUPER_ADMIN }
         - { path: ^/admin/, role: ROLE_ADMIN }
+        - { path: ^/api/v1/quick_registration, roles: [ IS_AUTHENTICATED_FULLY ], methods: [POST] }
         - { path: ^/api/v1/events, roles: [ IS_AUTHENTICATED_FULLY ], methods: [GET] }
         - { path: ^/api/v1/events, roles: [ ROLE_ADMIN ], methods: [PUT, POST, DELETE] }
         - { path: ^/api/v1/stands, roles: [ IS_AUTHENTICATED_FULLY ], methods: [GET] }

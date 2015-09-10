@@ -28,6 +28,11 @@ appointments:
     resource: Sysla\WeNeedToTalk\WnttApiBundle\Controller\AppointmentController
     prefix:   /api/v1/
 
+quick_registration:
+    type:     rest
+    resource: Sysla\WeNeedToTalk\WnttApiBundle\Controller\QuickRegistrationController
+    prefix:   /api/v1/
+
 wntt_registration_confirm:
     pattern: /confirm/{token}
     defaults:  { _controller: FOSUserBundle:Registration:confirm }
