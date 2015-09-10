@@ -80,11 +80,12 @@ class UserController extends AbstractWnttRestController
      */
     public function optionsUserAction($id)
     {
-        /** @var $user User */
-        $user = $this->verifyDocumentExists($id, 'User', 'SyslaWeNeedToTalkWnttUserBundle');
+        $this->verifyDocumentExists($id, 'User', 'SyslaWeNeedToTalkWnttUserBundle');
 
         $response = new Response();
         $response->headers->set('Allow', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
+        $response->headers->set('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
+
         return $response;
     }
 
@@ -305,7 +306,8 @@ class UserController extends AbstractWnttRestController
             'password' => $request->get('password'),
             'phoneNumber' => $request->get('phoneNumber'),
             'company' => $request->get('company'),
-            'isAdmin' => $request->get('isAdmin')
+            'isAdmin' => $request->get('isAdmin'),
+            'fullName' => $request->get('fullName')
         ];
     }
 

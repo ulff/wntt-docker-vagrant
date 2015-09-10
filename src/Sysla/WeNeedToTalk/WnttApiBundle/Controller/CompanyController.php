@@ -71,11 +71,12 @@ class CompanyController extends AbstractWnttRestController
      */
     public function optionsCompanyAction($id)
     {
-        /** @var $company Company */
-        $company = $this->verifyDocumentExists($id, 'Company');
+        $this->verifyDocumentExists($id, 'Company');
 
         $response = new Response();
         $response->headers->set('Allow', 'OPTIONS, GET, POST, PUT, DELETE');
+        $response->headers->set('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, DELETE');
+
         return $response;
     }
 
@@ -144,6 +145,8 @@ class CompanyController extends AbstractWnttRestController
             throw new HttpException(409, $e->getMessage());
         } catch(DocumentValidationException $e) {
             throw new HttpException(400, $e->getMessage());
+        } catch(\Swift_TransportException $e) {
+            throw new HttpException(500, 'Company was created, but some problems with sending email occured');
         } catch(\Exception $e) {
             throw new HttpException(500, 'Unknown error occured during processing request');
         }

@@ -40,6 +40,11 @@ class User extends BaseUser implements Document
     protected $phoneNumber;
 
     /**
+     * @MongoDB\String
+     */
+    protected $fullName;
+
+    /**
      * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Company", cascade={"remove"})
      * @Serializer\Exclude
      */
@@ -103,6 +108,22 @@ class User extends BaseUser implements Document
     public function setPhoneNumber($phoneNumber)
     {
         $this->phoneNumber = $phoneNumber;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullName()
+    {
+        return $this->fullName;
+    }
+
+    /**
+     * @param string $fullName
+     */
+    public function setFullName($fullName)
+    {
+        $this->fullName = $fullName;
     }
 
     /**
