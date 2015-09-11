@@ -38,3 +38,6 @@ fos_oauth_server_token:
 
 fos_oauth_server_authorize:
     resource: "@FOSOAuthServerBundle/Resources/config/routing/authorize.xml"
+
+wntt_admin:
+    resource: '@SyslaWeNeedToTalkWnttAdminBundle/Resources/config/routing.yml'

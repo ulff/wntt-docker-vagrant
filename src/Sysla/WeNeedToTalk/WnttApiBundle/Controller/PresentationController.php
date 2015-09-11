@@ -24,7 +24,7 @@ class PresentationController extends AbstractWnttRestController
      * @QueryParam(name="company", nullable=true, description="set company's ID to filter presentations of one company")
      * @QueryParam(name="event", nullable=true, description="set event's ID to filter presentations of one event")
      * @QueryParam(name="include", nullable=true, default=null, array=true)
-     * @QueryParam(name="search", nullable=true, default=null, array=true)
+     * @QueryParam(name="search", nullable=true, default=null, array=true, description="Possible fields to search: name, hall, number, description, company.name, category.name. Hall and number are searching by exact expression, other fields are seaching by substrings. Search is case sensitive.")
      * @QueryParam(name="noPaging", nullable=true, default=false, description="set to true if you want to retrieve all records without paging")
      * @QueryParam(name="sortby", nullable=true, default=null)
      * @QueryParam(name="sortdir", nullable=true, default=null)
