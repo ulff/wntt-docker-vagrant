@@ -28,7 +28,7 @@ class Category implements Document
     protected $name;
 
     /**
-     * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation", mappedBy="categories", cascade={"remove"})
+     * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation", mappedBy="categories")
      * @Serializer\Exclude
      */
     protected $presentations;

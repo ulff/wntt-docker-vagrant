@@ -45,7 +45,7 @@ class User extends BaseUser implements Document
     protected $fullName;
 
     /**
-     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Company", cascade={"remove"})
+     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Company")
      * @Serializer\Exclude
      */
     protected $company;

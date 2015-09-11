@@ -74,7 +74,7 @@ class Presentation implements Document
     protected $company;
 
     /**
-     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Event", cascade={"remove"})
+     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Event")
      * @Assert\NotBlank()
      * @Serializer\Expose
      * @Serializer\Groups({"inclEvent"})
@@ -255,6 +255,17 @@ class Presentation implements Document
     public function setIsPremium($isPremium)
     {
         $this->isPremium = $isPremium;
+    }
+
+    /**
+     * @param \Sysla\WeNeedToTalk\WnttApiBundle\Document\Category $category
+     */
+    public function removeCategory(Category $category)
+    {
+        /** @var $categories \Doctrine\ODM\MongoDB\PersistentCollection */
+        $categories = $this->getCategories();
+        $categories->removeElement($category);
+        $this->setCategories($categories);
     }
 
     /**
