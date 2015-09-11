@@ -49,7 +49,7 @@ class Company implements Document
     protected $presentations;
 
     /**
-     * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttUserBundle\Document\User", mappedBy="company", cascade={"remove"})
+     * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttUserBundle\Document\User", mappedBy="company")
      * @Serializer\Exclude
      */
     protected $users;

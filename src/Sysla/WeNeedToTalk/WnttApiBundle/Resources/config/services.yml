@@ -30,3 +30,13 @@ services:
     wnttapi.service.email_dispatcher:
         class: Sysla\WeNeedToTalk\WnttApiBundle\Service\EmailDispatcher
         arguments: [@service_container]
+
+    wnttapi.listener.company_delete:
+        class: Sysla\WeNeedToTalk\WnttApiBundle\EventListener\CompanyListener
+        tags:
+          - { name: doctrine_mongodb.odm.event_listener, event: preRemove }
+
+    wnttapi.listener.category_delete:
+        class: Sysla\WeNeedToTalk\WnttApiBundle\EventListener\CategoryListener
+        tags:
+          - { name: doctrine_mongodb.odm.event_listener, event: preRemove }
