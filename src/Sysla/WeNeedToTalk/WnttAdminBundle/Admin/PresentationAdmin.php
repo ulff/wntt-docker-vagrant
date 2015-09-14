@@ -13,15 +13,15 @@ class PresentationAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('videoUrl', 'text', [
-                'label' => 'Video URL',
-                'required' => true
-            ])
             ->add('name', 'text', [
                 'label' => 'Name',
                 'required' => true
             ])
-            ->add('description', 'text', [
+            ->add('videoUrl', 'textarea', [
+                'label' => 'Video URL',
+                'required' => true
+            ])
+            ->add('description', 'textarea', [
                 'label' => 'Description',
                 'required' => false
             ])
