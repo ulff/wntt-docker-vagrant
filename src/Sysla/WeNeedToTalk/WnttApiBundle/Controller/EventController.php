@@ -10,6 +10,7 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DuplicatedDocumentException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Event;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Company;
+use Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\EventManager;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
@@ -244,6 +245,41 @@ class EventController extends AbstractWnttRestController
         );
 
         $view->setData($paginatedPresentations);
+        return $this->handleView($view);
+    }
+
+    /**
+     * Returns distinct list of halls by given Event ID.
+     **
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Returns distinct list of halls by given Event ID.",
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         401="Returned when client is requesting without or with invalid access_token",
+     *     }
+     * )
+     */
+    public function getEventHallsAction(Request $request, $eventId)
+    {
+        /** @var $event Event */
+        $event = $this->verifyDocumentExists($eventId, 'Event');
+
+        $presentations = $this->get('doctrine_mongodb')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Presentation')
+            ->findBy([
+                'event.id' => $eventId
+            ]);
+
+        $halls = [];
+        foreach($presentations as $presentation) {
+            /** @var $presentation Presentation */
+            $halls[] = $presentation->getHall();
+        }
+        $halls = array_keys(array_flip($halls));
+
+        $view = $this->createViewWithSerializationContext([]);
+        $view->setData($halls);
         return $this->handleView($view);
     }
 
