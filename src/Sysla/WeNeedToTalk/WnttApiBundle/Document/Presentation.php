@@ -98,6 +98,12 @@ class Presentation implements Document
     protected $isPremium = false;
 
     /**
+     * @MongoDB\String
+     * @Serializer\Expose
+     */
+    protected $companyName;
+
+    /**
      * @return string
      */
     public function getId()
@@ -255,6 +261,22 @@ class Presentation implements Document
     public function setIsPremium($isPremium)
     {
         $this->isPremium = $isPremium;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCompanyName()
+    {
+        return $this->companyName;
+    }
+
+    /**
+     * @param string $companyName
+     */
+    public function setCompanyName($companyName)
+    {
+        $this->companyName = $companyName;
     }
 
     /**
