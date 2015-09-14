@@ -49,7 +49,7 @@ Feature: managing presentations through API
       | videoUrl     | http://company.api/2         |
       | description  | descr to search              |
       | name         | name of 2nd pres             |
-      | hall         | F                            |
+      | hall         | G                            |
       | number       | 1334                         |
       | company      | Company_Api                  |
       | event        | Event_Api_1                  |
@@ -502,6 +502,18 @@ Feature: managing presentations through API
     And the repsonse JSON should have "items" field
     And the response JSON "items" field should be a collection
     And the repsonse JSON should have "total_count" field with value "0"
+
+  Scenario: get distinct halls list
+    When I make request "GET" "/api/v1/events/{Event_Event_Api_1}/halls"
+    Then the response status code should be 200
+    And the response should be JSON
+    And the response JSON should be a collection
+    And the response should contain "F"
+    And the response should contain "G"
+
+  Scenario: should return 404 on not existing event
+    When I make request "GET" "/api/v1/events/not-existing/halls"
+    Then the response status code should be 404
 
   Scenario: create presentation
     Given I am authorized client with username "admin" and password "admin"
