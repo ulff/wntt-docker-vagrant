@@ -40,3 +40,8 @@ services:
         class: Sysla\WeNeedToTalk\WnttApiBundle\EventListener\CategoryListener
         tags:
           - { name: doctrine_mongodb.odm.event_listener, event: preRemove }
+
+    wnttapi.listener.presentation_persist:
+        class: Sysla\WeNeedToTalk\WnttApiBundle\EventListener\PresentationListener
+        tags:
+          - { name: doctrine_mongodb.odm.event_listener, event: prePersist }

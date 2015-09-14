@@ -70,6 +70,7 @@ class PresentationRepository extends DocumentRepository
         }
 
         if(!empty($sorting['sortby'])) {
+            $sorting['sortby'] = $sorting['sortby'] == 'company.name' ? 'companyName' : $sorting['sortby'];
             $sortdir = empty($sorting['sortdir']) ? 'asc' : $sorting['sortdir'];
             $qb->sort($sorting['sortby'], $sortdir);
         }
