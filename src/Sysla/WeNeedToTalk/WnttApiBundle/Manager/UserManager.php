@@ -114,9 +114,6 @@ class UserManager extends AbstractDocumentManager
         }
 
         $userRoles = ['ROLE_USER'];
-        if($userData['isAdmin'] == 'true') {
-            $userRoles[] = 'ROLE_ADMIN';
-        }
         $user->setRoles($userRoles);
     }
 
@@ -143,14 +140,6 @@ class UserManager extends AbstractDocumentManager
                     ->findOneById($userData['company']);
                 $user->setCompany($company);
             }
-        }
-
-        if(isset($userData['isAdmin'])) {
-            $userRoles = ['ROLE_USER'];
-            if ($userData['isAdmin'] == 'true') {
-                $userRoles[] = 'ROLE_ADMIN';
-            }
-            $user->setRoles($userRoles);
         }
     }
 

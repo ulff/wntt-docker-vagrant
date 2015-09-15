@@ -122,7 +122,6 @@ class UserController extends AbstractWnttRestController
      *      {"name"="email", "dataType"="string", "description"="user's email", "required"=true},
      *      {"name"="password", "dataType"="string", "description"="user's password", "required"=true},
      *      {"name"="company", "dataType"="string", "description"="user's company ID", "required"=false},
-     *      {"name"="isAdmin", "dataType"="string", "description"="user has admin priviledges", "required"=false, "format"="true|false"},
      *      {"name"="phoneNumber", "dataType"="string", "description"="user's phone number", "required"=false},
      *   },
      *   statusCodes={
@@ -306,7 +305,6 @@ class UserController extends AbstractWnttRestController
             'password' => $request->get('password'),
             'phoneNumber' => $request->get('phoneNumber'),
             'company' => $request->get('company'),
-            'isAdmin' => $request->get('isAdmin'),
             'fullName' => $request->get('fullName')
         ];
     }
@@ -352,9 +350,6 @@ class UserController extends AbstractWnttRestController
         }
         if($request->get('company') !== null) {
             $data['company'] = $request->get('company');
-        }
-        if($request->get('isAdmin') !== null) {
-            $data['isAdmin'] = $request->get('isAdmin');
         }
 
         return $data;
