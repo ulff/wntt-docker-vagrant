@@ -1,0 +1,41 @@
+wntt.admin.event.list:
+    path: /admin/weneedtotalk/wnttapi/event/list
+
+wntt.admin.event.create:
+    path: /admin/weneedtotalk/wnttapi/event/create
+
+wntt.admin.category.list:
+    path: /admin/weneedtotalk/wnttapi/category/list
+
+wntt.admin.category.create:
+    path: /admin/weneedtotalk/wnttapi/category/create
+
+wntt.admin.presentation.list:
+    path: /admin/weneedtotalk/wnttapi/presentation/list
+
+wntt.admin.presentation.create:
+    path: /admin/weneedtotalk/wnttapi/presentation/create
+
+wntt.admin.company.list:
+    path: /admin/weneedtotalk/wnttapi/company/list
+
+wntt.admin.company.create:
+    path: /admin/weneedtotalk/wnttapi/company/create
+
+wntt.admin.user.list:
+    path: /admin/weneedtotalk/wnttuser/user/list
+
+wntt.admin.user.create:
+    path: /admin/weneedtotalk/wnttuser/user/create
+
+wntt.admin.appointment.list:
+    path: /admin/weneedtotalk/wnttapi/appointment/list
+
+wntt.admin.appointment.create:
+    path: /admin/weneedtotalk/wnttapi/appointment/create
+
+wntt.admin.client.list:
+    path: /admin/weneedtotalk/wnttoauth/client/list
+
+wntt.admin.client.create:
+    path: /admin/weneedtotalk/wnttoauth/client/create

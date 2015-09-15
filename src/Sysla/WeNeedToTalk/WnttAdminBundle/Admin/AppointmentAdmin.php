@@ -67,7 +67,7 @@ class AppointmentAdmin extends Admin
         /** @var $event \Sysla\WeNeedToTalk\WnttApiBundle\Document\Event */
         $event = $object->getEvent();
 
-        if (!empty($presentation) && !empty($event) && $presentation->getStand()->getEvent()->getId() != $event->getId()) {
+        if (!empty($presentation) && !empty($event) && $presentation->getEvent()->getId() != $event->getId()) {
             $errorElement
                 ->with('event.id')
                 ->addViolation('Event does not match chosen presentation')

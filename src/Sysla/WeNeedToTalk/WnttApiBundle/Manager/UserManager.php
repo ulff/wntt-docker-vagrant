@@ -6,11 +6,15 @@ use Sysla\WeNeedToTalk\WnttUserBundle\Document\User;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Document;
 use FOS\UserBundle\Doctrine\UserManager as BaseUserManager;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\UserExistsException;
+use FOS\UserBundle\Util\TokenGeneratorInterface;
 
 class UserManager extends AbstractDocumentManager
 {
     /** @var $baseUserManager BaseUserManager */
     protected $baseUserManager;
+
+    /** @var $tokenGenerator TokenGeneratorInterface */
+    protected $tokenGenerator;
 
     public function __construct(ManagerRegistry $documentManager)
     {
@@ -19,12 +23,20 @@ class UserManager extends AbstractDocumentManager
     }
 
     /**
+     * @param TokenGeneratorInterface $tokenGenerator
+     */
+    public function setTokenGenerator(TokenGeneratorInterface $tokenGenerator)
+    {
+        $this->tokenGenerator = $tokenGenerator;
+    }
+
+    /**
      * @param array $documentData
      * @return Document
      */
     public function createDocument(array $documentData, array $checkIfExistsBy)
     {
-        $document = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttUserBundle:'.$this->documentName)
+        $document = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttUserBundle:'.$this->documentName)
             ->findOneBy($checkIfExistsBy);
 
         if (!empty($document)) {
@@ -53,6 +65,9 @@ class UserManager extends AbstractDocumentManager
         return $document;
     }
 
+    /**
+     * @param BaseUserManager $baseUserManager
+     */
     public function setBaseUserManager(BaseUserManager $baseUserManager)
     {
         $this->baseUserManager = $baseUserManager;
@@ -69,24 +84,36 @@ class UserManager extends AbstractDocumentManager
 
     protected function updateDocumentFromRequest(Document $user, array $userData)
     {
+        $userId = $user->getId();
+
         /** @var $user User */
         $user->setUsername($userData['username']);
         $user->setEmail($userData['email']);
-        $user->setPlainPassword($userData['password']);
         $user->setPhoneNumber($userData['phoneNumber']);
-        $user->setEnabled(true);
+        $user->setFullName($userData['fullName']);
+        $user->setIsContactPerson(!empty($userData['isContactPerson']));
+
+        $plainPassword = $userData['password'];
+        if(empty($userId)) {
+            $user->setEnabled(false);
+            $user->setConfirmationToken($this->tokenGenerator->generateToken());
+            if(empty($plainPassword)) {
+                $plainPassword = substr($this->tokenGenerator->generateToken(), 0,8);
+                $user->setDefaultPassword($plainPassword);
+                $user->setIsDefaultPassword(true);
+            }
+        }
+
+        $user->setPlainPassword($plainPassword);
 
         $companyId = $userData['company'];
         if(!empty($companyId)) {
-            $company = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+            $company = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
                 ->findOneById($userData['company']);
             $user->setCompany($company);
         }
 
         $userRoles = ['ROLE_USER'];
-        if($userData['isAdmin'] == 'true') {
-            $userRoles[] = 'ROLE_ADMIN';
-        }
         $user->setRoles($userRoles);
     }
 
@@ -109,18 +136,10 @@ class UserManager extends AbstractDocumentManager
         if(isset($userData['company'])) {
             $companyId = $userData['company'];
             if (!empty($companyId)) {
-                $company = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+                $company = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
                     ->findOneById($userData['company']);
                 $user->setCompany($company);
             }
-        }
-
-        if(isset($userData['isAdmin'])) {
-            $userRoles = ['ROLE_USER'];
-            if ($userData['isAdmin'] == 'true') {
-                $userRoles[] = 'ROLE_ADMIN';
-            }
-            $user->setRoles($userRoles);
         }
     }
 

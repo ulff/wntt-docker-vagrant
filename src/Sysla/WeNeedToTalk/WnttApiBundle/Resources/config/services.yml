@@ -15,10 +15,6 @@ services:
         class: Sysla\WeNeedToTalk\WnttApiBundle\Manager\PresentationManager
         arguments: [@doctrine_mongodb]
 
-    wnttapi.manager.stand:
-        class: Sysla\WeNeedToTalk\WnttApiBundle\Manager\StandManager
-        arguments: [@doctrine_mongodb]
-
     wnttapi.manager.user:
         class: Sysla\WeNeedToTalk\WnttApiBundle\Manager\UserManager
         arguments: [@doctrine_mongodb]
@@ -30,3 +26,24 @@ services:
     wnttapi.service.permission_verifier:
         class: Sysla\WeNeedToTalk\WnttApiBundle\Service\PermissionVerifier
         arguments: [@doctrine_mongodb]
+
+    wnttapi.service.email_dispatcher:
+        class: Sysla\WeNeedToTalk\WnttApiBundle\Service\EmailDispatcher
+        arguments: [@service_container]
+
+    wnttapi.listener.company:
+        class: Sysla\WeNeedToTalk\WnttApiBundle\EventListener\CompanyListener
+        tags:
+          - { name: doctrine_mongodb.odm.event_listener, event: preRemove }
+          - { name: doctrine_mongodb.odm.event_listener, event: postUpdate }
+
+    wnttapi.listener.category:
+        class: Sysla\WeNeedToTalk\WnttApiBundle\EventListener\CategoryListener
+        tags:
+          - { name: doctrine_mongodb.odm.event_listener, event: preRemove }
+
+    wnttapi.listener.presentation:
+        class: Sysla\WeNeedToTalk\WnttApiBundle\EventListener\PresentationListener
+        tags:
+          - { name: doctrine_mongodb.odm.event_listener, event: prePersist }
+          - { name: doctrine_mongodb.odm.event_listener, event: postUpdate }

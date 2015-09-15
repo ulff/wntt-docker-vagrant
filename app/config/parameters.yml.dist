@@ -21,3 +21,10 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
+
+    wntt.email.from:  info@offshore.no
+    wntt.email.admin: wntt.dev@gmail.com
+    wntt.amazonses.host:  email-smtp.eu-west-1.amazonaws.com
+    wntt.amazonses.port:  587
+    wntt.amazonses.username:  AKIAI7HAYJH6QPB4NXIQ
+    wntt.amazonses.password:  AkNwDxOhdQRqc2i3CMSbCka9J7jadcfzz8DN+Qfj+1d3

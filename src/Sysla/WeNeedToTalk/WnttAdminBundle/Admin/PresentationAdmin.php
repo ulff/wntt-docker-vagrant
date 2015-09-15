@@ -13,16 +13,28 @@ class PresentationAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('videoUrl', 'text', [
+            ->add('name', 'text', [
+                'label' => 'Name',
+                'required' => true
+            ])
+            ->add('videoUrl', 'textarea', [
                 'label' => 'Video URL',
                 'required' => true
             ])
-            ->add('description', 'text', [
+            ->add('description', 'textarea', [
                 'label' => 'Description',
                 'required' => false
             ])
+            ->add('hall', 'text', [
+                'label' => 'Hall',
+                'required' => false
+            ])
+            ->add('number', 'text', [
+                'label' => 'Number',
+                'required' => false
+            ])
             ->add('company', 'sonata_type_model', ['class' => 'Sysla\WeNeedToTalk\WnttApiBundle\Document\Company'])
-            ->add('stand', 'sonata_type_model', ['class' => 'Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand'])
+            ->add('event', 'sonata_type_model', ['class' => 'Sysla\WeNeedToTalk\WnttApiBundle\Document\Event'])
             ->add('categories', 'sonata_type_model', [
                 'class' => 'Sysla\WeNeedToTalk\WnttApiBundle\Document\Category',
                 'multiple' => true,
@@ -40,9 +52,11 @@ class PresentationAdmin extends Admin
     {
         $listMapper
             ->addIdentifier('id')
-            ->add('videoUrl')
+            ->add('name')
             ->add('company')
-            ->add('stand')
+            ->add('event')
+            ->add('hall')
+            ->add('number')
             ->add('categories')
             ->add('isPremium')
 

@@ -5,8 +5,11 @@ namespace Sysla\WeNeedToTalk\WnttApiBundle\Controller;
 use FOS\RestBundle\Controller\FOSRestController;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation;
+use Sysla\WeNeedToTalk\WnttApiBundle\Document\Event;
+use Sysla\WeNeedToTalk\WnttApiBundle\Document\Company;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DuplicatedDocumentException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\PresentationManager;
@@ -18,8 +21,13 @@ class PresentationController extends AbstractWnttRestController
     /**
      * Returns collection of Presentation objects.
      *
-     * @QueryParam(name="type", nullable=true, requirements="(free|premium)")
+     * @QueryParam(name="company", nullable=true, description="set company's ID to filter presentations of one company")
+     * @QueryParam(name="event", nullable=true, description="set event's ID to filter presentations of one event")
      * @QueryParam(name="include", nullable=true, default=null, array=true)
+     * @QueryParam(name="search", nullable=true, default=null, array=true, description="Possible fields to search: name, hall, number, description, company.name, category.name. Hall and number are searching by exact expression, other fields are seaching by substrings. Search is case sensitive.")
+     * @QueryParam(name="noPaging", nullable=true, default=false, description="set to true if you want to retrieve all records without paging")
+     * @QueryParam(name="sortby", nullable=true, default=null)
+     * @QueryParam(name="sortdir", nullable=true, default=null)
      *
      * @param ParamFetcher $paramFetcher
      *
@@ -32,23 +40,63 @@ class PresentationController extends AbstractWnttRestController
      *     }
      * )
      */
-    public function getPresentationsAction(ParamFetcher $paramFetcher)
+    public function getPresentationsAction(ParamFetcher $paramFetcher, Request $request)
     {
-        $queryParams = [];
-        $type = $paramFetcher->get('type');
-        if(!empty($type)) {
-            $queryParams['isPremium'] = $type == 'premium' ? true : false;
-        }
-
         $includeProperties = $paramFetcher->get('include');
         $view = $this->createViewWithSerializationContext($includeProperties);
 
-        $presentations = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
-            ->findBy($queryParams);
+        $searchParams = $paramFetcher->get('search');
 
-        $view->setData($presentations);
+        $eventId = $paramFetcher->get('event', null);
+        if(!empty($eventId)) {
+            $this->verifyDocumentExists($eventId, 'Event');
+        }
+
+        $companyId = $paramFetcher->get('company', null);
+        if(!empty($companyId)) {
+            $this->verifyDocumentExists($companyId, 'Company');
+        }
+
+        $presentations = $this->get('doctrine_mongodb')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Presentation')
+            ->findBySearchParams($searchParams, $eventId, $companyId, [
+                'sortby' => $paramFetcher->get('sortby'),
+                'sortdir' => $paramFetcher->get('sortdir')
+            ]);
+
+        $paginator  = $this->get('knp_paginator');
+        $paginatedPresentations = $paginator->paginate(
+            $presentations,
+            $request->query->getInt('page', 1),
+            $paramFetcher->get('noPaging') === 'true' ? PHP_INT_MAX : $this->container->getParameter('api_list_items_per_page')
+        );
+
+        $view->setData($paginatedPresentations);
         return $this->handleView($view);
+    }
+
+    /**
+     * Returns allowed HTTP methods in headers
+     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Returns allowed HTTP methods in headers",
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         401="Returned when client is requesting without or with invalid access_token",
+     *         404="Returned when the object with given ID is not found"
+     *     }
+     * )
+     */
+    public function optionsPresentationAction($id)
+    {
+        $this->verifyDocumentExists($id, 'Presentation');
+
+        $response = new Response();
+        $response->headers->set('Allow', 'OPTIONS, GET, POST, PUT, DELETE');
+        $response->headers->set('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, DELETE');
+
+        return $response;
     }
 
     /**
@@ -66,13 +114,8 @@ class PresentationController extends AbstractWnttRestController
      */
     public function getPresentationAction($id)
     {
-        $presentation = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
-            ->find($id);
-
-        if (!$presentation) {
-            throw $this->createNotFoundException('No product found for id '.$id);
-        }
+        /** @var $presentation Presentation */
+        $presentation = $this->verifyDocumentExists($id, 'Presentation');
 
         $view = $this->view($presentation, 200);
         return $this->handleView($view);
@@ -87,7 +130,10 @@ class PresentationController extends AbstractWnttRestController
      *   parameters={
      *      {"name"="videoUrl", "dataType"="string", "description"="presentation name", "required"=true},
      *      {"name"="company", "dataType"="string", "description"="presentation's company ID", "required"=true},
-     *      {"name"="stand", "dataType"="string", "description"="presentation's stand ID", "required"=true},
+     *      {"name"="event", "dataType"="string", "description"="presentation's event ID", "required"=true},
+     *      {"name"="name", "dataType"="string", "description"="presentation's name", "required"=true},
+     *      {"name"="hall", "dataType"="string", "description"="presentation's hall", "required"=false},
+     *      {"name"="number", "dataType"="string", "description"="presentation's stand number", "required"=false},
      *      {"name"="description", "dataType"="string", "description"="presentation's descrption", "required"=false},
      *      {"name"="isPremium", "dataType"="boolean", "description"="is presentation premium (true) or free (false)", "required"=false},
      *      {"name"="categories", "dataType"="string/array", "description"="one on many category IDs", "required"=false},
@@ -133,7 +179,10 @@ class PresentationController extends AbstractWnttRestController
      *   parameters={
      *      {"name"="videoUrl", "dataType"="string", "description"="presentation name", "required"=true},
      *      {"name"="company", "dataType"="string", "description"="presentation's company ID", "required"=true},
-     *      {"name"="stand", "dataType"="string", "description"="presentation's stand ID", "required"=true},
+     *      {"name"="event", "dataType"="string", "description"="presentation's event ID", "required"=true},
+     *      {"name"="name", "dataType"="string", "description"="presentation's name", "required"=true},
+     *      {"name"="hall", "dataType"="string", "description"="presentation's hall", "required"=false},
+     *      {"name"="number", "dataType"="string", "description"="presentation's stand number", "required"=false},
      *      {"name"="description", "dataType"="string", "description"="presentation's descrption", "required"=false},
      *      {"name"="isPremium", "dataType"="boolean", "description"="is presentation premium (true) or free (false)", "required"=false},
      *      {"name"="categories", "dataType"="string/array", "description"="one on many category IDs", "required"=false},
@@ -149,13 +198,7 @@ class PresentationController extends AbstractWnttRestController
     public function putPresentationAction(Request $request, $id)
     {
         /** @var $presentation Presentation */
-        $presentation = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
-            ->find($id);
-
-        if (empty($presentation)) {
-            throw $this->createNotFoundException('No presentation found for id '.$id);
-        }
+        $presentation = $this->verifyDocumentExists($id, 'Presentation');
 
         $presentationData = $this->retrievePresentationData($request);
         $this->checkPermission($presentationData['company']);
@@ -194,13 +237,7 @@ class PresentationController extends AbstractWnttRestController
     public function deletePresentationAction($id)
     {
         /** @var $presentation Presentation */
-        $presentation = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
-            ->find($id);
-
-        if (empty($presentation)) {
-            throw $this->createNotFoundException('No presentation found for id '.$id);
-        }
+        $presentation = $this->verifyDocumentExists($id, 'Presentation');
 
         $this->checkPermission($presentation->getCompany()->getId());
 
@@ -220,8 +257,11 @@ class PresentationController extends AbstractWnttRestController
     {
         return [
             'videoUrl' => $request->get('videoUrl'),
+            'name' => $request->get('name'),
+            'hall' => $request->get('hall'),
+            'number' => $request->get('number'),
             'description' => $request->get('description'),
-            'stand' => $request->get('stand'),
+            'event' => $request->get('event'),
             'company' => $request->get('company'),
             'isPremium' => $request->get('isPremium'),
             'categories' => $request->get('categories')
@@ -235,8 +275,11 @@ class PresentationController extends AbstractWnttRestController
         if (empty($presentationData['videoUrl'])) {
             throw new HttpException(400, 'Missing required parameters: videoUrl');
         }
-        if (empty($presentationData['stand'])) {
-            throw new HttpException(400, 'Missing required parameters: stand');
+        if (empty($presentationData['name'])) {
+            throw new HttpException(400, 'Missing required parameters: name');
+        }
+        if (empty($presentationData['event'])) {
+            throw new HttpException(400, 'Missing required parameters: event');
         }
         if (empty($presentationData['company'])) {
             throw new HttpException(400, 'Missing required parameters: company');
@@ -245,30 +288,30 @@ class PresentationController extends AbstractWnttRestController
         $categoryIds = $presentationData['categories'];
         if(is_array($categoryIds)) {
             foreach($categoryIds as $categoryId) {
-                $category = $documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+                $category = $documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Category')
                     ->findOneById($categoryId);
                 if(empty($category)) {
                     throw new HttpException(400, "Invalid parameter: category with ID: '$categoryId' not found!");
                 }
             }
         } elseif (!empty($categoryIds)) {
-            $category = $documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+            $category = $documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Category')
                 ->findOneById($presentationData['categories']);
             if(empty($category)) {
                 throw new HttpException(400, "Invalid parameter: category with ID: '{$categoryIds}' not found!");
             }
         }
 
-        $company = $documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+        $company = $documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
             ->findOneById($presentationData['company']);
         if(empty($company)) {
             throw new HttpException(400, "Invalid parameter: company with ID: '{$presentationData['company']}' not found!");
         }
 
-        $stand = $documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
-            ->findOneById($presentationData['stand']);
-        if(empty($stand)) {
-            throw new HttpException(400, "Invalid parameter: stand with ID: '{$presentationData['stand']}' not found!");
+        $event = $documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Event')
+            ->findOneById($presentationData['event']);
+        if(empty($event)) {
+            throw new HttpException(400, "Invalid parameter: event with ID: '{$presentationData['event']}' not found!");
         }
     }
 
