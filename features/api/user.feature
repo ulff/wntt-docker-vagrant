@@ -85,7 +85,6 @@ Feature: getting users through API
       | password        | password                  |
       | email           | olaf.galazka@schibsted.pl |
       | company         | Company_Company_Api       |
-      | isAdmin         | true                      |
       | phoneNumber     | 668 678                   |
     Then "User" should be created with "username" set to "uacreated"
     And the response status code should be 201
@@ -103,7 +102,6 @@ Feature: getting users through API
       | password        | password                  |
       | email           | olaf.galazka@schibsted.pl |
       | company         | Company_Company_Api       |
-      | isAdmin         | true                      |
       | phoneNumber     | 668 678 2                 |
     Then the response status code should be 200
     And the response should be JSON
@@ -139,18 +137,17 @@ Feature: getting users through API
       | password        | <password>      |
       | email           | <email>         |
       | company         | <company>       |
-      | isAdmin         | <isAdmin>       |
       | phoneNumber     | <phoneNumber>   |
     Then the response status code should be 400
     And the response should be JSON
     And the repsonse JSON should have "error" field
 
   Examples:
-    | username          | password            | email             | company             | isAdmin       | phoneNumber |
-    |                   | password            | user@api          | Company_Company_Api | true          | 668 678     |
-    | uaupdated         |                     | user@api          | Company_Company_Api | true          | 668 678     |
-    | uaupdated         | password            |                   | Company_Company_Api | true          | 668 678     |
-    | uaupdated         | password            | user@api          | not-existing        | true          | 668 678     |
+    | username          | password            | email             | company             | phoneNumber |
+    |                   | password            | user@api          | Company_Company_Api | 668 678     |
+    | uaupdated         |                     | user@api          | Company_Company_Api | 668 678     |
+    | uaupdated         | password            |                   | Company_Company_Api | 668 678     |
+    | uaupdated         | password            | user@api          | not-existing        | 668 678     |
 
   Scenario: cannot update user without user context
     When I make request "PUT" "/api/v1/users/{User_username_api}"
