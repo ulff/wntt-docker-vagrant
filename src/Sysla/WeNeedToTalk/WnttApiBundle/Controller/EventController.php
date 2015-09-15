@@ -9,6 +9,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DuplicatedDocumentException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Event;
+use Sysla\WeNeedToTalk\WnttApiBundle\Document\Company;
+use Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\EventManager;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
@@ -17,6 +19,10 @@ class EventController extends AbstractWnttRestController
 {
     /**
      * Returns collection of Event objects.
+     *
+     * @QueryParam(name="noPaging", nullable=true, default=false, description="set to true if you want to retrieve all records without paging")
+     *
+     * @param ParamFetcher $paramFetcher
      *
      * @ApiDoc(
      *  resource=true,
@@ -27,13 +33,20 @@ class EventController extends AbstractWnttRestController
      *     }
      * )
      */
-    public function getEventsAction()
+    public function getEventsAction(ParamFetcher $paramFetcher, Request $request)
     {
         $events = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Event')
             ->findAll();
 
-        $view = $this->view($events, 200);
+        $paginator  = $this->get('knp_paginator');
+        $paginatedEvents = $paginator->paginate(
+            $events,
+            $request->query->getInt('page', 1),
+            $paramFetcher->get('noPaging') === 'true' ? PHP_INT_MAX : $this->container->getParameter('api_list_items_per_page')
+        );
+
+        $view = $this->view($paginatedEvents, 200);
         return $this->handleView($view);
     }
 
@@ -52,13 +65,8 @@ class EventController extends AbstractWnttRestController
      */
     public function getEventAction($id)
     {
-        $event = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
-            ->find($id);
-
-        if (!$event) {
-            throw $this->createNotFoundException('No product found for id '.$id);
-        }
+        /** @var $event Event */
+        $event = $this->verifyDocumentExists($id, 'Event');
 
         $view = $this->view($event, 200);
         return $this->handleView($view);
@@ -134,13 +142,7 @@ class EventController extends AbstractWnttRestController
     public function putEventAction(Request $request, $id)
     {
         /** @var $event Event */
-        $event = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
-            ->find($id);
-
-        if (empty($event)) {
-            throw $this->createNotFoundException('No event found for id '.$id);
-        }
+        $event = $this->verifyDocumentExists($id, 'Event');
 
         $eventData = $this->retrieveEventData($request);
         $this->validateEventData($eventData);
@@ -178,13 +180,7 @@ class EventController extends AbstractWnttRestController
     public function deleteEventAction($id)
     {
         /** @var $event Event */
-        $event = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
-            ->find($id);
-
-        if (empty($event)) {
-            throw $this->createNotFoundException('No event found for id '.$id);
-        }
+        $event = $this->verifyDocumentExists($id, 'Event');
 
         try {
             /** @var $eventManager EventManager */
@@ -201,7 +197,12 @@ class EventController extends AbstractWnttRestController
     /**
      * Returns collection of Presentation objects by given Event ID.
      *
+     * @QueryParam(name="company", nullable=true, description="set company's ID to filter presentations of one company")
      * @QueryParam(name="include", nullable=true, default=null, array=true)
+     * @QueryParam(name="search", nullable=true, default=null, array=true)
+     * @QueryParam(name="noPaging", nullable=true, default=false, description="set to true if you want to retrieve all records without paging")
+     * @QueryParam(name="sortby", nullable=true, default=null)
+     * @QueryParam(name="sortdir", nullable=true, default=null)
      *
      * @param ParamFetcher $paramFetcher
      *
@@ -217,22 +218,68 @@ class EventController extends AbstractWnttRestController
     public function getEventPresentationsAction(ParamFetcher $paramFetcher, Request $request, $eventId)
     {
         /** @var $event Event */
-        $event = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
-            ->find($eventId);
+        $event = $this->verifyDocumentExists($eventId, 'Event');
 
-        if (empty($event)) {
-            throw $this->createNotFoundException('No event found for id '.$eventId);
+        $companyId = $paramFetcher->get('company', null);
+        if(!empty($companyId)) {
+            $this->verifyDocumentExists($companyId, 'Company');
         }
 
         $includeProperties = $paramFetcher->get('include');
         $view = $this->createViewWithSerializationContext($includeProperties);
 
-        $presentations = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
-            ->findByEvent($eventId);
+        $searchParams = $paramFetcher->get('search');
 
-        $view->setData($presentations);
+        $presentations = $this->get('doctrine_mongodb')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Presentation')
+            ->findBySearchParams($searchParams, $eventId, $companyId, [
+                'sortby' => $paramFetcher->get('sortby'),
+                'sortdir' => $paramFetcher->get('sortdir')
+            ]);
+
+        $paginator  = $this->get('knp_paginator');
+        $paginatedPresentations = $paginator->paginate(
+            $presentations,
+            $request->query->getInt('page', 1),
+            $paramFetcher->get('noPaging') === 'true' ? PHP_INT_MAX : $this->container->getParameter('api_list_items_per_page')
+        );
+
+        $view->setData($paginatedPresentations);
+        return $this->handleView($view);
+    }
+
+    /**
+     * Returns distinct list of halls by given Event ID.
+     **
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Returns distinct list of halls by given Event ID.",
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         401="Returned when client is requesting without or with invalid access_token",
+     *     }
+     * )
+     */
+    public function getEventHallsAction(Request $request, $eventId)
+    {
+        /** @var $event Event */
+        $event = $this->verifyDocumentExists($eventId, 'Event');
+
+        $presentations = $this->get('doctrine_mongodb')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Presentation')
+            ->findBy([
+                'event.id' => $eventId
+            ]);
+
+        $halls = [];
+        foreach($presentations as $presentation) {
+            /** @var $presentation Presentation */
+            $halls[] = $presentation->getHall();
+        }
+        $halls = array_keys(array_flip($halls));
+
+        $view = $this->createViewWithSerializationContext([]);
+        $view->setData($halls);
         return $this->handleView($view);
     }
 

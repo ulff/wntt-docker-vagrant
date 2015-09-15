@@ -2,10 +2,10 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: services.yml }
-    - { resource: @SyslaWeeNeedToTalkWnttAdminBundle/Resources/config/admin.yml }
-    - { resource: @SyslaWeeNeedToTalkWnttAdminBundle/Resources/config/services.yml }
-    - { resource: @SyslaWeeNeedToTalkWnttApiBundle/Resources/config/services.yml }
-    - { resource: @SyslaWeeNeedToTalkWnttOAuthBundle/Resources/config/services.yml }
+    - { resource: @SyslaWeNeedToTalkWnttAdminBundle/Resources/config/admin.yml }
+    - { resource: @SyslaWeNeedToTalkWnttAdminBundle/Resources/config/services.yml }
+    - { resource: @SyslaWeNeedToTalkWnttApiBundle/Resources/config/services.yml }
+    - { resource: @SyslaWeNeedToTalkWnttOAuthBundle/Resources/config/services.yml }
 
 framework:
     #esi:             ~
@@ -70,11 +70,13 @@ doctrine:
 
 # Swiftmailer Configuration
 swiftmailer:
-    transport: "%mailer_transport%"
-    host:      "%mailer_host%"
-    username:  "%mailer_user%"
-    password:  "%mailer_password%"
-    spool:     { type: memory }
+    transport:  smtp
+    host:       "%wntt.amazonses.host%"
+    port:       "%wntt.amazonses.port%"
+    encryption: tls
+    username:   "%wntt.amazonses.username%"
+    password:   "%wntt.amazonses.password%"
+    auth_mode:  login
 
 doctrine_mongodb:
     connections:
@@ -97,6 +99,9 @@ fos_user:
     db_driver: mongodb
     firewall_name: main
     user_class: Sysla\WeNeedToTalk\WnttUserBundle\Document\User
+    registration:
+        confirmation:
+            enabled:    true
 
 fos_rest:
     routing_loader:
@@ -113,3 +118,17 @@ fos_oauth_server:
     auth_code_class:     Sysla\WeNeedToTalk\WnttOAuthBundle\Document\AuthCode
     service:
         user_provider: fos_user.user_provider.username_email
+
+knp_paginator:
+    page_range: 5                      # default page range used in pagination control
+    default_options:
+        page_name: page                # page query parameter name
+        sort_field_name: sort          # sort field query parameter name
+        sort_direction_name: direction # sort direction query parameter name
+        distinct: true                 # ensure distinct results, useful when ORM queries are using GROUP BY statements
+    template:
+        pagination: KnpPaginatorBundle:Pagination:sliding.html.twig     # sliding pagination controls template
+        sortable: KnpPaginatorBundle:Pagination:sortable_link.html.twig # sort link template
+
+parameters:
+    api_list_items_per_page: 10

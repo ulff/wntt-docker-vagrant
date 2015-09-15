@@ -26,6 +26,9 @@ class PresentationManager extends AbstractDocumentManager
     {
         /** @var $presentation Presentation */
         $presentation->setVideoUrl($presentationData['videoUrl']);
+        $presentation->setName($presentationData['name']);
+        $presentation->setHall($presentationData['hall']);
+        $presentation->setNumber($presentationData['number']);
         $presentation->setDescription($presentationData['description']);
         $presentation->setIsPremium($presentationData['isPremium'] == 'true' ? true : false);
 
@@ -33,38 +36,27 @@ class PresentationManager extends AbstractDocumentManager
         $categoryIds = $presentationData['categories'];
         if(is_array($categoryIds)) {
             foreach($categoryIds as $categoryId) {
-                $category = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+                $category = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Category')
                     ->findOneById($categoryId);
                 $categories[] = $category;
             }
         } elseif (!empty($categoryIds)) {
-            $category = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+            $category = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Category')
                 ->findOneById($presentationData['categories']);
             $categories[] = $category;
         }
         $presentation->setCategories($categories);
 
-        $company = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+        $company = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
             ->findOneById($presentationData['company']);
         $presentation->setCompany($company);
 
-        $stand = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
-            ->findOneById($presentationData['stand']);
-        $presentation->setStand($stand);
+        $event = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Event')
+            ->findOneById($presentationData['event']);
+        $presentation->setEvent($event);
     }
 
     protected function validateDocumentData(array $presentationData, Document $presentation = null)
     {
-        /** @var $stand \Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand */
-        $stand = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
-            ->findOneById($presentationData['stand']);
-
-        $existingPresentation = $stand->getPresentation();
-        if (empty($presentation) && !empty($existingPresentation)) {
-            throw new DocumentValidationException("Stand '{$stand->getId()}' already has presentation '{$existingPresentation->getId()}' assigned");
-        }
-        if (!empty($presentation) && $presentation->getId() != $existingPresentation->getId()) {
-            throw new DocumentValidationException("Stand '{$stand->getId()}' already has presentation '{$existingPresentation->getId()}' assigned");
-        }
     }
 }

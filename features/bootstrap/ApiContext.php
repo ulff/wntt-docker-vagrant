@@ -94,7 +94,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
 
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
-        $accessToken = $dm->getRepository('SyslaWeeNeedToTalkWnttOAuthBundle:AccessToken')
+        $accessToken = $dm->getRepository('SyslaWeNeedToTalkWnttOAuthBundle:AccessToken')
             ->findOneBy(array('client.id' => $client->getId()));
 
         $this->getParameterBag()->set('ACCESS_TOKEN', $accessToken->getToken());
@@ -121,7 +121,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
 
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
-        $accessToken = $dm->getRepository('SyslaWeeNeedToTalkWnttOAuthBundle:AccessToken')
+        $accessToken = $dm->getRepository('SyslaWeNeedToTalkWnttOAuthBundle:AccessToken')
             ->findOneBy(array('client.id' => $client->getId()));
 
         $this->getParameterBag()->set('ACCESS_TOKEN', $accessToken->getToken());
@@ -150,9 +150,6 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
                 break;
             case 'Event':
                 $this->ensureEventExists($table->getRowsHash());
-                break;
-            case 'Stand':
-                $this->ensureStandExists($table->getRowsHash());
                 break;
             case 'Presentation':
                 $this->ensurePresentationExists($table->getRowsHash());
@@ -276,8 +273,84 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     public function allResponseCollectionItemsShouldHaveFieldSetTo($property, $expectedBoolean)
     {
         $response = json_decode($this->getClient()->getResponse()->getContent());
+        if(empty($response)) {
+            throw new Exception\EmptyCollectionException();
+        }
         foreach($response as $document) {
             $this->assertDocumentHasPropertyWithBooleanValue($document, $property, $expectedBoolean);
+        }
+        return;
+    }
+
+    /**
+     * @Then the response JSON :fieldName field should be a collection
+     */
+    public function theResponseJsonFieldShouldBeACollection($fieldName)
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        if(!is_array($response->$fieldName)) {
+            throw new Exception\CollectionExpectedException();
+        }
+        return;
+    }
+
+    /**
+     * @Then all nested :collectionFieldName collection items should have :nestedFieldName field
+     */
+    public function allNestedCollectionItemsShouldHaveField($collectionFieldName, $nestedFieldName)
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        if(empty($response->$collectionFieldName)) {
+            throw new Exception\EmptyCollectionException($collectionFieldName);
+        }
+        foreach($response->$collectionFieldName as $document) {
+            $this->assertDocumentHasProperty($document, $nestedFieldName);
+        }
+        return;
+    }
+
+    /**
+     * @Then all nested :collectionFieldName collection items should have :nestedFieldName field set to :expectedValue
+     */
+    public function allNestedCollectionItemsShouldHaveFieldSetTo($collectionFieldName, $nestedFieldName, $expectedValue)
+    {
+        $expectedBoolean = ($expectedValue == 'true' ? true : false);
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        if(empty($response->$collectionFieldName)) {
+            throw new Exception\EmptyCollectionException($collectionFieldName);
+        }
+        foreach($response->$collectionFieldName as $document) {
+            $this->assertDocumentHasPropertyWithBooleanValue($document, $nestedFieldName, $expectedBoolean);
+        }
+        return;
+    }
+
+    /**
+     * @Then all nested :collectionFieldName collection items should have :nestedFieldName field with value :expectedValue
+     */
+    public function allNestedCollectionItemsShouldHaveFieldWithValue($collectionFieldName, $nestedFieldName, $expectedValue)
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        if(empty($response->$collectionFieldName)) {
+            throw new Exception\EmptyCollectionException($collectionFieldName);
+        }
+        foreach($response->$collectionFieldName as $document) {
+            $this->assertDocumentHasPropertyWithValue($document, $nestedFieldName, $expectedValue);
+        }
+        return;
+    }
+
+    /**
+     * @Then all nested :collectionFieldName collection items should have nested :nestedFieldName field with value :expectedValue
+     */
+    public function allNestedCollectionItemsShouldHaveNestedFieldWithValue($collectionFieldName, $nestedFieldName, $expectedValue)
+    {
+        $response = json_decode($this->getClient()->getResponse()->getContent());
+        if(empty($response->$collectionFieldName)) {
+            throw new Exception\EmptyCollectionException($collectionFieldName);
+        }
+        foreach($response->$collectionFieldName as $document) {
+            $this->assertDocumentHasNestedPropertyWithValue($document, $nestedFieldName, $expectedValue);
         }
         return;
     }
@@ -290,10 +363,10 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
         if(ucfirst($documentName) == 'User') {
-            $document = $dm->getRepository('SyslaWeeNeedToTalkWnttUserBundle:'.ucfirst($documentName))
+            $document = $dm->getRepository('SyslaWeNeedToTalkWnttUserBundle:'.ucfirst($documentName))
                 ->findOneBy(array($property => $this->extractFromParameterBag($value)));
         } else {
-            $document = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:'.ucfirst($documentName))
+            $document = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:'.ucfirst($documentName))
                 ->findOneBy(array($property => $this->extractFromParameterBag($value)));
         }
 
@@ -382,7 +455,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     {
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
-        $category = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+        $category = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Category')
             ->findOneByName($categoryData['name']);
 
         if(empty($category)) {
@@ -400,7 +473,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     {
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
-        $company = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+        $company = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
             ->findOneByName($companyData['name']);
 
         if(empty($company)) {
@@ -408,6 +481,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
             $company->setName($companyData['name']);
             $company->setLogoUrl(@$companyData['logoUrl']);
             $company->setWebsiteUrl(@$companyData['websiteUrl']);
+            $company->setEnabled(@$companyData['enabled'] == 'false' ? false : true);
 
             $dm->persist($company);
             $dm->flush();
@@ -420,7 +494,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     {
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
-        $event = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
+        $event = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Event')
             ->findOneByName($eventData['name']);
 
         if(empty($event)) {
@@ -437,58 +511,30 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
         $this->getParameterBag()->set('Event_'.$eventData['identifiedBy'], $event->getId());
     }
 
-    protected function ensureStandExists($standData)
-    {
-        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
-
-        $stand = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
-            ->findOneByNumber($standData['number']);
-
-        if(empty($stand)) {
-            $stand = new Document\Stand();
-            $stand->setNumber($standData['number']);
-            $stand->setHall(@$standData['hall']);
-
-            $eventId = $this->getParameterBag()->get('Event_'.$standData['event']);
-            $event = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Event')
-                ->findOneById($eventId);
-            $stand->setEvent($event);
-
-            if(isset($standData['company'])) {
-                $companyId = $this->getParameterBag()->get('Company_'.$standData['company']);
-                $company = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
-                    ->findOneById($companyId);
-                $stand->setCompany($company);
-            }
-
-            $dm->persist($stand);
-            $dm->flush();
-        }
-
-        $this->getParameterBag()->set('Stand_'.$standData['identifiedBy'], $stand->getId());
-    }
-
     protected function ensurePresentationExists($presentationData)
     {
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
-        $presentation = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
+        $presentation = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Presentation')
             ->findOneByVideoUrl($presentationData['videoUrl']);
 
         if(empty($presentation)) {
             $presentation = new Document\Presentation();
             $presentation->setVideoUrl($presentationData['videoUrl']);
+            $presentation->setName($presentationData['name']);
             $presentation->setDescription(@$presentationData['description']);
+            $presentation->setHall(@$presentationData['hall']);
+            $presentation->setNumber(@$presentationData['number']);
             $presentation->setIsPremium(@$presentationData['isPremium'] == 'true' ? true : false);
 
-            $standId = $this->getParameterBag()->get('Stand_'.$presentationData['stand']);
-            $stand = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
-                ->findOneById($standId);
-            $presentation->setStand($stand);
+            $eventId = $this->getParameterBag()->get('Event_'.$presentationData['event']);
+            $event = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Event')
+                ->findOneById($eventId);
+            $presentation->setEvent($event);
 
             if(isset($presentationData['company'])) {
                 $companyId = $this->getParameterBag()->get('Company_'.$presentationData['company']);
-                $company = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+                $company = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
                     ->findOneById($companyId);
                 $presentation->setCompany($company);
             }
@@ -497,7 +543,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
                 $categories = [];
                 foreach(explode(';', $presentationData['categories']) as $categoryName) {
                     $categoryId = $this->getParameterBag()->get('Category_'.$categoryName);
-                    $category = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+                    $category = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Category')
                         ->findOneById($categoryId);
                     if(!empty($category)) {
                         $categories[] = $category;
@@ -517,7 +563,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     {
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
-        $user = $dm->getRepository('SyslaWeeNeedToTalkWnttUserBundle:User')
+        $user = $dm->getRepository('SyslaWeNeedToTalkWnttUserBundle:User')
             ->findOneByUsername($userData['username']);
 
         if(empty($user)) {
@@ -530,7 +576,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
 
             if(isset($userData['company'])) {
                 $companyId = $this->getParameterBag()->get('Company_'.$userData['company']);
-                $company = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+                $company = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
                     ->findOneById($companyId);
                 $user->setCompany($company);
             }
@@ -546,7 +592,7 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
     {
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
-        $appointment = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Appointment')
+        $appointment = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Appointment')
             ->findOneBy([
                 'user.id' => $appointmentData['user'],
                 'presentation.id' => $appointmentData['presentation']
@@ -558,16 +604,16 @@ class ApiContext extends MinkContext implements Context, SnippetAcceptingContext
             $appointment->setIsVisited(@$appointmentData['isVisited'] == 'true' ? true : false);
 
             $userId = $this->getParameterBag()->get('User_'.$appointmentData['user']);
-            $user = $dm->getRepository('SyslaWeeNeedToTalkWnttUserBundle:User')
+            $user = $dm->getRepository('SyslaWeNeedToTalkWnttUserBundle:User')
                 ->findOneById($userId);
             $appointment->setUser($user);
 
             $presentationId = $this->getParameterBag()->get('Presentation_'.$appointmentData['presentation']);
-            $presentation = $dm->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Presentation')
+            $presentation = $dm->getRepository('SyslaWeNeedToTalkWnttApiBundle:Presentation')
                 ->findOneById($presentationId);
             $appointment->setPresentation($presentation);
 
-            $event = $presentation->getStand()->getEvent();
+            $event = $presentation->getEvent();
             $appointment->setEvent($event);
 
             $dm->persist($appointment);

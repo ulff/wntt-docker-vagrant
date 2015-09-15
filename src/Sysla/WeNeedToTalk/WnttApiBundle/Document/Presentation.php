@@ -20,10 +20,10 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *     },
  * )
  * @Hateoas\Relation(
- *     name = "stand",
- *     href = "expr('/api/v1/stands/' ~ object.getStand().getId())",
+ *     name = "event",
+ *     href = "expr('/api/v1/events/' ~ object.getEvent().getId())",
  *     attributes = {
- *         "id" = "expr(object.getStand().getId())",
+ *         "id" = "expr(object.getEvent().getId())",
  *     },
  * )
  * @Hateoas\Relation(
@@ -46,11 +46,27 @@ class Presentation implements Document
 
     /**
      * @MongoDB\String
+     * @Assert\NotBlank()
+     */
+    protected $name;
+
+    /**
+     * @MongoDB\String
      */
     protected $description;
 
     /**
-     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Company", cascade={"remove"})
+     * @MongoDB\String
+     */
+    protected $number;
+
+    /**
+     * @MongoDB\String
+     */
+    protected $hall;
+
+    /**
+     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Company")
      * @Assert\NotBlank()
      * @Serializer\Expose
      * @Serializer\Groups({"inclCompany"})
@@ -58,12 +74,12 @@ class Presentation implements Document
     protected $company;
 
     /**
-     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand", cascade={"remove"})
+     * @MongoDB\ReferenceOne(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Event")
      * @Assert\NotBlank()
      * @Serializer\Expose
-     * @Serializer\Groups({"inclStand"})
+     * @Serializer\Groups({"inclEvent"})
      */
-    protected $stand;
+    protected $event;
 
     /**
      * @MongoDB\ReferenceMany(targetDocument="Sysla\WeNeedToTalk\WnttApiBundle\Document\Category")
@@ -80,6 +96,12 @@ class Presentation implements Document
      * @MongoDB\Boolean
      */
     protected $isPremium = false;
+
+    /**
+     * @MongoDB\String
+     * @Serializer\Expose
+     */
+    protected $companyName;
 
     /**
      * @return string
@@ -116,6 +138,22 @@ class Presentation implements Document
     /**
      * @return string
      */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
     public function getDescription()
     {
         return $this->description;
@@ -127,6 +165,38 @@ class Presentation implements Document
     public function setDescription($description)
     {
         $this->description = $description;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNumber()
+    {
+        return $this->number;
+    }
+
+    /**
+     * @param string $number
+     */
+    public function setNumber($number)
+    {
+        $this->number = $number;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHall()
+    {
+        return $this->hall;
+    }
+
+    /**
+     * @param string $hall
+     */
+    public function setHall($hall)
+    {
+        $this->hall = $hall;
     }
 
     /**
@@ -146,19 +216,19 @@ class Presentation implements Document
     }
 
     /**
-     * @return \Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand
+     * @return \Sysla\WeNeedToTalk\WnttApiBundle\Document\Event
      */
-    public function getStand()
+    public function getEvent()
     {
-        return $this->stand;
+        return $this->event;
     }
 
     /**
-     * @param \Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand $stand
+     * @param \Sysla\WeNeedToTalk\WnttApiBundle\Document\Event $event
      */
-    public function setStand($stand)
+    public function setEvent($event)
     {
-        $this->stand = $stand;
+        $this->event = $event;
     }
 
     /**
@@ -196,6 +266,33 @@ class Presentation implements Document
     /**
      * @return string
      */
+    public function getCompanyName()
+    {
+        return $this->companyName;
+    }
+
+    /**
+     * @param string $companyName
+     */
+    public function setCompanyName($companyName)
+    {
+        $this->companyName = $companyName;
+    }
+
+    /**
+     * @param \Sysla\WeNeedToTalk\WnttApiBundle\Document\Category $category
+     */
+    public function removeCategory(Category $category)
+    {
+        /** @var $categories \Doctrine\ODM\MongoDB\PersistentCollection */
+        $categories = $this->getCategories();
+        $categories->removeElement($category);
+        $this->setCategories($categories);
+    }
+
+    /**
+     * @return string
+     */
     public function getClassName()
     {
         $classCanonicalName = explode('\\', get_class($this));
@@ -207,6 +304,6 @@ class Presentation implements Document
      */
     public function __toString()
     {
-        return $this->getVideoUrl();
+        return $this->getName();
     }
 }

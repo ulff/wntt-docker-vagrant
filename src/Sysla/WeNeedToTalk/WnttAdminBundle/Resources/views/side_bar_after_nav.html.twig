@@ -1,0 +1,88 @@
+<ul class="sidebar-menu">
+
+    <li class="treeview first" label_catalogue="SonataAdminBundle" icon="&lt;i class=&quot;fa fa-th-list&quot;&gt;&lt;/i&gt;">
+        <a href="#"><i class="fa fa-th-list"></i><span>Events</span><i class="fa pull-right fa-angle-left"></i></a>
+        <ul class="treeview-menu menu_level_1">
+            <li class="first">
+                <a href="{{ path('wntt.admin.event.create') }}"><i class="fa fa-angle-double-right"></i>Add new event</a>
+            </li>
+            <li class="last">
+                <a href="{{ path('wntt.admin.event.list') }}"><i class="fa fa-angle-double-right"></i>List events</a>
+            </li>
+        </ul>
+    </li>
+
+    <li class="treeview" label_catalogue="SonataAdminBundle" icon="&lt;i class=&quot;fa fa-th-list&quot;&gt;&lt;/i&gt;">
+        <a href="#"><i class="fa fa-th-list"></i><span>Categories</span><i class="fa pull-right fa-angle-left"></i></a>
+        <ul class="treeview-menu menu_level_1">
+            <li class="first">
+                <a href="{{ path('wntt.admin.category.create') }}"><i class="fa fa-angle-double-right"></i>Add new category</a>
+            </li>
+            <li class="last">
+                <a href="{{ path('wntt.admin.category.list') }}"><i class="fa fa-angle-double-right"></i>List categories</a>
+            </li>
+        </ul>
+    </li>
+
+    <li class="treeview" label_catalogue="SonataAdminBundle" icon="&lt;i class=&quot;fa fa-th-list&quot;&gt;&lt;/i&gt;">
+        <a href="#"><i class="fa fa-th-list"></i><span>Presentations</span><i class="fa pull-right fa-angle-left"></i></a>
+        <ul class="treeview-menu menu_level_1">
+            <li class="first">
+                <a href="{{ path('wntt.admin.presentation.create') }}"><i class="fa fa-angle-double-right"></i>Add new presentation</a>
+            </li>
+            <li class="last">
+                <a href="{{ path('wntt.admin.presentation.list') }}"><i class="fa fa-angle-double-right"></i>List presentations</a>
+            </li>
+        </ul>
+    </li>
+
+    <li class="treeview" label_catalogue="SonataAdminBundle" icon="&lt;i class=&quot;fa fa-th-list&quot;&gt;&lt;/i&gt;">
+        <a href="#"><i class="fa fa-th-list"></i><span>Companies</span><i class="fa pull-right fa-angle-left"></i></a>
+        <ul class="treeview-menu menu_level_1">
+            <li class="first">
+                <a href="{{ path('wntt.admin.company.create') }}"><i class="fa fa-angle-double-right"></i>Add new company</a>
+            </li>
+            <li class="last">
+                <a href="{{ path('wntt.admin.company.list') }}"><i class="fa fa-angle-double-right"></i>List companies</a>
+            </li>
+        </ul>
+    </li>
+
+    <li class="treeview" label_catalogue="SonataAdminBundle" icon="&lt;i class=&quot;fa fa-th-list&quot;&gt;&lt;/i&gt;">
+        <a href="#"><i class="fa fa-th-list"></i><span>Users</span><i class="fa pull-right fa-angle-left"></i></a>
+        <ul class="treeview-menu menu_level_1">
+            <li class="first">
+                <a href="{{ path('wntt.admin.user.create') }}"><i class="fa fa-angle-double-right"></i>Add new user</a>
+            </li>
+            <li class="last">
+                <a href="{{ path('wntt.admin.user.list') }}"><i class="fa fa-angle-double-right"></i>List users</a>
+            </li>
+        </ul>
+    </li>
+
+    <li class="treeview" label_catalogue="SonataAdminBundle" icon="&lt;i class=&quot;fa fa-th-list&quot;&gt;&lt;/i&gt;">
+        <a href="#"><i class="fa fa-th-list"></i><span>Appointments</span><i class="fa pull-right fa-angle-left"></i></a>
+        <ul class="treeview-menu menu_level_1">
+            <li class="first">
+                <a href="{{ path('wntt.admin.appointment.create') }}"><i class="fa fa-angle-double-right"></i>Add new appointment</a>
+            </li>
+            <li class="last">
+                <a href="{{ path('wntt.admin.appointment.list') }}"><i class="fa fa-angle-double-right"></i>List appointments</a>
+            </li>
+        </ul>
+    </li>
+    {% if is_granted('ROLE_SUPER_ADMIN') %}
+        <li class="treeview last" label_catalogue="SonataDemoBundle" icon="&lt;i class=&quot;fa fa-th-list&quot;&gt;&lt;/i&gt;">
+            <a href="#"><i class="fa fa-th-list"></i><span>API Clients</span><i class="fa pull-right fa-angle-left"></i></a>
+            <ul class="treeview-menu menu_level_1">
+                <li class="first">
+                    <a href="{{ path('wntt.admin.client.create') }}"><i class="fa fa-angle-double-right"></i>Add new client</a>
+                </li>
+                <li class="last">
+                    <a href="{{ path('wntt.admin.client.list') }}"><i class="fa fa-angle-double-right"></i>List clients</a>
+                </li>
+            </ul>
+        </li>
+    {% endif %}
+
+</ul>

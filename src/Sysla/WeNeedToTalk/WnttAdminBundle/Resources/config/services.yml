@@ -12,18 +12,7 @@ services:
             - Sysla\WeNeedToTalk\WnttApiBundle\Document\Event
             - ~
         calls:
-            - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]
-
-    sonata.admin.stand:
-        class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\StandAdmin
-        tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: api.content, label: "Stands" }
-        arguments:
-            - ~
-            - Sysla\WeNeedToTalk\WnttApiBundle\Document\Stand
-            - ~
-        calls:
-            - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]
+            - [ setTranslationDomain, [SyslaWeNeedToTalkWnttAdminBundle]]
 
     sonata.admin.category:
         class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\CategoryAdmin
@@ -34,7 +23,7 @@ services:
             - Sysla\WeNeedToTalk\WnttApiBundle\Document\Category
             - ~
         calls:
-            - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]
+            - [ setTranslationDomain, [SyslaWeNeedToTalkWnttAdminBundle]]
 
     sonata.admin.presentation:
         class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\PresentationAdmin
@@ -45,7 +34,7 @@ services:
             - Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation
             - ~
         calls:
-            - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]
+            - [ setTranslationDomain, [SyslaWeNeedToTalkWnttAdminBundle]]
 
     sonata.admin.company:
         class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\CompanyAdmin
@@ -56,7 +45,7 @@ services:
             - Sysla\WeNeedToTalk\WnttApiBundle\Document\Company
             - ~
         calls:
-            - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]
+            - [ setTranslationDomain, [SyslaWeNeedToTalkWnttAdminBundle]]
 
     sonata.admin.user:
         class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\UserAdmin
@@ -67,7 +56,7 @@ services:
             - Sysla\WeNeedToTalk\WnttUserBundle\Document\User
             - ~
         calls:
-            - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]
+            - [ setTranslationDomain, [SyslaWeNeedToTalkWnttAdminBundle]]
 
     sonata.admin.appointment:
         class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\AppointmentAdmin
@@ -78,7 +67,7 @@ services:
             - Sysla\WeNeedToTalk\WnttApiBundle\Document\Appointment
             - ~
         calls:
-            - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]
+            - [ setTranslationDomain, [SyslaWeNeedToTalkWnttAdminBundle]]
 
     sonata.admin.client:
         class: Sysla\WeNeedToTalk\WnttAdminBundle\Admin\ClientAdmin
@@ -89,4 +78,4 @@ services:
             - Sysla\WeNeedToTalk\WnttOAuthBundle\Document\Client
             - ~
         calls:
-            - [ setTranslationDomain, [SyslaWeeNeedToTalkWnttAdminBundle]]
+            - [ setTranslationDomain, [SyslaWeNeedToTalkWnttAdminBundle]]

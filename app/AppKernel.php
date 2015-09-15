@@ -18,6 +18,7 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new Knp\Bundle\MenuBundle\KnpMenuBundle(),
+            new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
             new JMS\SerializerBundle\JMSSerializerBundle(),
             new Bazinga\Bundle\HateoasBundle\BazingaHateoasBundle(),
             new Sonata\CoreBundle\SonataCoreBundle(),
@@ -30,10 +31,10 @@ class AppKernel extends Kernel
             new FOS\RestBundle\FOSRestBundle(),
             new FOS\OAuthServerBundle\FOSOAuthServerBundle(),
             new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
-            new Sysla\WeNeedToTalk\WnttApiBundle\SyslaWeeNeedToTalkWnttApiBundle(),
-            new Sysla\WeNeedToTalk\WnttAdminBundle\SyslaWeeNeedToTalkWnttAdminBundle(),
-            new Sysla\WeNeedToTalk\WnttUserBundle\SyslaWeeNeedToTalkWnttUserBundle(),
-            new Sysla\WeNeedToTalk\WnttOAuthBundle\SyslaWeeNeedToTalkWnttOAuthBundle(),
+            new Sysla\WeNeedToTalk\WnttApiBundle\SyslaWeNeedToTalkWnttApiBundle(),
+            new Sysla\WeNeedToTalk\WnttAdminBundle\SyslaWeNeedToTalkWnttAdminBundle(),
+            new Sysla\WeNeedToTalk\WnttUserBundle\SyslaWeNeedToTalkWnttUserBundle(),
+            new Sysla\WeNeedToTalk\WnttOAuthBundle\SyslaWeNeedToTalkWnttOAuthBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test', 'behat'))) {

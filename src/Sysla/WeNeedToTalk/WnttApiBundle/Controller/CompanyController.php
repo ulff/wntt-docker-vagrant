@@ -5,16 +5,25 @@ namespace Sysla\WeNeedToTalk\WnttApiBundle\Controller;
 use FOS\RestBundle\Controller\FOSRestController;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DuplicatedDocumentException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Company;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\CompanyManager;
+use FOS\RestBundle\Request\ParamFetcher;
+use FOS\RestBundle\Controller\Annotations\QueryParam;
+use Sysla\WeNeedToTalk\WnttApiBundle\Service\EmailDispatcher;
 
 class CompanyController extends AbstractWnttRestController
 {
     /**
      * Returns collection of Company objects.
+     *
+     * @QueryParam(name="noPaging", nullable=true, default=false, description="set to true if you want to retrieve all records without paging")
+     * @QueryParam(name="inclDisabled", nullable=true, default=false, description="set to true if you want to retrieve all companies, including disabled")
+     *
+     * @param ParamFetcher $paramFetcher
      *
      * @ApiDoc(
      *  resource=true,
@@ -25,18 +34,58 @@ class CompanyController extends AbstractWnttRestController
      *     }
      * )
      */
-    public function getCompaniesAction()
+    public function getCompaniesAction(ParamFetcher $paramFetcher, Request $request)
     {
-        $companies = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
-            ->findAll();
+        $queryParams = [];
+        if($paramFetcher->get('inclDisabled') !== 'true') {
+            $queryParams['enabled'] = true;
+        }
 
-        $view = $this->view($companies, 200);
+        $companies = $this->get('doctrine_mongodb')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
+            ->findBy($queryParams);
+
+        $paginator  = $this->get('knp_paginator');
+        $paginatedCompanies = $paginator->paginate(
+            $companies,
+            $request->query->getInt('page', 1),
+            $paramFetcher->get('noPaging') === 'true' ? PHP_INT_MAX : $this->container->getParameter('api_list_items_per_page')
+        );
+
+        $view = $this->view($paginatedCompanies, 200);
         return $this->handleView($view);
     }
 
     /**
+     * Returns allowed HTTP methods in headers
+     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Returns allowed HTTP methods in headers",
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         401="Returned when client is requesting without or with invalid access_token",
+     *         404="Returned when the object with given ID is not found"
+     *     }
+     * )
+     */
+    public function optionsCompanyAction($id)
+    {
+        $this->verifyDocumentExists($id, 'Company');
+
+        $response = new Response();
+        $response->headers->set('Allow', 'OPTIONS, GET, POST, PUT, DELETE');
+        $response->headers->set('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, DELETE');
+
+        return $response;
+    }
+
+    /**
      * Returns Company object by given ID.
+     *
+     * @QueryParam(name="inclDisabled", nullable=true, default=false, description="set to true if you want to retrieve all companies, including disabled")
+     *
+     * @param ParamFetcher $paramFetcher
      *
      * @ApiDoc(
      *  resource=true,
@@ -48,14 +97,13 @@ class CompanyController extends AbstractWnttRestController
      *     }
      * )
      */
-    public function getCompanyAction($id)
+    public function getCompanyAction(ParamFetcher $paramFetcher, Request $request, $id)
     {
-        $company = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
-            ->find($id);
+        /** @var $company Company */
+        $company = $this->verifyDocumentExists($id, 'Company');
 
-        if (!$company) {
-            throw $this->createNotFoundException('No company found for id '.$id);
+        if($paramFetcher->get('inclDisabled') !== 'true' && $company->getEnabled() === false) {
+            throw $this->createNotFoundException('No Company found for id '.$id);
         }
 
         $view = $this->view($company, 200);
@@ -63,7 +111,7 @@ class CompanyController extends AbstractWnttRestController
     }
 
     /**
-     * Creates new Company object. ROLE_USER is minimum required role to perform this action.
+     * Creates new Company object.
      *
      * @ApiDoc(
      *   resource=true,
@@ -89,10 +137,16 @@ class CompanyController extends AbstractWnttRestController
             /** @var $companyManager CompanyManager */
             $companyManager = $this->get('wnttapi.manager.company');
             $company = $companyManager->createDocument($companyData, ['name' => $companyData['name']]);
+
+            /** @var $emailDispatcher EmailDispatcher */
+            $emailDispatcher = $this->get('wnttapi.service.email_dispatcher');
+            $emailDispatcher->sendNewCompanyRegsiteredNotification($company);
         } catch(DuplicatedDocumentException $e) {
             throw new HttpException(409, $e->getMessage());
         } catch(DocumentValidationException $e) {
             throw new HttpException(400, $e->getMessage());
+        } catch(\Swift_TransportException $e) {
+            throw new HttpException(500, 'Company was created, but some problems with sending email occured');
         } catch(\Exception $e) {
             throw new HttpException(500, 'Unknown error occured during processing request');
         }
@@ -126,13 +180,7 @@ class CompanyController extends AbstractWnttRestController
     public function putCompanyAction(Request $request, $id)
     {
         /** @var $company Company */
-        $company = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
-            ->find($id);
-
-        if (empty($company)) {
-            throw $this->createNotFoundException('No company found for id '.$id);
-        }
+        $company = $this->verifyDocumentExists($id, 'Company');
 
         $this->checkPermission($id);
 
@@ -172,13 +220,7 @@ class CompanyController extends AbstractWnttRestController
     public function deleteCompanyAction($id)
     {
         /** @var $company Company */
-        $company = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
-            ->find($id);
-
-        if (empty($company)) {
-            throw $this->createNotFoundException('No company found for id '.$id);
-        }
+        $company = $this->verifyDocumentExists($id, 'Company');
 
         $this->checkPermission($id);
 

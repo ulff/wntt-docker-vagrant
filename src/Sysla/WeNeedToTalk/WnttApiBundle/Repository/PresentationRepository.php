@@ -7,20 +7,73 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Document\Presentation;
 
 class PresentationRepository extends DocumentRepository
 {
-    public function findByEvent($eventId)
+    public function findBySearchParams($searchParams, $eventId = null, $companyId = null, $sorting = [])
     {
-        $eventStands = $this
-            ->getDocumentManager()
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Stand')
-            ->findBy(['event.id' => $eventId]);
+        $qb = $this->createQueryBuilder();
 
-        $standIds = [];
-        foreach($eventStands as $es) {
-            $standIds[] = $es->getId();
+        if(!empty($eventId)) {
+            $qb->field('event.id')->equals($eventId);
+        }
+        if(!empty($companyId)) {
+            $qb->field('company.id')->equals($companyId);
         }
 
-        $qb = $this->createQueryBuilder();
-        $qb->field('stand.id')->in($standIds);
+        if(!empty($searchParams['name'])) {
+            $qb->addOr(
+                $qb->expr()->field('name')->equals(new \MongoRegex('/.*'.$searchParams['name'].'.*/i'))
+            );
+        }
+        if(!empty($searchParams['hall'])) {
+            $qb->addOr(
+                $qb->expr()->field('hall')->equals($searchParams['hall'])
+            );
+        }
+        if(!empty($searchParams['number'])) {
+            $qb->addOr(
+                $qb->expr()->field('number')->equals($searchParams['number'])
+            );
+        }
+        if(!empty($searchParams['description'])) {
+            $qb->addOr(
+                $qb->expr()->field('description')->equals(new \MongoRegex('/.*'.$searchParams['description'].'.*/i'))
+            );
+        }
+
+        if(!empty($searchParams['company.name'])) {
+            $matchingCompanies = $this
+                ->getDocumentManager()
+                ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
+                ->findBy(['name' => new \MongoRegex('/.*'.$searchParams['company.name'].'.*/i')]);
+            $companyIds = [];
+            foreach($matchingCompanies as $item) {
+                $companyIds[] = $item->getId();
+            }
+
+            $qb->addOr(
+                $qb->expr()->field('company.id')->in($companyIds)
+            );
+        }
+
+        if(!empty($searchParams['category.name'])) {
+            $matchingCateories = $this
+                ->getDocumentManager()
+                ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Category')
+                ->findBy(['name' => new \MongoRegex('/.*'.$searchParams['category.name'].'.*/i')]);
+            $categoryIds = [];
+            foreach($matchingCateories as $item) {
+                $categoryIds[] = $item->getId();
+            }
+
+            $qb->addOr(
+                $qb->expr()->field('categories.id')->in($categoryIds)
+            );
+        }
+
+        if(!empty($sorting['sortby'])) {
+            $sorting['sortby'] = $sorting['sortby'] == 'company.name' ? 'companyName' : $sorting['sortby'];
+            $sortdir = empty($sorting['sortdir']) ? 'asc' : $sorting['sortdir'];
+            $qb->sort($sorting['sortby'], $sortdir);
+        }
 
         $resultArray = [];
         foreach($qb->getQuery()->execute()->toArray() as $presentation) {

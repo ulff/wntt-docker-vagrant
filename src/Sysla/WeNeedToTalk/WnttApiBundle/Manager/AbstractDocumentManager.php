@@ -26,7 +26,7 @@ abstract class AbstractDocumentManager
      */
     public function createDocument(array $documentData, array $checkIfExistsBy)
     {
-        $document = $this->documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:' . $this->documentName)
+        $document = $this->documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:' . $this->documentName)
             ->findOneBy($checkIfExistsBy);
 
         if (!empty($document)) {

@@ -14,7 +14,11 @@ class UserAdmin extends Admin
     {
         $formMapper
             ->add('username', 'text', ['label' => 'Username'])
-            ->add('email', 'text', ['label' => 'Email']);
+            ->add('email', 'text', ['label' => 'Email'])
+            ->add('fullName', 'text', [
+                'label' => 'Full name',
+                'required' => false
+            ]);
 
         $user = $this->getSubject();
         $userId = $user->getId();
@@ -52,7 +56,9 @@ class UserAdmin extends Admin
             ->addIdentifier('id')
             ->add('username')
             ->add('email')
+            ->add('fullName')
             ->add('phoneNumber')
+            ->add('isDefaultPassword')
             ->add('roles', 'choice', [
                     'multiple' => true,
                     'delimiter' => ' | ',
@@ -70,7 +76,7 @@ class UserAdmin extends Admin
                 'actions' => [
                     'edit' => [],
                     'delete' => [
-                        'template' => 'SyslaWeeNeedToTalkWnttAdminBundle:CRUD:list__action_delete.html.twig'
+                        'template' => 'SyslaWeNeedToTalkWnttAdminBundle:CRUD:list__action_delete.html.twig'
                     ],
                 ]
             ])

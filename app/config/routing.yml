@@ -25,8 +25,8 @@ media:
 fos_user:
     resource: "@FOSUserBundle/Resources/config/routing/all.xml"
 
-SyslaWeeNeedToTalkWnttApiBundle:
-    resource: "@SyslaWeeNeedToTalkWnttApiBundle/Resources/config/routing.yml"
+SyslaWeNeedToTalkWnttApiBundle:
+    resource: "@SyslaWeNeedToTalkWnttApiBundle/Resources/config/routing.yml"
     prefix:   /
 
 NelmioApiDocBundle:
@@ -38,3 +38,6 @@ fos_oauth_server_token:
 
 fos_oauth_server_authorize:
     resource: "@FOSOAuthServerBundle/Resources/config/routing/authorize.xml"
+
+wntt_admin:
+    resource: '@SyslaWeNeedToTalkWnttAdminBundle/Resources/config/routing.yml'

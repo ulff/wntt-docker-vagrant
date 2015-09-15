@@ -23,42 +23,6 @@ Feature: managing appointments using API
     And following "Company" exists:
       | identifiedBy  | com2        |
       | name          | Company 2   |
-    And following "Stand" exists:
-      | identifiedBy  | evt1_s1       |
-      | number        | 133           |
-      | hall          | A             |
-      | event         | evt1          |
-      | company       | com1          |
-    And following "Stand" exists:
-      | identifiedBy  | evt1_s2       |
-      | number        | 134           |
-      | hall          | A             |
-      | event         | evt1          |
-      | company       | com1          |
-    And following "Stand" exists:
-      | identifiedBy  | evt1_s3       |
-      | number        | 135           |
-      | hall          | A             |
-      | event         | evt1          |
-      | company       | com2          |
-    And following "Stand" exists:
-      | identifiedBy  | evt2_s1       |
-      | number        | 1             |
-      | hall          | D             |
-      | event         | evt2          |
-      | company       | com1          |
-    And following "Stand" exists:
-      | identifiedBy  | evt2_s2       |
-      | number        | 34            |
-      | hall          | A             |
-      | event         | evt2          |
-      | company       | com1          |
-    And following "Stand" exists:
-      | identifiedBy  | evt2_s3       |
-      | number        | 5             |
-      | hall          | B             |
-      | event         | evt2          |
-      | company       | com2          |
     And following "User" exists:
       | identifiedBy  | user9_api       |
       | username      | user9_api       |
@@ -79,28 +43,32 @@ Feature: managing appointments using API
     And following "Presentation" exists:
       | identifiedBy | pres1                    |
       | videoUrl     | http://company.api/12345 |
+      | name         | http://company.api/12345 |
       | description  | Presentation for API     |
       | company      | com1                     |
-      | stand        | evt1_s1                  |
+      | event        | evt1                     |
       | categories   | Gas;Oil                  |
       | isPremium    | true                     |
     And following "Presentation" exists:
       | identifiedBy | pres2                    |
       | videoUrl     | http://company.api/9     |
+      | name         | http://company.api/9     |
       | company      | com2                     |
-      | stand        | evt1_s2                  |
+      | event        | evt1                     |
       | isPremium    | true                     |
     And following "Presentation" exists:
       | identifiedBy | pres3                    |
       | videoUrl     | http://company.api/2314  |
+      | name         | http://company.api/2314  |
       | company      | com1                     |
-      | stand        | evt2_s1                  |
+      | event        | evt2                     |
       | isPremium    | false                    |
     And following "Presentation" exists:
       | identifiedBy | pres4                    |
       | videoUrl     | http://company.api23/76  |
+      | name         | http://company.api23/76  |
       | company      | com1                     |
-      | stand        | evt2_s2                  |
+      | event        | evt2                     |
       | isPremium    | false                    |
     And following "Appointment" exists:
       | identifiedBy  | app1                |
@@ -132,15 +100,29 @@ Feature: managing appointments using API
   Scenario: get list of all appointments
     When I make request "GET" "/api/v1/appointments"
     Then the response status code should be 200
-    And the response should be JSON
-    And the response JSON should be a collection
+    And the response JSON should be a single object
+    And the repsonse JSON should have "items" field
+    And the repsonse JSON should have "total_count" field
+    And the repsonse JSON should have "current_page_number" field
+    And the response JSON "items" field should be a collection
+
+  Scenario: should allow OPTIONS method
+    When I make request "OPTIONS" "/api/v1/appointments/{Appointment_app1}"
+    Then the response status code should be 200
+
+  Scenario: should return 404 when called OPTIONS method on not existing ID
+    When I make request "OPTIONS" "/api/v1/appointments/notexisting"
+    Then the response status code should be 404
 
   Scenario: get list of all appointments, including presentations information
     When I make request "GET" "/api/v1/appointments?include[]=presentation"
     Then the response status code should be 200
-    And the response should be JSON
-    And the response JSON should be a collection
-    And all response collection items should have "presentation" field
+    And the response JSON should be a single object
+    And the repsonse JSON should have "items" field
+    And the repsonse JSON should have "total_count" field
+    And the repsonse JSON should have "current_page_number" field
+    And the response JSON "items" field should be a collection
+    And all nested "items" collection items should have "presentation" field
 
   Scenario: get one appointment
     When I make request "GET" "/api/v1/appointments/{Appointment_app1}"
@@ -152,23 +134,32 @@ Feature: managing appointments using API
   Scenario: get appointments list of particular user
     When I make request "GET" "/api/v1/appointments?user={User_user9_api}"
     Then the response status code should be 200
-    And the response should be JSON
-    And the response JSON should be a collection
-    And all response collection items should have nested field "_links->user->id" with value "{User_user9_api}"
+    And the response JSON should be a single object
+    And the repsonse JSON should have "items" field
+    And the repsonse JSON should have "total_count" field
+    And the repsonse JSON should have "current_page_number" field
+    And the response JSON "items" field should be a collection
+    And all nested "items" collection items should have nested "_links->user->id" field with value "{User_user9_api}"
 
   Scenario: get appointments list of particular event
     When I make request "GET" "/api/v1/appointments?event={Event_evt1}"
     Then the response status code should be 200
-    And the response should be JSON
-    And the response JSON should be a collection
-    And all response collection items should have nested field "_links->event->id" with value "{Event_evt1}"
+    And the response JSON should be a single object
+    And the repsonse JSON should have "items" field
+    And the repsonse JSON should have "total_count" field
+    And the repsonse JSON should have "current_page_number" field
+    And the response JSON "items" field should be a collection
+    And all nested "items" collection items should have nested "_links->event->id" field with value "{Event_evt1}"
 
   Scenario: get appointments list of particular presentation
     When I make request "GET" "/api/v1/appointments?presentation={Presentation_pres2}"
     Then the response status code should be 200
-    And the response should be JSON
-    And the response JSON should be a collection
-    And all response collection items should have nested field "_links->presentation->id" with value "{Presentation_pres2}"
+    And the response JSON should be a single object
+    And the repsonse JSON should have "items" field
+    And the repsonse JSON should have "total_count" field
+    And the repsonse JSON should have "current_page_number" field
+    And the response JSON "items" field should be a collection
+    And all nested "items" collection items should have nested "_links->presentation->id" field with value "{Presentation_pres2}"
 
   Scenario: create appointment
     Given I am authorized client with username "admin" and password "admin"

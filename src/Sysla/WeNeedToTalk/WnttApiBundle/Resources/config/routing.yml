@@ -18,11 +18,6 @@ companies:
     resource: Sysla\WeNeedToTalk\WnttApiBundle\Controller\CompanyController
     prefix:   /api/v1/
 
-stands:
-    type:     rest
-    resource: Sysla\WeNeedToTalk\WnttApiBundle\Controller\StandController
-    prefix:   /api/v1/
-
 users:
     type:     rest
     resource: Sysla\WeNeedToTalk\WnttApiBundle\Controller\UserController
@@ -33,4 +28,11 @@ appointments:
     resource: Sysla\WeNeedToTalk\WnttApiBundle\Controller\AppointmentController
     prefix:   /api/v1/
 
+quick_registration:
+    type:     rest
+    resource: Sysla\WeNeedToTalk\WnttApiBundle\Controller\QuickRegistrationController
+    prefix:   /api/v1/
 
+wntt_registration_confirm:
+    pattern: /confirm/{token}
+    defaults:  { _controller: FOSUserBundle:Registration:confirm }

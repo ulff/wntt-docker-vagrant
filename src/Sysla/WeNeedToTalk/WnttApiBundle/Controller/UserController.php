@@ -5,20 +5,25 @@ namespace Sysla\WeNeedToTalk\WnttApiBundle\Controller;
 use FOS\RestBundle\Controller\FOSRestController;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\UserExistsException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
 use Sysla\WeNeedToTalk\WnttUserBundle\Document\User;
+use Sysla\WeNeedToTalk\WnttApiBundle\Document\Company;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\UserManager;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
+use Sysla\WeNeedToTalk\WnttApiBundle\Service\EmailDispatcher;
 
 class UserController extends AbstractWnttRestController
 {
     /**
      * Returns collection of User objects.
      *
-     * @QueryParam(name="username", nullable=true, requirements="\w+")
+     * @QueryParam(name="username", nullable=true, description="set username to find")
+     * @QueryParam(name="company", nullable=true, description="set company's ID to filter only members of company")
+     * @QueryParam(name="noPaging", nullable=true, default=false, description="set to true if you want to retrieve all records without paging")
      *
      * @param ParamFetcher $paramFetcher
      *
@@ -31,7 +36,7 @@ class UserController extends AbstractWnttRestController
      *     }
      * )
      */
-    public function getUsersAction(ParamFetcher $paramFetcher)
+    public function getUsersAction(ParamFetcher $paramFetcher, Request $request)
     {
         $queryParams = [];
         $username = $paramFetcher->get('username');
@@ -39,12 +44,49 @@ class UserController extends AbstractWnttRestController
             $queryParams['username'] = $username;
         }
 
+        $companyId = $paramFetcher->get('company');
+        if(!empty($companyId)) {
+            $this->verifyDocumentExists($companyId, 'Company');
+            $queryParams['company.id'] = $companyId;
+        }
+
         $users = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttUserBundle:User')
+            ->getRepository('SyslaWeNeedToTalkWnttUserBundle:User')
             ->findBy($queryParams);
 
-        $view = $this->view($users, 200);
+        $paginator  = $this->get('knp_paginator');
+        $paginatedUsers = $paginator->paginate(
+            $users,
+            $request->query->getInt('page', 1),
+            $paramFetcher->get('noPaging') === 'true' ? PHP_INT_MAX : $this->container->getParameter('api_list_items_per_page')
+        );
+
+        $view = $this->view($paginatedUsers, 200);
         return $this->handleView($view);
+    }
+
+    /**
+     * Returns allowed HTTP methods in headers
+     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Returns allowed HTTP methods in headers",
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         401="Returned when client is requesting without or with invalid access_token",
+     *         404="Returned when the object with given ID is not found"
+     *     }
+     * )
+     */
+    public function optionsUserAction($id)
+    {
+        $this->verifyDocumentExists($id, 'User', 'SyslaWeNeedToTalkWnttUserBundle');
+
+        $response = new Response();
+        $response->headers->set('Allow', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
+        $response->headers->set('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
+
+        return $response;
     }
 
     /**
@@ -62,13 +104,8 @@ class UserController extends AbstractWnttRestController
      */
     public function getUserAction($id)
     {
-        $user = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttUserBundle:User')
-            ->find($id);
-
-        if (!$user) {
-            throw $this->createNotFoundException('No product found for id '.$id);
-        }
+        /** @var $user User */
+        $user = $this->verifyDocumentExists($id, 'User', 'SyslaWeNeedToTalkWnttUserBundle');
 
         $view = $this->view($user, 200);
         return $this->handleView($view);
@@ -85,7 +122,6 @@ class UserController extends AbstractWnttRestController
      *      {"name"="email", "dataType"="string", "description"="user's email", "required"=true},
      *      {"name"="password", "dataType"="string", "description"="user's password", "required"=true},
      *      {"name"="company", "dataType"="string", "description"="user's company ID", "required"=false},
-     *      {"name"="isAdmin", "dataType"="string", "description"="user has admin priviledges", "required"=false, "format"="true|false"},
      *      {"name"="phoneNumber", "dataType"="string", "description"="user's phone number", "required"=false},
      *   },
      *   statusCodes={
@@ -105,13 +141,20 @@ class UserController extends AbstractWnttRestController
             $userManager = $this->get('wnttapi.manager.user');
             $baseUserManager = $this->container->get('fos_user.user_manager');
             $userManager->setBaseUserManager($baseUserManager);
+            $userManager->setTokenGenerator($this->get('fos_user.util.token_generator'));
             $user = $userManager->createDocument($userData, [
                 'username' => $userData['username']
             ]);
+
+            /** @var $emailDispatcher EmailDispatcher */
+            $emailDispatcher = $this->get('wnttapi.service.email_dispatcher');
+            $emailDispatcher->sendUserConfirmationEmail($user);
         } catch(UserExistsException $e) {
             throw new HttpException(409, $e->getMessage());
         } catch(DocumentValidationException $e) {
             throw new HttpException(400, $e->getMessage());
+        } catch(\Swift_TransportException $e) {
+            throw new HttpException(500, 'User was created, but some problems with sending confirmation email occured');
         } catch(\Exception $e) {
             throw new HttpException(500, 'Unknown error occured during processing request');
         }
@@ -148,13 +191,7 @@ class UserController extends AbstractWnttRestController
     public function putUserAction(Request $request, $id)
     {
         /** @var $user User */
-        $user = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttUserBundle:User')
-            ->find($id);
-
-        if (empty($user)) {
-            throw $this->createNotFoundException('No user found for id '.$id);
-        }
+        $user = $this->verifyDocumentExists($id, 'User', 'SyslaWeNeedToTalkWnttUserBundle');
 
         $this->checkPermission($id);
 
@@ -204,13 +241,7 @@ class UserController extends AbstractWnttRestController
     public function patchUserAction(Request $request, $id)
     {
         /** @var $user User */
-        $user = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttUserBundle:User')
-            ->find($id);
-
-        if (empty($user)) {
-            throw $this->createNotFoundException('No user found for id '.$id);
-        }
+        $user = $this->verifyDocumentExists($id, 'User', 'SyslaWeNeedToTalkWnttUserBundle');
 
         $this->checkPermission($id);
 
@@ -250,13 +281,7 @@ class UserController extends AbstractWnttRestController
     public function deleteUserAction($id)
     {
         /** @var $user User */
-        $user = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttUserBundle:User')
-            ->find($id);
-
-        if (empty($user)) {
-            throw $this->createNotFoundException('No user found for id '.$id);
-        }
+        $user = $this->verifyDocumentExists($id, 'User', 'SyslaWeNeedToTalkWnttUserBundle');
 
         $this->checkPermission($id);
 
@@ -280,7 +305,7 @@ class UserController extends AbstractWnttRestController
             'password' => $request->get('password'),
             'phoneNumber' => $request->get('phoneNumber'),
             'company' => $request->get('company'),
-            'isAdmin' => $request->get('isAdmin')
+            'fullName' => $request->get('fullName')
         ];
     }
 
@@ -299,7 +324,7 @@ class UserController extends AbstractWnttRestController
         }
 
         if(!empty($userData['company'])) {
-            $company = $documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+            $company = $documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
                 ->findOneById($userData['company']);
             if (empty($company)) {
                 throw new HttpException(400, "Invalid parameter: company with ID: '{$userData['company']}' not found!");
@@ -326,9 +351,6 @@ class UserController extends AbstractWnttRestController
         if($request->get('company') !== null) {
             $data['company'] = $request->get('company');
         }
-        if($request->get('isAdmin') !== null) {
-            $data['isAdmin'] = $request->get('isAdmin');
-        }
 
         return $data;
     }
@@ -348,7 +370,7 @@ class UserController extends AbstractWnttRestController
         }
 
         if(!empty($userData['company'])) {
-            $company = $documentManager->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Company')
+            $company = $documentManager->getRepository('SyslaWeNeedToTalkWnttApiBundle:Company')
                 ->findOneById($userData['company']);
             if (empty($company)) {
                 throw new HttpException(400, "Invalid parameter: company with ID: '{$userData['company']}' not found!");

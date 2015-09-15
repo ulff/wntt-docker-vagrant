@@ -10,11 +10,17 @@ use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DocumentValidationException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Exception\DuplicatedDocumentException;
 use Sysla\WeNeedToTalk\WnttApiBundle\Document\Category;
 use Sysla\WeNeedToTalk\WnttApiBundle\Manager\CategoryManager;
+use FOS\RestBundle\Request\ParamFetcher;
+use FOS\RestBundle\Controller\Annotations\QueryParam;
 
 class CategoryController extends AbstractWnttRestController
 {
     /**
      * Returns collection of Category objects.
+     *
+     * @QueryParam(name="noPaging", nullable=true, default=false, description="set to true if you want to retrieve all records without paging")
+     *
+     * @param ParamFetcher $paramFetcher
      *
      * @ApiDoc(
      *  resource=true,
@@ -25,13 +31,20 @@ class CategoryController extends AbstractWnttRestController
      *     }
      * )
      */
-    public function getCategoriesAction()
+    public function getCategoriesAction(ParamFetcher $paramFetcher, Request $request)
     {
         $categories = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
+            ->getRepository('SyslaWeNeedToTalkWnttApiBundle:Category')
             ->findAll();
 
-        $view = $this->view($categories, 200);
+        $paginator  = $this->get('knp_paginator');
+        $paginatedCategories = $paginator->paginate(
+            $categories,
+            $request->query->getInt('page', 1),
+            $paramFetcher->get('noPaging') === 'true' ? PHP_INT_MAX : $this->container->getParameter('api_list_items_per_page')
+        );
+
+        $view = $this->view($paginatedCategories, 200);
         return $this->handleView($view);
     }
 
@@ -50,13 +63,8 @@ class CategoryController extends AbstractWnttRestController
      */
     public function getCategoryAction($id)
     {
-        $category = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
-            ->find($id);
-
-        if (!$category) {
-            throw $this->createNotFoundException('No product found for id '.$id);
-        }
+        /** @var $category Category */
+        $category = $this->verifyDocumentExists($id, 'Category');
 
         $view = $this->view($category, 200);
         return $this->handleView($view);
@@ -122,13 +130,7 @@ class CategoryController extends AbstractWnttRestController
     public function putCategoryAction(Request $request, $id)
     {
         /** @var $category Category */
-        $category = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
-            ->find($id);
-
-        if (empty($category)) {
-            throw $this->createNotFoundException('No category found for id '.$id);
-        }
+        $category = $this->verifyDocumentExists($id, 'Category');
 
         $categoryData = $this->retrieveCategoryData($request);
         $this->validateCategoryData($categoryData);
@@ -166,13 +168,7 @@ class CategoryController extends AbstractWnttRestController
     public function deleteCategoryAction($id)
     {
         /** @var $category Category */
-        $category = $this->get('doctrine_mongodb')
-            ->getRepository('SyslaWeeNeedToTalkWnttApiBundle:Category')
-            ->find($id);
-
-        if (empty($category)) {
-            throw $this->createNotFoundException('No category found for id '.$id);
-        }
+        $category = $this->verifyDocumentExists($id, 'Category');
 
         try {
             /** @var $categoryManager CategoryManager */

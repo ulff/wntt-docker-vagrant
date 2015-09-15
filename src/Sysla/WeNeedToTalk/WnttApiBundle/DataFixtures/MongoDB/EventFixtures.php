@@ -43,6 +43,14 @@ class EventFixtures extends AbstractFixture implements OrderedFixtureInterface
         $manager->persist($event);
         $this->addReference('event_ot_2015', $event);
 
+        $event = new Event();
+        $event->setName('Mo I Rana 2015');
+        $event->setLocation('Mo I Rana');
+        $event->setDateStart(new \DateTime('2015-11-16'));
+        $event->setDateEnd(new \DateTime('2015-11-27'));
+        $manager->persist($event);
+        $this->addReference('event_mo_i_rana', $event);
+
         $manager->flush();
     }
 
