@@ -145,7 +145,6 @@ Feature: getting users through API
   Examples:
     | username          | password            | email             | company             | phoneNumber |
     |                   | password            | user@api          | Company_Company_Api | 668 678     |
-    | uaupdated         |                     | user@api          | Company_Company_Api | 668 678     |
     | uaupdated         | password            |                   | Company_Company_Api | 668 678     |
     | uaupdated         | password            | user@api          | not-existing        | 668 678     |
 
