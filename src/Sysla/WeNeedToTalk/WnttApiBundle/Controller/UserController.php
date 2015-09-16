@@ -316,9 +316,6 @@ class UserController extends AbstractWnttRestController
         if (empty($userData['username'])) {
             throw new HttpException(400, 'Missing required parameters: username');
         }
-        if (empty($userData['password'])) {
-            throw new HttpException(400, 'Missing required parameters: password');
-        }
         if (empty($userData['email'])) {
             throw new HttpException(400, 'Missing required parameters: email');
         }
