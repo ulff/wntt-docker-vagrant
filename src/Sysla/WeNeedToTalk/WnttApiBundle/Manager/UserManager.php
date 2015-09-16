@@ -126,6 +126,9 @@ class UserManager extends AbstractDocumentManager
         if(isset($userData['email'])) {
             $user->setEmail($userData['email']);
         }
+        if(isset($userData['fullName'])) {
+            $user->setFullName($userData['fullName']);
+        }
         if(isset($userData['password'])) {
             $user->setPlainPassword($userData['password']);
         }

@@ -225,6 +225,7 @@ class UserController extends AbstractWnttRestController
      *   parameters={
      *      {"name"="username", "dataType"="string", "description"="user name", "required"=false},
      *      {"name"="email", "dataType"="string", "description"="user's email", "required"=false},
+     *      {"name"="fullName", "dataType"="string", "description"="user's full name", "required"=false},
      *      {"name"="password", "dataType"="string", "description"="user's password", "required"=false},
      *      {"name"="company", "dataType"="string", "description"="user's company ID", "required"=false},
      *      {"name"="isAdmin", "dataType"="string", "description"="true or false", "required"=false},
@@ -338,6 +339,9 @@ class UserController extends AbstractWnttRestController
         }
         if($request->get('email') !== null) {
             $data['email'] = $request->get('email');
+        }
+        if($request->get('fullName') !== null) {
+            $data['fullName'] = $request->get('fullName');
         }
         if($request->get('password') !== null) {
             $data['password'] = $request->get('password');
