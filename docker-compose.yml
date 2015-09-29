@@ -1,0 +1,14 @@
+web:
+  build: .
+  links:
+    - mongo
+  volumes:
+    - .:/var/www/
+  ports:
+    - "80:80"
+mongo:
+  image: mongo:latest
+  volumes:
+    - /mnt/sda1/var/lib/mongo-data:/data/db
+  ports:
+    - "27017:27017"
