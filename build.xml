@@ -4,6 +4,8 @@
     <target name="prepare">
         <exec command="sleep 15" passthru="true"/>
         <exec command="chown -R www:www /var/www/app/cache /var/www/app/logs"/>
+        <exec command="mkdir -p /tmp/sf2"/>
+        <exec command="chown -R www:www /tmp/sf2"/>
     </target>
 
     <target name="behat" depends="prepare">
