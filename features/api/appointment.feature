@@ -4,7 +4,9 @@ Feature: managing appointments using API
   I want to be able to make all operations on appointments
 
   Background:
-    Given I am authorized client
+    Given I make request "OPTIONS" "/api/v1/appointments/{Appointment_app1}"
+    And print last response
+    And I am authorized client
     And following "Event" exists:
       | identifiedBy  | evt1        |
       | name          | Event 1     |
