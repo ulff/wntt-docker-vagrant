@@ -8,6 +8,7 @@ web:
     - "80:80"
 mongo:
   image: mongo:latest
+  command: "--smallfiles"
   volumes:
     - /mnt/sda1/var/lib/mongo-data:/data/db
   ports:
