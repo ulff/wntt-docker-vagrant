@@ -9,11 +9,19 @@ Go to project directory and start with command:
 
 ```sh bin/vagrant-up.sh```
 
+After starting log into webserver container and clear cache with command:
+
+```sh bin/clear-cache.sh``` 
+
 ### Docker-compose based setup
 
 Go to project directory and start with command:
 
 ```docker-compose up -d```
+
+After starting log into webserver container and clear cache with command:
+
+```sh bin/clear-cache.sh```
 
 ## Stopping environment
 
@@ -45,11 +53,11 @@ Logging on container (e.g. webserver container):
 
 Clearing cache of dev environment:
 
-```php app/console cache:clear --no-warmup``` 
+```sh bin/clear-cache.sh``` 
 
 Clearing cache of other environments (e.g. behat):
 
-```php app/console cache:clear --no-warmup --env=behat```
+```sh bin/clear-cache.sh behat```
 
 Loading data fixtures:
 

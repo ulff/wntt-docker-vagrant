@@ -22,6 +22,7 @@
 !/bin/vagrant-up.sh
 !/bin/setup.sh
 !/bin/load-fixtures.sh
+!/bin/clear-cache.sh
 credentials.yml
 !logs/.gitignore
 logs/*
