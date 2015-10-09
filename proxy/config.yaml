@@ -1,0 +1,5 @@
+# you can edit this config file
+
+config:
+    ip: 192.168.36.16
+    port: 8092
